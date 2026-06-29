@@ -1,9 +1,13 @@
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import Layout from './components/Layout';
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <h1 className="text-3xl font-bold text-center py-8">Patel Sales</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

@@ -1,0 +1,275 @@
+import type { Product, Category } from '../types';
+
+export const mockCategories: Category[] = [
+{
+  _id: 'cat-1',
+  name: 'Foam Products',
+  slug: 'foam-products',
+  image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800&auto=format&fit=crop',
+  productCount: 34
+},
+{
+  _id: 'cat-2',
+  name: 'Foil Products',
+  slug: 'foil-products',
+  image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=800&auto=format&fit=crop',
+  productCount: 33
+},
+{
+  _id: 'cat-3',
+  name: 'Plastic Containers',
+  slug: 'plastic-containers',
+  image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=800&auto=format&fit=crop',
+  productCount: 14
+},
+{
+  _id: 'cat-4',
+  name: 'Paper Bags',
+  slug: 'paper-bags',
+  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?q=80&w=800&auto=format&fit=crop',
+  productCount: 14
+},
+{
+  _id: 'cat-5',
+  name: 'Eco Friendly',
+  slug: 'eco-friendly',
+  image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop',
+  productCount: 14
+},
+{
+  _id: 'cat-6',
+  name: 'Disposable Gloves',
+  slug: 'disposable-gloves',
+  image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=800&auto=format&fit=crop',
+  productCount: 10
+}];
+
+
+export const mockProducts: Product[] = [
+{
+  _id: 'prod-1',
+  name: '12" x 1000\' Standard Aluminum Foil Roll',
+  description: 'Heavy-duty aluminum foil for commercial kitchens. Perfect for wrapping, covering, and storing food.',
+  price: 24.99,
+  originalPrice: 34.99,
+  categoryId: 'cat-2',
+  categoryName: 'Foil Products',
+  images: ['https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=600&auto=format&fit=crop'],
+  stock: 250,
+  status: 'active',
+  sku: 'FOIL-12-1000',
+  caseSize: '1 Roll',
+  isOnSale: true,
+  rating: 4.8,
+  reviewCount: 124
+},
+{
+  _id: 'prod-2',
+  name: 'Dart 4J4 4oz White Foam Cups — 1,000/Case',
+  description: 'Insulated foam cups keep beverages hot or cold. Ideal for coffee, tea, and cold drinks.',
+  price: 18.49,
+  originalPrice: 22.99,
+  categoryId: 'cat-1',
+  categoryName: 'Foam Products',
+  images: ['https://images.unsplash.com/photo-1514190051997-0f6f39ca5cde?q=80&w=600&auto=format&fit=crop'],
+  stock: 500,
+  status: 'active',
+  sku: 'DART-4J4',
+  caseSize: '1,000/Case',
+  isOnSale: true,
+  rating: 4.7,
+  reviewCount: 89
+},
+{
+  _id: 'prod-3',
+  name: 'Dart 8J8 8oz White Foam Cups — 1,000/Case',
+  description: 'Popular 8oz foam cups for hot beverages. Excellent insulation and comfortable to hold.',
+  price: 22.99,
+  originalPrice: 28.99,
+  categoryId: 'cat-1',
+  categoryName: 'Foam Products',
+  images: ['https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=600&auto=format&fit=crop'],
+  stock: 320,
+  status: 'active',
+  sku: 'DART-8J8',
+  caseSize: '1,000/Case',
+  isOnSale: true,
+  rating: 4.9,
+  reviewCount: 201
+},
+{
+  _id: 'prod-4',
+  name: '5oz Dart Foam Bowls — 1,000/Case',
+  description: 'Versatile foam bowls for soups, sides, and snacks. Leak-resistant and microwave-safe.',
+  price: 28.99,
+  categoryId: 'cat-1',
+  categoryName: 'Foam Products',
+  images: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=600&auto=format&fit=crop'],
+  stock: 180,
+  status: 'active',
+  sku: '5BWWC-1000',
+  caseSize: '1,000/Case',
+  isNew: true,
+  rating: 4.6,
+  reviewCount: 56
+},
+{
+  _id: 'prod-5',
+  name: '8"x8"x3" Compostable Bagasse Take-Out Box — 150/Case',
+  description: 'Eco-friendly sugarcane bagasse containers. 100% compostable, grease-resistant, and sturdy.',
+  price: 32.99,
+  originalPrice: 38.99,
+  categoryId: 'cat-5',
+  categoryName: 'Eco Friendly',
+  images: ['https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=600&auto=format&fit=crop'],
+  stock: 95,
+  status: 'active',
+  sku: 'ECO-8X8-150',
+  caseSize: '150/Case',
+  isOnSale: true,
+  isNew: true,
+  rating: 4.9,
+  reviewCount: 73
+},
+{
+  _id: 'prod-6',
+  name: 'Clear Plastic Deli Containers 32oz — 240/Case',
+  description: 'Airtight clear containers for deli foods, salads, and meal prep. Stackable and reusable.',
+  price: 41.99,
+  categoryId: 'cat-3',
+  categoryName: 'Plastic Containers',
+  images: ['https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=600&auto=format&fit=crop'],
+  stock: 12,
+  status: 'active',
+  sku: 'DELI-32OZ-240',
+  caseSize: '240/Case',
+  rating: 4.5,
+  reviewCount: 38
+},
+{
+  _id: 'prod-7',
+  name: 'Kraft Paper Grocery Bags #16 — 500/Bundle',
+  description: 'Heavy-duty kraft paper bags with handles. Ideal for bakeries, delis, and grocery stores.',
+  price: 36.49,
+  categoryId: 'cat-4',
+  categoryName: 'Paper Bags',
+  images: ['https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?q=80&w=600&auto=format&fit=crop'],
+  stock: 150,
+  status: 'active',
+  sku: 'KRAFT-16-500',
+  caseSize: '500/Bundle',
+  isNew: true,
+  rating: 4.7,
+  reviewCount: 44
+},
+{
+  _id: 'prod-8',
+  name: 'Vinyl Disposable Gloves — Powder Free — 100/Box',
+  description: 'Latex-free vinyl gloves for food handling. Comfortable fit with excellent dexterity.',
+  price: 9.99,
+  originalPrice: 13.99,
+  categoryId: 'cat-6',
+  categoryName: 'Disposable Gloves',
+  images: ['https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=600&auto=format&fit=crop'],
+  stock: 800,
+  status: 'active',
+  sku: 'GLOVE-VNL-100',
+  caseSize: '100/Box',
+  isOnSale: true,
+  rating: 4.4,
+  reviewCount: 167
+},
+{
+  _id: 'prod-9',
+  name: 'Aluminum Half-Size Steam Table Pan — 100/Case',
+  description: 'Standard steam table pans for catering and buffet service. Oven and freezer safe.',
+  price: 44.99,
+  categoryId: 'cat-2',
+  categoryName: 'Foil Products',
+  images: ['https://images.unsplash.com/photo-1585515320310-259814833e62?q=80&w=600&auto=format&fit=crop'],
+  stock: 60,
+  status: 'active',
+  sku: 'STEAM-HALF-100',
+  caseSize: '100/Case',
+  rating: 4.8,
+  reviewCount: 92
+},
+{
+  _id: 'prod-10',
+  name: 'White Poly-Lined Paper Soup Cups 12oz — 500/Case',
+  description: 'Leak-proof soup cups with poly lining. Great for soups, stews, and hot beverages.',
+  price: 38.99,
+  originalPrice: 45.99,
+  categoryId: 'cat-1',
+  categoryName: 'Foam Products',
+  images: ['https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=600&auto=format&fit=crop'],
+  stock: 200,
+  status: 'active',
+  sku: 'SOUP-12OZ-500',
+  caseSize: '500/Case',
+  isOnSale: true,
+  rating: 4.6,
+  reviewCount: 61
+},
+{
+  _id: 'prod-11',
+  name: 'Portion Cups 2oz with Lids — 2,500/Case',
+  description: 'Clear polypropylene portion cups with snap-on lids. Perfect for condiments and dressings.',
+  price: 29.99,
+  categoryId: 'cat-3',
+  categoryName: 'Plastic Containers',
+  images: ['https://images.unsplash.com/photo-1609501676725-7186f017a4b7?q=80&w=600&auto=format&fit=crop'],
+  stock: 300,
+  status: 'active',
+  sku: 'PORTION-2OZ-2500',
+  caseSize: '2,500/Case',
+  isNew: true,
+  rating: 4.7,
+  reviewCount: 83
+},
+{
+  _id: 'prod-12',
+  name: 'Compostable Palm Leaf Plates 10" Round — 100/Case',
+  description: 'Natural palm leaf plates — no chemicals, no trees cut. Sturdy enough for hot and cold foods.',
+  price: 48.99,
+  categoryId: 'cat-5',
+  categoryName: 'Eco Friendly',
+  images: ['https://images.unsplash.com/photo-1466637574441-749b8f19452f?q=80&w=600&auto=format&fit=crop'],
+  stock: 45,
+  status: 'active',
+  sku: 'PALM-10IN-100',
+  caseSize: '100/Case',
+  isNew: true,
+  rating: 4.9,
+  reviewCount: 29
+}];
+
+
+export const testimonials = [
+{
+  id: 1,
+  name: 'Marcus Johnson',
+  role: 'Owner, Marcus\'s Deli & Grill',
+  location: 'Newark, NJ',
+  quote: 'Patel Sales has been our supplier for 3 years. The foam cups and foil pans arrive next day, prices beat every competitor we\'ve tried. Can\'t run our deli without them.',
+  image: "https://images.unsplash.com/photo-1552986104-980f9c25bc44",
+  rating: 5
+},
+{
+  id: 2,
+  name: 'Priya Mehta',
+  role: 'Operations Manager, Sunrise Bakery Chain',
+  location: 'Edison, NJ',
+  quote: 'We order for 4 locations through one account. The bulk pricing on paper bags and boxes saves us $800 a month compared to our old supplier.',
+  image: "https://img.rocket.new/generatedImages/rocket_gen_img_151023a74-1764700093180.png",
+  rating: 5
+},
+{
+  id: 3,
+  name: 'Tony Carvalho',
+  role: 'Executive Chef, The Riverside Hotel',
+  location: 'New Brunswick, NJ',
+  quote: 'The eco-friendly bagasse containers are perfect for our catering events. Guests notice the quality, and we hit our sustainability targets. Patel Sales delivers every time.',
+  image: "https://img.rocket.new/generatedImages/rocket_gen_img_127fa4b2c-1772257682946.png",
+  rating: 5
+}];
