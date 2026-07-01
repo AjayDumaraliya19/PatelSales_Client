@@ -32,7 +32,7 @@ export default function Footer() {
     <footer className="wss-footer">
       {/* Trust bar */}
       <div className="bg-[#003087] border-b border-white/10">
-        <div className="w-full px-4 py-5">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { icon: 'TruckIcon' as const, title: 'Free Shipping $150+', sub: 'NJ, NY, CT & PA' },
@@ -55,12 +55,13 @@ export default function Footer() {
       </div>
 
       {/* Main footer */}
-      <div className="w-full px-4 py-10">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand column */}
           <div>
-            <div className="text-white font-bold text-xl mb-1">Patel Sales LLC</div>
-            <div className="text-white/50 text-xs mb-4">Wholesale Food Service Supplies</div>
+            <Link to="/" className="inline-block mb-4">
+              <img src="/brand_logo.png" alt="Patel Sales Logo" className="h-12 w-auto object-contain" />
+            </Link>
             <p className="text-white/60 text-sm leading-relaxed mb-4">
               Your trusted source for bulk disposable food service supplies in New Jersey. Serving restaurants, delis, bakeries, and hotels since 2021.
             </p>
@@ -99,7 +100,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="w-full px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-white/50 text-xs">
             © 2026 Patel Sales LLC · All Rights Reserved · North Brunswick, NJ 08902
           </p>

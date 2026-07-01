@@ -1,31 +1,35 @@
 import React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BottomNav from '../components/BottomNav';
 import HeroSection from '../components/HeroSection';
-import CategoryBento from '../components/CategoryBento';
-import FlashSaleSection from '../components/FlashSaleSection';
-import TrustSection from '../components/TrustSection';
-import TestimonialsSection from '../components/TestimonialsSection';
-import PWAInstallBanner from '../components/PWAInstallBanner';
-import { mockCategories, mockProducts } from '../data/mockData';
+import PromoGridSection, { PlusBannerSection } from '../components/home/PromoGridSection';
+import FeaturedProductSection from '../components/home/FeaturedProductSection';
+import ActionTilesSection from '../components/home/ActionTilesSection';
+import FeaturedCategoriesSection from '../components/home/FeaturedCategoriesSection';
+import BestSellingSection from '../components/home/BestSellingSection';
+import QuoteBannerSection from '../components/home/QuoteBannerSection';
+import PopularBrandsSection from '../components/home/PopularBrandsSection';
+import ResourcesSection from '../components/home/ResourcesSection';
+import NewsletterAppSection from '../components/home/NewsletterAppSection';
+import { mockProducts } from '../data/mockData';
 
 export default function HomePage() {
-  const flashSaleProducts = mockProducts.filter(p => p.isOnSale).slice(0, 4);
+  const featuredProducts = mockProducts.slice(0, 8);
+  const bestSellingProducts = [...mockProducts]
+    .sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0))
+    .slice(0, 10);
 
   return (
-    <>
-      <PWAInstallBanner />
-      <Header />
-      <main className="min-h-screen bg-[#f5f5f5]">
-        <HeroSection />
-        <CategoryBento categories={mockCategories} />
-        <FlashSaleSection products={flashSaleProducts} />
-        <TrustSection />
-        <TestimonialsSection />
-      </main>
-      <Footer />
-      <BottomNav />
-    </>
+    <div className="min-h-full bg-[#f5f5f5]">
+      <HeroSection />
+      <PromoGridSection />
+      <PlusBannerSection />
+      <FeaturedProductSection products={featuredProducts} />
+      <ActionTilesSection />
+      <FeaturedCategoriesSection />
+      <BestSellingSection products={bestSellingProducts} />
+      <QuoteBannerSection />
+      <PopularBrandsSection />
+      <ResourcesSection />
+      <NewsletterAppSection />
+    </div>
   );
 }
