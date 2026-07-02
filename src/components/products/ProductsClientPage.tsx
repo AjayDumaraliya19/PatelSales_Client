@@ -10,38 +10,47 @@ import type { Product, Category, FilterState } from '../../types';
 interface ProductsClientPageProps {
   products: Product[];
   categories: Category[];
+  loading?: boolean;
+  page?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
-export default function ProductsClientPage({ products, categories }: ProductsClientPageProps) {
-  const [searchParams] = useSearchParams();
+export default function ProductsClientPage({
+  products,
+  categories,
+  loading = false,
+  page = 1,
+  totalPages = 1,
+  onPageChange,
+}: ProductsClientPageProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const [filter, setFilter] = useState<FilterState>({
     category: searchParams.get('category') || '',
-    minPrice: 0,
-    maxPrice: 500,
-    sortBy: 'name',
+    minPrice: Number(searchParams.get('minPrice')) || 0,
+    maxPrice: Number(searchParams.get('maxPrice')) || 500,
+    sortBy: (searchParams.get('sort') as 'name' | 'price_asc' | 'price_desc' | 'newest') || 'name',
     search: searchParams.get('search') || '',
     page: 1,
   });
 
-  const filteredProducts = React.useMemo(() => {
-    return products.filter((product) => {
-      if (filter.category && product.categoryId !== filter.category) return false;
-      if (filter.search && !product.name.toLowerCase().includes(filter.search.toLowerCase())) return false;
-      if (product.price < filter.minPrice || product.price > filter.maxPrice) return false;
-      return true;
-    }).sort((a, b) => {
-      switch (filter.sortBy) {
-        case 'price_asc': return a.price - b.price;
-        case 'price_desc': return b.price - a.price;
-        case 'newest': return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-        default: return a.name.localeCompare(b.name);
-      }
+  // Sync filter with URL params
+  React.useEffect(() => {
+    setFilter({
+      category: searchParams.get('category') || '',
+      minPrice: Number(searchParams.get('minPrice')) || 0,
+      maxPrice: Number(searchParams.get('maxPrice')) || 500,
+      sortBy: (searchParams.get('sort') as 'name' | 'price_asc' | 'price_desc' | 'newest') || 'name',
+      search: searchParams.get('search') || '',
+      page: 1,
     });
-  }, [products, filter]);
+  }, [searchParams]);
+
+  // Products are already filtered by backend, no need for client-side filtering
+  const filteredProducts = products;
 
   const activeFilterCount = [
     filter.category,
@@ -51,7 +60,43 @@ export default function ProductsClientPage({ products, categories }: ProductsCli
   ].filter(Boolean).length;
 
   const handleFilterChange = (updates: Partial<FilterState>) => {
-    setFilter((prev) => ({ ...prev, ...updates, page: 1 }));
+    const newFilter = { ...filter, ...updates, page: 1 };
+    setFilter(newFilter);
+    
+    // Update URL params
+    const newSearchParams = new URLSearchParams(searchParams);
+    
+    if (newFilter.category) {
+      newSearchParams.set('category', newFilter.category);
+    } else {
+      newSearchParams.delete('category');
+    }
+    
+    if (newFilter.search) {
+      newSearchParams.set('search', newFilter.search);
+    } else {
+      newSearchParams.delete('search');
+    }
+    
+    if (newFilter.minPrice > 0) {
+      newSearchParams.set('minPrice', newFilter.minPrice.toString());
+    } else {
+      newSearchParams.delete('minPrice');
+    }
+    
+    if (newFilter.maxPrice < 500) {
+      newSearchParams.set('maxPrice', newFilter.maxPrice.toString());
+    } else {
+      newSearchParams.delete('maxPrice');
+    }
+    
+    if (newFilter.sortBy !== 'name') {
+      newSearchParams.set('sort', newFilter.sortBy);
+    } else {
+      newSearchParams.delete('sort');
+    }
+    
+    setSearchParams(newSearchParams);
   };
 
   const clearFilters = () => {
@@ -63,6 +108,7 @@ export default function ProductsClientPage({ products, categories }: ProductsCli
       search: '',
       page: 1,
     });
+    setSearchParams(new URLSearchParams());
   };
 
   return (
@@ -189,32 +235,81 @@ export default function ProductsClientPage({ products, categories }: ProductsCli
 
         {/* Products Grid */}
         <div className="flex-1">
-         {loading ? (
+          {loading ? (
             <ProductsSkeleton viewMode={viewMode} />
           ) : filteredProducts.length === 0 ? (
             <div className="bg-white border border-gray-200 rounded-sm p-8 text-center">
               <Icon name="MagnifyingGlassIcon" size={48} className="text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-bold text-gray-800 mb-2">No products found</h3>
               <p className="text-gray-600 mb-4">Try adjusting your filters or search terms</p>
-              <button
-                onClick={clearFilters}
-                className="btn-secondary"
-              >
+              <button onClick={clearFilters} className="btn-secondary">
                 Clear Filters
               </button>
             </div>
           ) : (
-            <div
-              className={`grid gap-3 ${
-                viewMode === 'grid'
-                  ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
-                  : 'grid-cols-1'
-              }`}
-            >
-              {filteredProducts.map((product) => (
-                <ProductCard key={product._id} product={product} variant={viewMode} />
-              ))}
-            </div>
+            <>
+              <div
+                className={`grid gap-3 ${
+                  viewMode === 'grid'
+                    ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+                    : 'grid-cols-1'
+                }`}
+              >
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product._id} product={product} variant={viewMode} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex justify-center items-center gap-2">
+                  <button
+                    onClick={() => onPageChange && onPageChange(Math.max(1, page - 1))}
+                    disabled={page === 1}
+                    className="px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+                  
+                  <div className="flex gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (page <= 3) {
+                        pageNum = i + 1;
+                      } else if (page >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = page - 2 + i;
+                      }
+                      
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => onPageChange && onPageChange(pageNum)}
+                          className={`px-3 py-2 border rounded-sm text-sm font-medium transition-colors ${
+                            page === pageNum
+                              ? 'bg-[#003087] text-white border-[#003087]'
+                              : 'border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  <button
+                    onClick={() => onPageChange && onPageChange(Math.min(totalPages, page + 1))}
+                    disabled={page === totalPages}
+                    className="px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

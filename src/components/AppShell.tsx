@@ -6,10 +6,13 @@ import BottomNav from './BottomNav';
 import OfflineBanner from './pwa/OfflineBanner';
 import PWAUpdatePrompt from './pwa/PWAUpdatePrompt';
 import PWAInstallBanner from './pwa/PWAInstallBanner';
+import PWAInstallFAB from './pwa/PWAInstallFAB';
 import { usePWA } from '../hooks/usePWA';
 
 export default function AppShell() {
   const { isInstalled, canInstall } = usePWA();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   return (
     <div
@@ -18,13 +21,16 @@ export default function AppShell() {
       <OfflineBanner />
       <Header />
       {!isInstalled && <PWAInstallBanner />}
-      <main className="app-main content-below-header">
+      <main
+        className={`app-main ${isHomePage ? 'app-main--home' : 'content-below-header'}`}
+      >
         <Outlet />
       </main>
       <div className="hidden lg:block">
         <Footer />
       </div>
       <BottomNav />
+      <PWAInstallFAB />
       <PWAUpdatePrompt />
     </div>
   );

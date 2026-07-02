@@ -2,13 +2,20 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
+import { rm } from 'fs/promises';
 
 export default defineConfig({
   plugins: [
     react(),
+    {
+      name: 'exclude-appicons-from-dist',
+      closeBundle: async () => {
+        await rm(path.resolve(__dirname, 'dist', 'AppIcons'), { recursive: true, force: true });
+      },
+    },
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'icons/*.png', 'browserconfig.xml'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.png', 'browserconfig.xml'],
       manifest: {
         name: 'Patel Sales LLC - Wholesale Food Service Supplies',
         short_name: 'Patel Sales',
@@ -47,6 +54,13 @@ export default defineConfig({
             icons: [{ src: 'icons/icon-96x96.png', sizes: '96x96' }],
           },
           {
+            name: 'Track Order',
+            short_name: 'Track',
+            description: 'Track your order status',
+            url: '/track-order',
+            icons: [{ src: 'icons/icon-96x96.png', sizes: '96x96' }],
+          },
+          {
             name: 'View Cart',
             short_name: 'Cart',
             description: 'View your shopping cart',
@@ -57,6 +71,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
+        globIgnores: ['**/AppIcons/**'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [

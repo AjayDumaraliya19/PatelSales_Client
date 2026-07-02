@@ -9,7 +9,8 @@ const navItems = [
     href: '/products',
     icon: 'Squares2X2Icon' as const,
     label: 'Shop',
-    match: (path: string) => path.startsWith('/products'),
+    match: (path: string) =>
+      path.startsWith('/products') || path === '/disposables',
   },
   {
     href: '/cart',
@@ -19,16 +20,16 @@ const navItems = [
     badge: true,
   },
   {
-    href: '/get-the-app',
-    icon: 'DevicePhoneMobileIcon' as const,
-    label: 'App',
-    match: (path: string) => path === '/get-the-app',
+    href: '/track-order',
+    icon: 'TruckIcon' as const,
+    label: 'Track',
+    match: (path: string) => path === '/track-order',
   },
   {
-    href: '/register',
+    href: '/account',
     icon: 'UserCircleIcon' as const,
     label: 'Account',
-    match: (path: string) => path === '/register',
+    match: (path: string) => path === '/account' || path === '/login' || path === '/register' || path.startsWith('/account/'),
   },
 ];
 
@@ -37,10 +38,7 @@ export default function BottomNav() {
   const itemCount = useCartStore((s) => s?.getItemCount());
 
   return (
-    <nav
-      className="app-bottom-nav lg:hidden"
-      aria-label="Mobile navigation"
-    >
+    <nav className="app-bottom-nav lg:hidden" aria-label="Mobile navigation">
       <div className="app-bottom-nav__inner">
         {navItems.map((item) => {
           const isActive = item.match(location.pathname);
@@ -60,6 +58,7 @@ export default function BottomNav() {
                   </span>
                 )}
               </div>
+              <span className="app-bottom-nav__label">{item.label}</span>
             </Link>
           );
         })}

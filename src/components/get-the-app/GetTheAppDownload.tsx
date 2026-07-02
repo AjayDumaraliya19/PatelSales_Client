@@ -1,10 +1,10 @@
 import React from 'react';
 import Icon from '../ui/AppIcon';
-import PWAInstallButton from '../pwa/PWAInstallButton';
+import PWAInstallGuide from '../pwa/PWAInstallGuide';
 
 function StarRating() {
   return (
-    <div className="flex items-center gap-1 mb-3">
+    <div className="flex items-center justify-center gap-1 mb-3">
       <span className="text-lg font-bold text-gray-800">4.9</span>
       <div className="flex">
         {[1, 2, 3, 4, 5].map((i) => (
@@ -43,38 +43,54 @@ function PhoneDevice({ type }: { type: 'ios' | 'android' }) {
   );
 }
 
+function PlatformInstallSection({
+  type,
+  badgeTitle,
+  badgeSub,
+  caption,
+}: {
+  type: 'ios' | 'android';
+  badgeTitle: string;
+  badgeSub: string;
+  caption: string;
+}) {
+  return (
+    <div className="text-center">
+      <PhoneDevice type={type} />
+      <StarRating />
+      <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg mb-4">
+        <Icon name="DevicePhoneMobileIcon" size={20} />
+        <div className="text-left">
+          <div className="text-[9px] opacity-80">{badgeSub}</div>
+          <div className="text-sm font-bold leading-tight">{badgeTitle}</div>
+        </div>
+      </div>
+      <p className="text-gray-700 font-semibold mb-4">{caption}</p>
+    </div>
+  );
+}
+
 export default function GetTheAppDownload() {
   return (
     <section className="bg-[#eef5f0] py-14 lg:py-16 border-t border-[#d4e8da]">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-20">
-          <div className="text-center">
-            <PhoneDevice type="ios" />
-            <StarRating />
-            <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg mb-4">
-              <Icon name="DevicePhoneMobileIcon" size={20} />
-              <div className="text-left">
-                <div className="text-[9px] opacity-80">Download on the</div>
-                <div className="text-sm font-bold leading-tight">App Store</div>
-              </div>
-            </div>
-            <p className="text-gray-700 font-semibold mb-4">Install on any device</p>
-            <PWAInstallButton label="Install PWA App" />
-          </div>
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 mb-10">
+          <PlatformInstallSection
+            type="ios"
+            badgeSub="Works on"
+            badgeTitle="iPhone & iPad"
+            caption="Add to Home Screen via Safari"
+          />
+          <PlatformInstallSection
+            type="android"
+            badgeSub="Works on"
+            badgeTitle="Android & Desktop"
+            caption="Install directly from Chrome"
+          />
+        </div>
 
-          <div className="text-center">
-            <PhoneDevice type="android" />
-            <StarRating />
-            <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg mb-4">
-              <Icon name="DevicePhoneMobileIcon" size={20} />
-              <div className="text-left">
-                <div className="text-[9px] opacity-80">Works on</div>
-                <div className="text-sm font-bold leading-tight">Android & Desktop</div>
-              </div>
-            </div>
-            <p className="text-gray-700 font-semibold mb-4">No app store required</p>
-            <PWAInstallButton label="Add to Home Screen" />
-          </div>
+        <div className="max-w-2xl mx-auto">
+          <PWAInstallGuide />
         </div>
       </div>
     </section>

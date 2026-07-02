@@ -44,8 +44,7 @@ ReactJS/
     │   ├── ProductCard.tsx # Product display card
     │   ├── ui/             # UI utility components
     │   │   ├── AppIcon.tsx
-    │   │   ├── AppImage.tsx
-    │   │   └── AppLogo.tsx
+    │   │   └── AppImage.tsx
     │   ├── cart/           # Cart-related components
     │   │   ├── CartClientPage.tsx
     │   │   ├── CartEmpty.tsx

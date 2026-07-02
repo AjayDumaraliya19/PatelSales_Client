@@ -69,7 +69,7 @@ export default function CartSummary() {
 
       {/* Checkout Button */}
       <Link
-        to="/products"
+        to="/checkout"
         className="btn-primary w-full justify-center py-3 text-base"
       >
         Proceed to Checkout

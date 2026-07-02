@@ -23,7 +23,7 @@ export default function AboutPage() {
               Shop Products
             </Link>
             <Link
-              to="/products"
+              to="/contact"
               className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors"
             >
               Contact Us
@@ -347,7 +347,7 @@ export default function AboutPage() {
               Browse Products
             </Link>
             <Link
-              to="/products"
+              to="/contact"
               className="bg-[#2F7D32] text-white font-bold px-8 py-4 rounded-lg hover:bg-[#1a5c1e] transition-colors"
             >
               Contact Our Team

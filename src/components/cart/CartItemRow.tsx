@@ -14,13 +14,29 @@ interface CartItemRowProps {
 
 export default function CartItemRow({ item }: CartItemRowProps) {
   const [removing, setRemoving] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
 
   const handleRemove = async () => {
     setRemoving(true);
-    await new Promise((r) => setTimeout(r, 300));
-    removeItem(item.productId);
+    try {
+      await removeItem(item.productId);
+    } catch (error) {
+      console.error('Failed to remove item:', error);
+      setRemoving(false);
+    }
+  };
+
+  const handleUpdateQuantity = async (newQuantity: number) => {
+    setUpdating(true);
+    try {
+      await updateQuantity(item.productId, newQuantity);
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+    } finally {
+      setUpdating(false);
+    }
   };
 
   const discount = item.product.originalPrice
@@ -30,7 +46,7 @@ export default function CartItemRow({ item }: CartItemRowProps) {
   return (
     <div className={`p-4 flex gap-4 ${removing ? 'opacity-50' : ''}`}>
       {/* Product Image */}
-      <Link to="/products" className="flex-shrink-0">
+      <Link to={`/products/${item.product._id}`} className="flex-shrink-0">
         <div className="w-24 h-24 bg-gray-50 border border-gray-100 overflow-hidden">
           <AppImage
             src={item.product.images[0]}
@@ -44,7 +60,7 @@ export default function CartItemRow({ item }: CartItemRowProps) {
 
       {/* Product Info */}
       <div className="flex-1 min-w-0">
-        <Link to="/products" className="block mb-1">
+        <Link to={`/products/${item.product._id}`} className="block mb-1">
           <h3 className="text-sm font-semibold text-[#003087] hover:text-[#e8471e] transition-colors line-clamp-2">
             {item.product.name}
           </h3>

@@ -34,7 +34,7 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
 
   if (variant === 'list') {
     return (
-      <Link to="/products" className="block">
+      <Link to={`/products/${product._id}`} className="block">
         <div className="wss-product-card bg-white p-4 flex gap-4 group">
           {/* Image */}
           <div className="relative w-28 h-28 flex-shrink-0 bg-gray-50 border border-gray-100 overflow-hidden">
@@ -110,7 +110,7 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
   }
 
   return (
-    <Link to="/products" className="block h-full">
+    <Link to={`/products/${product._id}`} className="block h-full">
       <div className="wss-product-card bg-white flex flex-col h-full group">
         {/* Image */}
         <div className="relative aspect-square bg-gray-50 overflow-hidden border-b border-gray-100">

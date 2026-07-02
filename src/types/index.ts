@@ -10,15 +10,33 @@ export interface User {
 export interface Product {
   _id: string;
   name: string;
+  slug: string;
   description: string;
   price: number;
-  originalPrice?: number;
-  categoryId: string;
-  categoryName?: string;
+  compareAtPrice?: number;
+  sku: string;
   images: string[];
+  category: {
+    _id: string;
+    name: string;
+    slug: string;
+  };
+  brand?: string;
   stock: number;
-  status: 'active' | 'inactive';
-  sku?: string;
+  lowStockThreshold: number;
+  attributes?: Record<string, any>;
+  variants?: any[];
+  isActive: boolean;
+  isFeatured: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  createdAt: string;
+  updatedAt: string;
+  // Legacy fields for compatibility
+  originalPrice?: number;
+  categoryId?: string;
+  categoryName?: string;
+  status?: 'active' | 'inactive';
   caseSize?: string;
   isOnSale?: boolean;
   isNew?: boolean;
@@ -29,9 +47,21 @@ export interface Product {
 export interface Category {
   _id: string;
   name: string;
-  image: string;
-  productCount?: number;
   slug: string;
+  description?: string;
+  image?: string;
+  parent?: {
+    _id: string;
+    name: string;
+  } | null;
+  displayOrder: number;
+  isActive: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  createdAt: string;
+  updatedAt: string;
+  // Legacy fields for compatibility
+  productCount?: number;
 }
 
 export interface CartItem {

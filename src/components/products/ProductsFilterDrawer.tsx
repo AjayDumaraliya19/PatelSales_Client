@@ -39,7 +39,7 @@ export default function ProductsFilterDrawer({
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 left-0 w-80 max-w-full bg-white shadow-xl overflow-y-auto">
+      <div className="fixed inset-y-0 left-0 w-80 max-w-full bg-white shadow-xl overflow-y-auto scrollbar-hide">
         <div className="p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">

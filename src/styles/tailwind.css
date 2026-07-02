@@ -27,6 +27,8 @@
   --navy: #003087;
   --navy-dark: #002266;
   --wred: #e8471e;
+  --site-header-height: 4.5rem;
+  --pwa-install-bar-height: 0.75rem;
 }
 
 @layer base {
@@ -63,6 +65,31 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior-y: none;
+  }
+
+  /* Native app feel — hide visible scrollbars on mobile */
+  @media (max-width: 1023px) {
+    html,
+    body {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .app-shell--standalone,
+  .app-shell--standalone * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .app-shell--standalone::-webkit-scrollbar,
+  .app-shell--standalone *::-webkit-scrollbar {
+    display: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -155,33 +182,31 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* Offset for fixed header — mobile-first */
+  /* Offset for fixed header — uses live --site-header-height from Header */
   .content-below-header {
-    padding-top: 8.25rem;
+    padding-top: var(--site-header-height);
   }
 
   .app-shell--installable .content-below-header {
-    padding-top: 10.5rem;
+    padding-top: calc(var(--site-header-height) + var(--pwa-install-bar-height));
   }
 
-  @media (min-width: 768px) {
-    .content-below-header {
-      padding-top: 9.75rem;
-    }
-
-    .app-shell--installable .content-below-header {
-      padding-top: 11.5rem;
-    }
+  /* Home: hero handles header offset internally for seamless header-to-banner join */
+  .app-main--home {
+    padding-top: 0;
   }
 
-  @media (min-width: 1024px) {
-    .content-below-header {
-      padding-top: 11rem;
-    }
+  .app-shell--installable .app-main--home {
+    padding-top: var(--pwa-install-bar-height);
+  }
 
-    .app-shell--installable .content-below-header {
-      padding-top: 12.75rem;
-    }
+  .hero-home {
+    padding-top: var(--site-header-height);
+    background-color: var(--secondary);
+  }
+
+  .app-shell--installable .hero-home {
+    padding-top: calc(var(--site-header-height) + var(--pwa-install-bar-height));
   }
 
   /* ── PWA App Shell ── */
@@ -221,7 +246,34 @@
   }
 
   .pwa-install-bar {
-    background: linear-gradient(135deg, #003087 0%, #0040a0 100%);
+    background: linear-gradient(135deg, var(--secondary) 0%, #0040a0 100%);
+    top: var(--site-header-height);
+  }
+
+  .pwa-install-fab {
+    position: fixed;
+    right: 0.75rem;
+    bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
+    z-index: 44;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #e8471e 0%, #c73a17 100%);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(232, 71, 30, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pwa-install-fab:active {
+    transform: scale(0.96);
+  }
+
+  .app-shell--installable .pwa-install-fab {
+    bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px) + var(--pwa-install-bar-height) + 0.75rem);
   }
 
   .top-safe-offset {
@@ -303,6 +355,129 @@
     justify-content: center;
     padding: 0 0.25rem;
     border: 2px solid #003087;
+  }
+
+  .mobile-drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 49;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-drawer__scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .mobile-drawer__scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-drawer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    text-align: left;
+    transition: background-color 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-drawer__row:active {
+    background-color: #f9fafb;
+  }
+
+  .mobile-drawer__row--active {
+    color: #003087;
+    font-weight: 600;
+    background-color: #f8fafc;
+    box-shadow: inset 3px 0 0 #003087;
+  }
+
+  .mobile-drawer__row--toggle {
+    cursor: pointer;
+    background: #ffffff;
+    border: none;
+    font-family: inherit;
+  }
+
+  .mobile-drawer__sub {
+    background-color: #fafafa;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .mobile-drawer__sub-row {
+    display: block;
+    padding: 0.625rem 1rem 0.625rem 1.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: #4b5563;
+    line-height: 1.4;
+    transition: color 0.12s ease, background-color 0.12s ease;
+  }
+
+  .mobile-drawer__sub-row:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-drawer__sub-row:active {
+    background-color: #f3f4f6;
+    color: #003087;
+  }
+
+  .mobile-drawer__sub-row--heading {
+    font-weight: 600;
+    color: #003087;
+    padding-top: 0.75rem;
+  }
+
+  .mobile-drawer__divider {
+    height: 0.5rem;
+    background-color: #f3f4f6;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .mobile-drawer__footer {
+    flex-shrink: 0;
+    padding: 0.875rem 1rem;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+  }
+
+  .mobile-drawer__footer-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  .mobile-drawer__footer-line a {
+    color: #003087;
+    font-weight: 500;
+  }
+
+  .mobile-drawer__footer-line + .mobile-drawer__footer-line {
+    margin-top: 0.375rem;
   }
 
   .skeleton-pulse {
@@ -403,16 +578,29 @@
     border-color: #999;
   }
 
-  .pwa-install-bar {
-    background: var(--secondary);
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible,
+  .btn-outline:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active {
+    transform: scale(0.98);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .category-bento-tall {
     grid-row: span 2;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
   }
 
   .scrollbar-hide {
@@ -420,23 +608,29 @@
     scrollbar-width: none;
   }
 
-  /* WebstaurantStore-style thin scrollbar */
-  .thin-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
-  .thin-scrollbar::-webkit-scrollbar-track {
-    background: #f0f0f0;
-  }
+  /* Desktop-only thin scrollbar for admin/panel areas */
+  @media (min-width: 1024px) {
+    .thin-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
 
-  .thin-scrollbar::-webkit-scrollbar-thumb {
-    background: #cccccc;
-    border-radius: 3px;
-  }
+    .thin-scrollbar::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
 
-  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #999999;
+    .thin-scrollbar::-webkit-scrollbar-thumb {
+      background: #cccccc;
+      border-radius: 3px;
+    }
+
+    .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #999999;
+    }
   }
 
   /* WSS-style product card */
@@ -660,6 +854,20 @@
 }
 
 @layer components {
+  .app-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .app-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
   /* WSS-style checkbox */
   .wss-checkbox {
     width: 14px;

@@ -9,21 +9,22 @@ const footerLinks = {
     { label: 'Plastic Containers', href: '/products' },
     { label: 'Paper Bags', href: '/products' },
     { label: 'Eco Friendly', href: '/products' },
-    { label: 'Disposable Gloves', href: '/products' },
+    { label: 'Disposables', href: '/disposables' },
   ],
   'Customer Service': [
-    { label: 'Contact Us', href: '/products' },
-    { label: 'Track Your Order', href: '/products' },
-    { label: 'Returns & Exchanges', href: '/products' },
-    { label: 'Shipping Info', href: '/products' },
-    { label: 'Bulk Order Inquiry', href: '/products' },
+    { label: 'Contact Us', href: '/contact' },
+    { label: 'Track Your Order', href: '/track-order' },
+    { label: 'Returns & Exchanges', href: '/returns' },
+    { label: 'Shipping Info', href: '/shipping' },
+    { label: 'Bulk Order Inquiry', href: '/bulk-order' },
+    { label: 'FAQ', href: '/faq' },
   ],
   'About Patel Sales': [
-    { label: 'About Us', href: '/products' },
-    { label: 'Our Location', href: '/products' },
-    { label: 'Business Accounts', href: '/products' },
-    { label: 'Privacy Policy', href: '/products' },
-    { label: 'Terms of Service', href: '/products' },
+    { label: 'About Us', href: '/about' },
+    { label: 'Our Location', href: '/location' },
+    { label: 'Business Accounts', href: '/business-accounts' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Terms of Service', href: '/terms-of-service' },
   ],
 };
 
@@ -70,10 +71,10 @@ export default function Footer() {
                 <Icon name="PhoneIcon" size={14} />
                 (732) 762-7840
               </a>
-              <div className="flex items-start gap-2 text-white/70 text-sm">
+              <Link to="/location" className="flex items-start gap-2 text-white/70 hover:text-white text-sm transition-colors">
                 <Icon name="MapPinIcon" size={14} className="mt-0.5 flex-shrink-0" />
                 102-103 North Center Dr,<br />North Brunswick, NJ 08902
-              </div>
+              </Link>
             </div>
           </div>
 
@@ -105,11 +106,11 @@ export default function Footer() {
             © 2026 Patel Sales LLC · All Rights Reserved · North Brunswick, NJ 08902
           </p>
           <div className="flex items-center gap-4">
-            <Link to="/products" className="text-white/50 hover:text-white/80 text-xs transition-colors">Privacy Policy</Link>
+            <Link to="/privacy-policy" className="text-white/50 hover:text-white/80 text-xs transition-colors">Privacy Policy</Link>
             <span className="text-white/20">|</span>
-            <Link to="/products" className="text-white/50 hover:text-white/80 text-xs transition-colors">Terms of Service</Link>
+            <Link to="/terms-of-service" className="text-white/50 hover:text-white/80 text-xs transition-colors">Terms of Service</Link>
             <span className="text-white/20">|</span>
-            <Link to="/products" className="text-white/50 hover:text-white/80 text-xs transition-colors">Sitemap</Link>
+            <Link to="/sitemap" className="text-white/50 hover:text-white/80 text-xs transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

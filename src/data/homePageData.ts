@@ -135,17 +135,18 @@ export const actionTiles = [
 ];
 
 export const featuredCategories = [
+  { name: 'Disposables', image: PLACEHOLDER_ICON, href: '/disposables' },
   { name: 'Restaurant Equipment', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Refrigeration', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Smallwares', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Food & Beverage', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Tabletop', image: PLACEHOLDER_ICON, href: '/products' },
-  { name: 'Disposables', image: PLACEHOLDER_ICON, href: '/disposables' },
   { name: 'Furniture', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Storage & Transport', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Janitorial', image: PLACEHOLDER_ICON, href: '/products' },
   { name: 'Industrial', image: PLACEHOLDER_ICON, href: '/products' },
-  { name: 'Business Type', image: PLACEHOLDER_ICON, href: '/products' },
+  { name: 'Foam Products', image: PLACEHOLDER_ICON, href: '/products' },
+  { name: 'Uncategorized', image: PLACEHOLDER_ICON, href: '/products' },
 ];
 
 export const popularBrands = [
