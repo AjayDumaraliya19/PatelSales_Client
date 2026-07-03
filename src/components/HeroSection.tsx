@@ -64,63 +64,57 @@ export default function HeroSection() {
           >
             {heroSlides.map((slide, index) => (
               <div key={index} className="w-full flex-shrink-0">
-                <div className="relative min-h-[320px] md:min-h-[380px] lg:min-h-[420px]">
-                  {/* Right — full background image */}
-                  <div className="absolute inset-0 bg-gray-200">
+                <div className="relative min-h-[380px] md:min-h-[380px] lg:min-h-[420px]">
+                  {/* Full-slide background image */}
+                  <div className="absolute inset-0 bg-gray-900">
                     <AppImage
                       src={slide.image}
                       alt={slide.imageAlt}
                       fill
-                      className="object-cover"
+                      className="hero-slide__image"
                       loading={index === 0 ? 'eager' : 'lazy'}
                     />
                   </div>
 
-                  {/* Left — angled color panel */}
-                  <div
-                    className={`absolute inset-y-0 left-0 w-full md:w-[58%] lg:w-[52%] bg-gradient-to-br ${slide.panelClass} z-10`}
-                    style={{ clipPath: 'polygon(0 0, 100% 0, 78% 100%, 0 100%)' }}
-                  />
+                  {/* Dark overlay — solid left, fades to transparent at 50% width */}
+                  <div className="hero-slide-overlay" aria-hidden="true" />
 
-                  {/* Left content */}
-                  <div className="relative z-20 flex items-center h-full min-h-[320px] md:min-h-[380px] lg:min-h-[420px]">
-                    <div className="w-full md:w-[50%] lg:w-[44%] px-6 py-8 md:px-10 md:py-10">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center">
+                  {/* Left / top content */}
+                  <div className="relative z-20 flex items-start md:items-center h-full min-h-[380px] md:min-h-[380px] lg:min-h-[420px]">
+                    <div className="hero-slide__content">
+                      <div className="flex items-center gap-2 mb-3 md:mb-4">
+                        <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center shrink-0">
                           <Icon name="SparklesIcon" size={14} className="text-white" />
                         </div>
-                        <span className="text-white/90 text-xs font-bold tracking-widest uppercase">
+                        <span className="text-white/90 text-[11px] sm:text-xs font-bold tracking-widest uppercase">
                           {slide.brandLabel}
                         </span>
                       </div>
 
-                      <h1 className="text-white font-bold text-2xl sm:text-3xl lg:text-[2.4rem] leading-tight mb-2">
+                      <h1 className="hero-slide__title text-white font-bold leading-tight mb-1.5 md:mb-2">
                         {slide.title}
                       </h1>
-                      <p className="text-white/90 text-base md:text-lg font-medium mb-2">
+                      <p className="text-white/90 text-sm sm:text-base md:text-lg font-medium mb-2">
                         {slide.subtitle}
                       </p>
-                      <p className="text-white/75 text-sm leading-relaxed mb-6 max-w-sm hidden sm:block">
+                      <p className="hero-slide__description text-white/80 text-sm leading-relaxed mb-4 md:mb-6">
                         {slide.description}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-3">
+                      <div className="hero-slide__actions">
                         <Link
                           to={slide.ctaHref}
-                          className="bg-[#003087] hover:bg-[#002266] text-white font-bold text-sm px-6 py-2.5 rounded transition-colors shadow-md"
+                          className="hero-slide__cta bg-[#003087] hover:bg-[#002266] text-white font-bold text-sm rounded transition-colors shadow-md"
                         >
                           {slide.cta}
                         </Link>
-                        <span className="bg-white text-[#003087] border-2 border-white font-bold text-sm px-5 py-2 rounded shadow-sm">
-                          CODE: {slide.couponCode}
-                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Discount badge */}
-                  <div className="absolute top-6 right-6 md:top-8 md:right-10 z-20">
-                    <div className="w-16 h-16 md:w-[72px] md:h-[72px] bg-[#003087] rounded-full flex flex-col items-center justify-center shadow-lg border-4 border-white">
+                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-10 z-20">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px] bg-[#003087] rounded-full flex flex-col items-center justify-center shadow-lg border-[3px] sm:border-4 border-white">
                       <span className="text-white font-bold text-sm md:text-base leading-none">
                         {slide.discountBadge.split(' ')[0]}
                       </span>

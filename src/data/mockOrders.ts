@@ -15,8 +15,8 @@ export const mockTrackedOrders: TrackedOrder[] = [
     _id: 'ord-1001',
     orderNumber: 'PS-20260315-1001',
     trackingNumber: 'PSNJ7840123456',
-    orderStatus: 'Shipped',
-    paymentStatus: 'Paid',
+    orderStatus: 'shipped',
+    paymentStatus: 'paid',
     products: [
       {
         productId: 'prod-2',
@@ -59,8 +59,8 @@ export const mockTrackedOrders: TrackedOrder[] = [
     _id: 'ord-1002',
     orderNumber: 'PS-20260310-1002',
     trackingNumber: 'PSNJ7840987654',
-    orderStatus: 'Delivered',
-    paymentStatus: 'Paid',
+    orderStatus: 'delivered',
+    paymentStatus: 'paid',
     products: [
       {
         productId: 'prod-1',

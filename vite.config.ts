@@ -19,8 +19,7 @@ export default defineConfig({
       manifest: {
         name: 'Patel Sales LLC - Wholesale Food Service Supplies',
         short_name: 'Patel Sales',
-        description:
-          'Shop bulk disposable food service supplies at Patel Sales LLC — foam cups, foil, plastic containers, eco packaging. Serving restaurants, delis & bakeries in New Jersey.',
+        description: 'Shop bulk disposable food service supplies at Patel Sales LLC — foam cups, foil, plastic containers, eco packaging. Serving restaurants, delis & bakeries in New Jersey.',
         theme_color: '#003087',
         background_color: '#ffffff',
         display: 'standalone',
@@ -71,10 +70,20 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
-        globIgnores: ['**/AppIcons/**'],
+        globIgnores: ['**/AppIcons/**', '**/images/hero/**'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
+          {
+            urlPattern: /\/images\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'local-images',
+              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,
             handler: 'CacheFirst',

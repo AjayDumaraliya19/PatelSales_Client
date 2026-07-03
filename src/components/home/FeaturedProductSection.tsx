@@ -27,7 +27,7 @@ export default function FeaturedProductSection({ products }: FeaturedProductSect
             to={featuredSpotlight.href}
             className="lg:col-span-3 relative bg-gradient-to-br from-[#003087] to-[#0040a0] rounded overflow-hidden group min-h-[280px] flex flex-col justify-end"
           >
-            <div className="absolute inset-0 opacity-30 overflow-hidden">
+            <div className="absolute inset-0 opacity-50 overflow-hidden">
               <AppImage
                 src={featuredSpotlight.image}
                 alt={featuredSpotlight.imageAlt}

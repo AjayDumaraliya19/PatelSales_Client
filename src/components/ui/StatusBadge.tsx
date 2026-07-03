@@ -27,15 +27,15 @@ export function getOrderStatusVariant(
   status: string
 ): 'success' | 'warning' | 'info' | 'neutral' | 'danger' {
   switch (status) {
-    case 'Delivered':
+    case 'delivered':
       return 'success';
-    case 'Shipped':
-    case 'Packed':
+    case 'shipped':
+    case 'packed':
       return 'info';
-    case 'Confirmed':
-    case 'Pending':
+    case 'confirmed':
+    case 'pending':
       return 'warning';
-    case 'Cancelled':
+    case 'cancelled':
       return 'danger';
     default:
       return 'neutral';

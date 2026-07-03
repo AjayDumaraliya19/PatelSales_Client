@@ -1,0 +1,30 @@
+[
+  {
+    "id": "slide-01",
+    "fileName": "slide-01-bubble-tea.png",
+    "path": "/images/hero/slide-01-bubble-tea.png",
+    "title": "Bubble Tea Essentials",
+    "recommendedSize": "1600x700"
+  },
+  {
+    "id": "slide-02",
+    "fileName": "slide-02-foam-cups.png",
+    "path": "/images/hero/slide-02-foam-cups.png",
+    "title": "Foam Cups & Containers",
+    "recommendedSize": "1600x700"
+  },
+  {
+    "id": "slide-03",
+    "fileName": "slide-03-eco-packaging.png",
+    "path": "/images/hero/slide-03-eco-packaging.png",
+    "title": "Eco-Friendly Packaging",
+    "recommendedSize": "1600x700"
+  },
+  {
+    "id": "slide-04",
+    "fileName": "slide-04-concession-supplies.png",
+    "path": "/images/hero/slide-04-concession-supplies.png",
+    "title": "Concession Supplies",
+    "recommendedSize": "1600x700"
+  }
+]

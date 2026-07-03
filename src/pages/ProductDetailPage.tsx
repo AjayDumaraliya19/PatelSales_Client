@@ -79,7 +79,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-full bg-[var(--background)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-10 sm:pt-8">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 pt-5 pb-10 sm:pt-8">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-16 text-center">
         <div className="bg-white border border-red-200 rounded-lg p-8">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="ExclamationTriangleIcon" size={32} className="text-red-600" />
@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-full bg-[var(--background)]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-10 sm:pt-8">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 pt-5 pb-10 sm:pt-8">
         <PageHeader
           title={product.name}
           breadcrumbs={[

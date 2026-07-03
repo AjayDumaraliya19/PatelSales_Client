@@ -102,7 +102,7 @@ export interface OrderItem {
 
 export interface Address {
   _id?: string;
-  fullName: string;
+  fullName?: string;
   street: string;
   city: string;
   state: string;
@@ -114,33 +114,32 @@ export interface Address {
 
 export interface ApiResponse<T> {
   success: boolean;
-  data: T;
+  data?: T;
   message?: string;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
+  count?: number;
+  total?: number;
+  page?: number;
+  pages?: number;
 }
 
-export type OrderStatus = 'Pending' | 'Confirmed' | 'Packed' | 'Shipped' | 'Delivered' | 'Cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'cancelled';
 
 export const OrderStatus = {
-  Pending: 'Pending' as const,
-  Confirmed: 'Confirmed' as const,
-  Packed: 'Packed' as const,
-  Shipped: 'Shipped' as const,
-  Delivered: 'Delivered' as const,
-  Cancelled: 'Cancelled' as const,
+  Pending: 'pending' as const,
+  Confirmed: 'confirmed' as const,
+  Packed: 'packed' as const,
+  Shipped: 'shipped' as const,
+  Delivered: 'delivered' as const,
+  Cancelled: 'cancelled' as const,
 };
 
-export type PaymentStatus = 'Pending' | 'Paid' | 'Failed';
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 export const PaymentStatus = {
-  Pending: 'Pending' as const,
-  Paid: 'Paid' as const,
-  Failed: 'Failed' as const,
+  Pending: 'pending' as const,
+  Paid: 'paid' as const,
+  Failed: 'failed' as const,
+  Refunded: 'refunded' as const,
 };
 
 export interface FilterState {

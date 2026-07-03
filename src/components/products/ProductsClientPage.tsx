@@ -112,7 +112,7 @@ export default function ProductsClientPage({
   };
 
   return (
-    <div className="w-full px-4 py-6">
+    <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-6">
       {/* Breadcrumb */}
       <div className="wss-breadcrumb mb-4">
         <span>Home</span>

@@ -1,78 +1,7 @@
-import type { Product, Category } from '../types';
+import type { Product } from '../types';
+import { catalogCategories } from './productCategories';
 
-export const mockCategories: Category[] = [
-{
-  _id: 'cat-1',
-  name: 'Foam Products',
-  slug: 'foam-products',
-  image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=800&auto=format&fit=crop',
-  displayOrder: 1,
-  isActive: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  // Legacy fields for compatibility
-  productCount: 34
-},
-{
-  _id: 'cat-2',
-  name: 'Foil Products',
-  slug: 'foil-products',
-  image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=800&auto=format&fit=crop',
-  displayOrder: 2,
-  isActive: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  // Legacy fields for compatibility
-  productCount: 33
-},
-{
-  _id: 'cat-3',
-  name: 'Plastic Containers',
-  slug: 'plastic-containers',
-  image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?q=80&w=800&auto=format&fit=crop',
-  displayOrder: 3,
-  isActive: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  // Legacy fields for compatibility
-  productCount: 14
-},
-{
-  _id: 'cat-4',
-  name: 'Paper Bags',
-  slug: 'paper-bags',
-  image: 'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?q=80&w=800&auto=format&fit=crop',
-  displayOrder: 4,
-  isActive: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  // Legacy fields for compatibility
-  productCount: 14
-},
-{
-  _id: 'cat-5',
-  name: 'Eco Friendly',
-  slug: 'eco-friendly',
-  image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop',
-  displayOrder: 5,
-  isActive: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  // Legacy fields for compatibility
-  productCount: 14
-},
-{
-  _id: 'cat-6',
-  name: 'Disposable Gloves',
-  slug: 'disposable-gloves',
-  image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=800&auto=format&fit=crop',
-  displayOrder: 6,
-  isActive: true,
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
-  // Legacy fields for compatibility
-  productCount: 10
-}];
+export const mockCategories = catalogCategories;
 
 
 export const mockProducts: Product[] = [
@@ -187,7 +116,7 @@ export const mockProducts: Product[] = [
   compareAtPrice: 38.99,
   sku: 'ECO-8X8-150',
   images: ['https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=600&auto=format&fit=crop'],
-  category: { _id: 'cat-5', name: 'Eco Friendly', slug: 'eco-friendly' },
+  category: { _id: 'cat-eco-friendly-products', name: 'Eco Friendly Products', slug: 'eco-friendly-products' },
   stock: 95,
   lowStockThreshold: 25,
   isActive: true,
@@ -196,8 +125,8 @@ export const mockProducts: Product[] = [
   updatedAt: '2024-01-01T00:00:00Z',
   // Legacy fields for compatibility
   originalPrice: 38.99,
-  categoryId: 'cat-5',
-  categoryName: 'Eco Friendly',
+  categoryId: 'cat-eco-friendly-products',
+  categoryName: 'Eco Friendly Products',
   status: 'active',
   caseSize: '150/Case',
   isOnSale: true,
@@ -359,7 +288,7 @@ export const mockProducts: Product[] = [
   price: 48.99,
   sku: 'PALM-10IN-100',
   images: ['https://images.unsplash.com/photo-1466637574441-749b8f19452f?q=80&w=600&auto=format&fit=crop'],
-  category: { _id: 'cat-5', name: 'Eco Friendly', slug: 'eco-friendly' },
+  category: { _id: 'cat-eco-friendly-products', name: 'Eco Friendly Products', slug: 'eco-friendly-products' },
   stock: 45,
   lowStockThreshold: 15,
   isActive: true,
@@ -367,8 +296,8 @@ export const mockProducts: Product[] = [
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
   // Legacy fields for compatibility
-  categoryId: 'cat-5',
-  categoryName: 'Eco Friendly',
+  categoryId: 'cat-eco-friendly-products',
+  categoryName: 'Eco Friendly Products',
   status: 'active',
   caseSize: '100/Case',
   isNew: true,

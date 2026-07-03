@@ -16,12 +16,14 @@ export default function PromoGridSection() {
               className="group border border-gray-200 hover:border-[#003087]/30 hover:shadow-md transition-all bg-white overflow-hidden"
             >
               <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
-                <AppImage
-                  src={item.image}
-                  alt={item.imageAlt}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+                <div className="absolute inset-0">
+                  <AppImage
+                    src={item.image}
+                    alt={item.imageAlt}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
                 <span className="absolute top-2 left-2 bg-[#003087] text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
                   plus
                 </span>

@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from './ui/AppIcon';
+import { disposablesCategoryNav, getCategoryProductHref, productCategoryDefinitions } from '../data/productCategories';
 
 const footerLinks = {
   'Shop': [
-    { label: 'Foam Products', href: '/products' },
-    { label: 'Foil & Pans', href: '/products' },
-    { label: 'Plastic Containers', href: '/products' },
-    { label: 'Paper Bags', href: '/products' },
-    { label: 'Eco Friendly', href: '/products' },
-    { label: 'Disposables', href: '/disposables' },
+    { label: `All ${disposablesCategoryNav.label}`, href: disposablesCategoryNav.href },
+    ...productCategoryDefinitions.slice(0, 5).map((category) => ({
+      label: category.title,
+      href: getCategoryProductHref(category.slug),
+    })),
   ],
   'Customer Service': [
     { label: 'Contact Us', href: '/contact' },

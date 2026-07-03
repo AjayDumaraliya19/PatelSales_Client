@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "portion-cups-and-lids",
+    "fileName": "portion-cups-and-lids.png",
+    "title": "Portion Cups & Lids",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "plastic-containers",
+    "fileName": "plastic-containers.png",
+    "title": "Plastic Containers",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "paper-napkins-and-towels",
+    "fileName": "paper-napkins-and-towels.png",
+    "title": "Paper Napkins & Towels",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "paper-bags",
+    "fileName": "paper-bags.png",
+    "title": "Paper Bags",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "microwaveable-containers",
+    "fileName": "microwaveable-containers.png",
+    "title": "Microwaveable Containers",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "foam-products",
+    "fileName": "foam-products.png",
+    "title": "Foam Products",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "kens-salad-dressings",
+    "fileName": "kens-salad-dressings.png",
+    "title": "Ken's Salad Dressings",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "foil-products",
+    "fileName": "foil-products.png",
+    "title": "Foil Products",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "foam-containers",
+    "fileName": "foam-containers.png",
+    "title": "Foam Containers",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "eco-friendly-products",
+    "fileName": "eco-friendly-products.png",
+    "title": "Eco Friendly Products",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "disposable-plastic-cups",
+    "fileName": "disposable-plastic-cups.png",
+    "title": "Disposable Plastic Cups",
+    "recommendedSize": "200x200"
+  },
+  {
+    "slug": "disposable-gloves",
+    "fileName": "disposable-gloves.png",
+    "title": "Disposable Gloves",
+    "recommendedSize": "200x200"
+  }
+]

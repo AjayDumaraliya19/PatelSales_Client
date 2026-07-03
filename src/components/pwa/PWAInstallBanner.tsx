@@ -64,7 +64,7 @@ export default function PWAInstallBanner({ variant = 'bar' }: PWAInstallBannerPr
   }
 
   return (
-    <div className="pwa-install-bar fixed left-0 right-0 z-40 border-b border-white/10 shadow-md">
+    <div className="pwa-install-bar relative md:fixed left-0 right-0 z-40 border-b border-white/10 shadow-md">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <img src="/icons/icon-72x72.png" alt="" className="w-8 h-8 rounded-lg shrink-0 hidden sm:block" />

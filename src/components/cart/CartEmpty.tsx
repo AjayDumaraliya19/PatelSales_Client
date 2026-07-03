@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
+import { productCategoryDefinitions, getCategoryProductHref } from '../../data/productCategories';
 
 export default function CartEmpty() {
+  const popularCategories = productCategoryDefinitions.slice(0, 5);
+
   return (
     <div className="w-full px-4 py-12">
       <div className="bg-white border border-gray-200 rounded-sm p-8 text-center">
@@ -22,13 +25,13 @@ export default function CartEmpty() {
         <div className="mt-8 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500 mb-4">Popular categories:</p>
           <div className="flex flex-wrap gap-2 justify-center">
-            {['Foam Cups', 'Foil Pans', 'Plastic Containers', 'Paper Bags', 'Eco-Friendly'].map((cat) => (
+            {popularCategories.map((category) => (
               <Link
-                key={cat}
-                to="/products"
+                key={category.slug}
+                to={getCategoryProductHref(category.slug)}
                 className="text-sm text-[#003087] hover:text-[#e8471e] transition-colors"
               >
-                {cat}
+                {category.title}
               </Link>
             ))}
           </div>

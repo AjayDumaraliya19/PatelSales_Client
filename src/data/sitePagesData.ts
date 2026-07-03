@@ -320,7 +320,7 @@ export const sitemapGroups: SitemapGroup[] = [
     links: [
       { label: 'Home', href: '/', description: 'Wholesale food service supplies' },
       { label: 'Shop All Products', href: '/products' },
-      { label: 'Disposables', href: '/disposables' },
+      { label: 'Shop Disposables', href: '/products' },
       { label: 'About Us', href: '/about' },
       { label: 'Contact Us', href: '/contact' },
       { label: 'Get the App', href: '/get-the-app' },

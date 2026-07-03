@@ -1,90 +1,172 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductsClientPage from '../components/products/ProductsClientPage';
 import productsService from '../services/productsService';
 import categoriesService from '../services/categoriesService';
+import { catalogCategories } from '../data/productCategories';
+import { mockProducts } from '../data/mockData';
 import type { Product, Category } from '../types';
+
+const PRODUCTS_PER_PAGE = 20;
+
+function filterMockProducts(
+  products: Product[],
+  {
+    categorySlug,
+    searchQuery,
+    sortBy,
+    minPrice,
+    maxPrice,
+  }: {
+    categorySlug?: string;
+    searchQuery?: string;
+    sortBy?: string;
+    minPrice?: number;
+    maxPrice?: number;
+  },
+) {
+  let filteredProducts = products.filter((product) => product.isActive !== false);
+
+  if (categorySlug) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.category.slug === categorySlug,
+    );
+  }
+
+  if (searchQuery) {
+    const normalizedSearch = searchQuery.toLowerCase();
+    filteredProducts = filteredProducts.filter(
+      (product) =>
+        product.name.toLowerCase().includes(normalizedSearch) ||
+        product.description.toLowerCase().includes(normalizedSearch) ||
+        product.sku.toLowerCase().includes(normalizedSearch),
+    );
+  }
+
+  if (minPrice !== undefined) {
+    filteredProducts = filteredProducts.filter((product) => product.price >= minPrice);
+  }
+
+  if (maxPrice !== undefined) {
+    filteredProducts = filteredProducts.filter((product) => product.price <= maxPrice);
+  }
+
+  switch (sortBy) {
+    case 'price-asc':
+    case 'price_asc':
+      filteredProducts.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-desc':
+    case 'price_desc':
+      filteredProducts.sort((a, b) => b.price - a.price);
+      break;
+    case 'newest':
+      filteredProducts.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+      break;
+    case 'name-asc':
+    case 'name':
+    default:
+      filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+  }
+
+  return filteredProducts;
+}
 
 export default function ProductsPage() {
   const [searchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>(catalogCategories);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isUsingMockCatalog, setIsUsingMockCatalog] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch categories on mount
+  const categoryFilter = searchParams.get('category') || undefined;
+  const searchQuery = searchParams.get('search') || undefined;
+  const sortBy = searchParams.get('sort') || 'name-asc';
+  const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined;
+  const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await categoriesService.getCategories();
-        setCategories(response.categories);
-      } catch (err: any) {
-        console.error('Failed to fetch categories:', err);
+        if (response.categories?.length) {
+          setCategories(response.categories);
+          setIsUsingMockCatalog(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories, using local catalog:', error);
       }
+
+      setCategories(catalogCategories);
+      setIsUsingMockCatalog(true);
     };
+
     fetchCategories();
   }, []);
 
-  // Fetch products when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [categoryFilter, searchQuery, sortBy, minPrice, maxPrice]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setError(null);
 
-      try {
-        const categoryFilter = searchParams.get('category') || undefined;
-        const searchQuery = searchParams.get('search') || undefined;
-        const sortBy = (searchParams.get('sort') as any) || 'name-asc';
-        const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined;
-        const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
+      if (!isUsingMockCatalog) {
+        try {
+          const response = await productsService.getProducts({
+            page,
+            limit: PRODUCTS_PER_PAGE,
+            category: categoryFilter,
+            search: searchQuery,
+            sort: sortBy as 'price-asc' | 'price-desc' | 'newest' | 'name-asc',
+            minPrice,
+            maxPrice,
+            active: true,
+          });
 
-        const response = await productsService.getProducts({
-          page,
-          limit: 20,
-          category: categoryFilter,
-          search: searchQuery,
-          sort: sortBy,
-          minPrice,
-          maxPrice,
-          active: true, // Only show active products
-        });
-
-        setProducts(response.products);
-        setTotalPages(response.pages);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load products');
-        console.error('Failed to fetch products:', err);
-      } finally {
-        setLoading(false);
+          setProducts(response.products);
+          setTotalPages(response.pages);
+          setLoading(false);
+          return;
+        } catch (error) {
+          console.error('Failed to fetch products, using local catalog:', error);
+          setIsUsingMockCatalog(true);
+          setCategories(catalogCategories);
+        }
       }
+
+      const filteredProducts = filterMockProducts(mockProducts, {
+        categorySlug: categoryFilter,
+        searchQuery,
+        sortBy,
+        minPrice,
+        maxPrice,
+      });
+
+      const pages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
+      const currentPage = Math.min(page, pages);
+      const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+
+      setProducts(filteredProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE));
+      setTotalPages(pages);
+      setLoading(false);
     };
 
     fetchProducts();
-  }, [searchParams, page]);
+  }, [categoryFilter, searchQuery, sortBy, minPrice, maxPrice, page, isUsingMockCatalog]);
 
-  if (error && !loading) {
-    return (
-      <div className="min-h-full bg-[#f5f5f5] flex items-center justify-center p-4">
-        <div className="bg-white border border-red-200 rounded-lg p-8 max-w-md text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Failed to Load Products</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="btn-primary"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const pageTitle = useMemo(() => {
+    if (searchQuery) return `Search: ${searchQuery}`;
+    if (!categoryFilter) return 'All Disposables';
+    return categories.find((category) => category.slug === categoryFilter)?.name ?? 'Products';
+  }, [categories, categoryFilter, searchQuery]);
 
   return (
     <div className="min-h-full bg-[#f5f5f5]">
