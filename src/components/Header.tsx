@@ -11,13 +11,13 @@ const wholesaleOfferItems = [
 
 const drawerMainMenuItems = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
+  // { label: 'About', href: '/about' },
   { label: 'Categories', href: PRODUCTS_PAGE_PATH, hasDropdown: true, dropdownType: 'categories' as const },
   { label: 'Wholesale Offer', href: '/wholesale-flyer', hasDropdown: true, dropdownType: 'wholesale' as const },
 ];
 
 const drawerQuickLinks = [
-  { label: 'Get the App', href: '/get-the-app' },
+  // { label: 'Get the App', href: '/get-the-app' },
   { label: 'Track Your Order', href: '/track-order' },
   { label: 'Wholesale Flyer', href: '/wholesale-flyer' },
   { label: 'Business Accounts', href: '/business-accounts' },
@@ -26,11 +26,11 @@ const drawerQuickLinks = [
 
 const mainMenu = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
+  // { label: 'About', href: '/about' },
   { label: 'Categories', href: PRODUCTS_PAGE_PATH, hasDropdown: true, dropdownType: 'categories' as const },
   { label: 'Wholesale Offer', href: '/wholesale-flyer', hasDropdown: true, dropdownType: 'wholesale' as const },
   { label: 'Track Order', href: '/track-order' },
-  { label: 'Get the App', href: '/get-the-app' },
+  // { label: 'Get the App', href: '/get-the-app' },
   { label: 'Contact Us', href: '/contact' },
 ];
 
@@ -642,7 +642,7 @@ export default function Header() {
             </div>
 
             {/* Get the App promo — bottom banner */}
-            <Link
+            {/* <Link
               to="/get-the-app"
               onClick={closeMobileMenu}
               className="mobile-drawer__app-promo"
@@ -666,7 +666,7 @@ export default function Header() {
                   <span className="mobile-drawer__store-badge">Google Play</span>
                 </div>
               </div>
-            </Link>
+            </Link> */}
           </div>
         </>
       )}
