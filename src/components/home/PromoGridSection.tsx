@@ -41,7 +41,7 @@ export default function PromoGridSection() {
               </div>
 
               <div className="p-3 text-center">
-                <h3 className="text-sm font-bold text-gray-800 group-hover:text-[#003087] transition-colors mb-1">
+                <h3 className="text-xl font-bold text-gray-800 group-hover:text-[#003087] transition-colors mb-1">
                   {item.title}
                 </h3>
                 <p className="text-xs text-gray-500 leading-relaxed">{item.description}</p>
@@ -56,21 +56,46 @@ export default function PromoGridSection() {
 
 export function PlusBannerSection() {
   return (
-    <section className="bg-[#e8f0fa] border-y border-[#003087]/10">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="bg-[#003087] text-white text-xs font-bold px-2 py-0.5 rounded">Plus</span>
-          <span className="text-sm font-semibold text-[#003087]">
-            Unlock FREE &amp; Priority Shipping with Plus!
-          </span>
+    <section className="py-6 md:py-8">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+        <div className="bg-gradient-to-r from-[#003087] via-[#0040a0] to-[#003087] rounded-2xl py-6 md:py-8 relative overflow-hidden">
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=')]"></div>
+          </div>
+
+          <div className="relative z-10 px-4 md:px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+              {/* Left side - Badge and Text */}
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#e8471e] to-[#ff5722] text-white text-xs md:text-sm font-bold px-3 py-2 rounded-xl shadow-lg">
+                    Plus
+                  </span>
+                </div>
+                <div className="text-center md:text-left">
+                  <h3 className="text-white font-bold text-lg md:text-xl leading-tight mb-1">
+                    Unlock FREE &amp; Priority Shipping
+                  </h3>
+                  <p className="text-white/90 text-sm md:text-base">
+                    Join Plus and save on every order
+                  </p>
+                </div>
+              </div>
+
+              {/* Right side - CTA Button */}
+              <div className="flex-shrink-0">
+                <Link
+                  to="/products"
+                  className="inline-flex items-center gap-2 bg-white text-[#003087] hover:bg-gray-100 font-bold text-sm md:text-base px-6 md:px-8 py-3 md:py-3.5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                >
+                  Try it for FREE — 30-DAY TRIAL
+                  <Icon name="ArrowRightIcon" size={18} />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
-        <Link
-          to="/products"
-          className="flex items-center gap-2 text-sm font-bold text-[#003087] hover:text-[#e8471e] transition-colors whitespace-nowrap"
-        >
-          Try it for FREE — 30-DAY TRIAL
-          <Icon name="ArrowRightIcon" size={16} />
-        </Link>
       </div>
     </section>
   );

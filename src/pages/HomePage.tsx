@@ -18,7 +18,7 @@ export default function HomePage() {
     .slice(0, 10);
 
   return (
-    <div className="min-h-full bg-[#f5f5f5]">
+    <div className="min-h-full bg-white">
       <HeroSection />
       <PromoGridSection />
       <PlusBannerSection />

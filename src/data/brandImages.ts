@@ -10,15 +10,14 @@ export const PLACEHOLDER_BRAND_LOGO =
   'https://placehold.co/240x120/f4f4f4/999999?text=Brand';
 
 export const popularBrandDefinitions = [
-  { name: 'Rubbermaid Commercial Products', slug: 'rubbermaid', fileName: 'rubbermaid.png' },
-  { name: 'Edlund', slug: 'edlund', fileName: 'edlund.png' },
-  { name: 'San Jamar', slug: 'san-jamar', fileName: 'san-jamar.png' },
-  { name: 'Vollrath', slug: 'vollrath', fileName: 'vollrath.png' },
-  { name: 'Mercer Culinary', slug: 'mercer-culinary', fileName: 'mercer-culinary.png' },
-  { name: 'Cambro', slug: 'cambro', fileName: 'cambro.png' },
-  { name: 'Carlisle', slug: 'carlisle', fileName: 'carlisle.png' },
-  { name: 'Amana Commercial', slug: 'amana', fileName: 'amana.png' },
-  { name: 'True', slug: 'true', fileName: 'true.png' },
+  { name: 'Moniz', slug: 'brand-1', fileName: 'brand-1.png' },
+  { name: 'Duro', slug: 'brand-2', fileName: 'brand-2.png' },
+  { name: 'Kraft', slug: 'brand-3', fileName: 'brand-3.png' },
+  { name: 'Solo Foodservice', slug: 'brand-4', fileName: 'brand-4.png' },
+  { name: 'Newspring Packaging', slug: 'brand-5', fileName: 'brand-5.png' },
+  { name: 'Fabri-Kal', slug: 'brand-6', fileName: 'brand-6.png' },
+  { name: 'Vollrath', slug: 'brand-7', fileName: 'brand-7.png' },
+  { name: 'Cambro', slug: 'brand-8', fileName: 'brand-8.png' },
 ] as const;
 
 export type PopularBrandSlug = (typeof popularBrandDefinitions)[number]['slug'];

@@ -214,13 +214,11 @@
 
   .hero-home {
     padding-top: 0;
-    background-color: var(--secondary);
   }
 
   @media (min-width: 768px) {
     .hero-home {
       padding-top: var(--site-header-height);
-      background-color: var(--secondary);
     }
   }
 
@@ -1325,6 +1323,24 @@
     border-radius: 0.5rem;
     background: rgba(255, 255, 255, 0.98);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Auto-scroll animation for brand slider */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-100% / 3));
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 30s linear infinite;
+  }
+
+  .animate-scroll:hover {
+    animation-play-state: paused;
   }
 
   .site-header-brand--mobile .site-header-brand__img {

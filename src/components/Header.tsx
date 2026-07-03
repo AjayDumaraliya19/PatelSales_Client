@@ -384,10 +384,13 @@ export default function Header() {
                 </Link>
 
                 {/* Categories Dropdown */}
-                {item.hasDropdown && item.dropdownType === 'categories' && categoriesDropdownOpen && (
+                {item.hasDropdown && item.dropdownType === 'categories' && (
                   <div
-                    className="absolute top-full left-0 w-full min-w-[900px] max-w-[1200px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 opacity-0 translate-y-3 transition-all duration-250 ease-out"
-                    style={{ opacity: categoriesDropdownOpen ? 1 : 0, transform: categoriesDropdownOpen ? 'translateY(0)' : 'translateY(12px)' }}
+                    className={`absolute top-full left-0 w-full min-w-[900px] max-w-[1200px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 transition-all duration-300 ease-out ${
+                      categoriesDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none'
+                    }`}
+                    onMouseEnter={() => setCategoriesDropdownOpen(true)}
+                    onMouseLeave={() => setCategoriesDropdownOpen(false)}
                     role="menu"
                     aria-label="Categories menu"
                   >
@@ -399,10 +402,14 @@ export default function Header() {
                             <Link
                               key={category.slug}
                               to={category.href}
-                              className="group flex flex-col items-center text-center p-3 rounded-lg border border-transparent hover:bg-[#F8FFF6] hover:border-[#2F7D32] transition-all duration-250"
+                              className="group flex flex-col items-center text-center p-3 rounded-lg border border-transparent hover:bg-[#F8FFF6] hover:border-[#2F7D32] transition-all duration-300"
                             >
-                              <div className="w-[70px] h-[70px] bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-250">
-                                <div className="w-12 h-12 bg-gray-100 rounded" />
+                              <div className="w-[90px] h-[90px] bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-center mb-3 overflow-hidden group-hover:shadow-md group-hover:border-[#2F7D32]/30 transition-all duration-300">
+                                <img
+                                  src={category.image}
+                                  alt={category.title}
+                                  className="w-full h-full object-contain p-1"
+                                />
                               </div>
                               <span className="text-[#2F7D32] font-semibold text-sm group-hover:text-[#1a5c1e] transition-colors">
                                 {category.title}
@@ -428,7 +435,7 @@ export default function Header() {
                                   <Link
                                     key={link.slug}
                                     to={link.href}
-                                    className="block text-[15px] text-[#555] leading-8 hover:text-[#2F7D32] hover:translate-x-1 transition-all duration-250"
+                                    className="block text-[15px] text-[#555] leading-8 hover:text-[#2F7D32] hover:translate-x-1 transition-all duration-300"
                                   >
                                     {link.title}
                                   </Link>
@@ -443,10 +450,13 @@ export default function Header() {
                 )}
 
                 {/* Wholesale Dropdown */}
-                {item.hasDropdown && item.dropdownType === 'wholesale' && wholesaleDropdownOpen && (
+                {item.hasDropdown && item.dropdownType === 'wholesale' && (
                   <div
-                    className="absolute top-full left-0 w-[200px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 opacity-0 translate-y-3 transition-all duration-250 ease-out"
-                    style={{ opacity: wholesaleDropdownOpen ? 1 : 0, transform: wholesaleDropdownOpen ? 'translateY(0)' : 'translateY(12px)' }}
+                    className={`absolute top-full left-0 w-[200px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 transition-all duration-300 ease-out ${
+                      wholesaleDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none'
+                    }`}
+                    onMouseEnter={() => setWholesaleDropdownOpen(true)}
+                    onMouseLeave={() => setWholesaleDropdownOpen(false)}
                     role="menu"
                     aria-label="Wholesale offer menu"
                   >
@@ -455,7 +465,7 @@ export default function Header() {
                         <Link
                           key={index}
                           to={offer.href}
-                          className="block px-4 py-3 text-sm text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
+                          className="block px-4 py-3 text-sm text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-all duration-300"
                         >
                           {offer.label}
                         </Link>
