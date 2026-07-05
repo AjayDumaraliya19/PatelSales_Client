@@ -137,11 +137,11 @@ export default function ProductsClientPage({
           <p className="text-sm text-gray-500">{filteredProducts.length} products</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 lg:sticky lg:top-4 lg:z-10">
           {/* Mobile Filter Button */}
           <button
             onClick={() => setFilterDrawerOpen(true)}
-            className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 transition-colors sticky top-0 z-10 bg-[#f5f5f5]"
           >
             <Icon name="FunnelIcon" size={16} />
             Filters
@@ -153,7 +153,25 @@ export default function ProductsClientPage({
           </button>
 
           {/* View Toggle */}
-          <div className="flex border border-gray-300 rounded-sm overflow-hidden">
+          <div className="flex border border-gray-300 rounded-sm overflow-hidden lg:hidden sticky top-0 z-10 bg-[#f5f5f5]">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 ${viewMode === 'grid' ? 'bg-[#003087] text-white' : 'text-gray-600 hover:bg-gray-50'} transition-colors`}
+              aria-label="Grid view"
+            >
+              <Icon name="Squares2X2Icon" size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 ${viewMode === 'list' ? 'bg-[#003087] text-white' : 'text-gray-600 hover:bg-gray-50'} transition-colors`}
+              aria-label="List view"
+            >
+              <Icon name="ListBulletIcon" size={16} />
+            </button>
+          </div>
+
+          {/* Desktop View Toggle */}
+          <div className="hidden lg:flex border border-gray-300 rounded-sm overflow-hidden">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 ${viewMode === 'grid' ? 'bg-[#003087] text-white' : 'text-gray-600 hover:bg-gray-50'} transition-colors`}

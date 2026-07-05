@@ -24,7 +24,7 @@ const features = [
 export default function GetTheAppFeatures() {
   return (
     <section id="features" className="bg-white py-16 lg:py-24">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+      <div className="max-w-7xl md:max-w-5xl lg:max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
             It&apos;s faster &amp; easier in the app!

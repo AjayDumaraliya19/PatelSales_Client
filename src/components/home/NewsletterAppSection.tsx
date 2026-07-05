@@ -125,11 +125,8 @@ export default function NewsletterAppSection() {
             to="/get-the-app"
             className="flex flex-col items-center justify-center gap-4 bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-xl hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1"
           >
-            <div className="w-24 h-24 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden bg-gradient-to-br  from-[#003087] to-[#0040a0] relative">
-              <img src="/public/images/app-promo.png" alt="Patel Sales App" className="w-full h-full object-contain p-2 rounded-2xl" />
-              <div className="absolute inset-0 w-16 h-16 bg-[#003087] rounded-xl flex items-center justify-center opacity-0 pointer-events-none" id="fallback-icon">
-                <Icon name="DevicePhoneMobileIcon" size={32} className="text-white" />
-              </div>
+            <div className="w-24 h-24 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden relative bg-gray-100">
+              <img src="/images/home/app-promo.png" alt="Patel Sales App" className="w-full h-full object-cover" />
             </div>
             <div className="text-center">
               <h3 className="font-bold text-gray-800 text-lg mb-1">Patel Sales App</h3>

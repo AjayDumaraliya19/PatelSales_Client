@@ -34,7 +34,11 @@ function FieldLabel({ label, required = false, htmlFor }: { label: string; requi
 const inputClass = 'input-field w-full min-h-[44px]';
 const selectClass = 'input-field w-full min-h-[44px] appearance-none';
 
-export default function RegisterForm() {
+interface RegisterFormProps {
+  initialEmail?: string;
+}
+
+export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
   const navigate = useNavigate();
   const { register } = useAuthStore();
   
@@ -107,6 +111,7 @@ export default function RegisterForm() {
             name="email"
             required
             autoComplete="email"
+            defaultValue={initialEmail}
             className={inputClass}
             placeholder="you@company.com"
           />

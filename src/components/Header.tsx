@@ -22,6 +22,8 @@ const drawerQuickLinks = [
   { label: 'Wholesale Flyer', href: '/wholesale-flyer' },
   { label: 'Business Accounts', href: '/business-accounts' },
   { label: 'Contact Us', href: '/contact' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms of Service', href: '/terms-of-service' },
 ];
 
 const mainMenu = [
@@ -167,7 +169,7 @@ export default function Header() {
       className={`relative md:fixed top-0 left-0 right-0 z-50 ${mobileMenuOpen ? 'site-header--menu-open' : ''}`}
     >
       {/* Mobile header — stays visible when menu is open */}
-      <div className="md:hidden site-header-mobile">
+      <div className="sm:hidden site-header-mobile">
         <div className="site-header-mobile__inner">
           <div className="site-header-mobile__top">
             <button
@@ -485,12 +487,12 @@ export default function Header() {
         <>
           <button
             type="button"
-            className="mobile-drawer-backdrop lg:hidden"
+            className="mobile-drawer-backdrop md:hidden"
             onClick={closeMobileMenu}
             aria-label="Close menu"
           />
           <div
-            className="mobile-drawer mobile-drawer--open lg:hidden"
+            className="mobile-drawer mobile-drawer--open md:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
@@ -642,31 +644,18 @@ export default function Header() {
               </nav>
             </div>
 
-            {/* Get the App promo — bottom banner */}
+            {/* Login promo banner */}
             <Link
-              to="/get-the-app"
+              to="/login"
               onClick={closeMobileMenu}
-              className="mobile-drawer__app-promo"
-              aria-label="Get the Patel Sales app"
+              className="flex-shrink-0 flex items-center justify-center p-4 bg-white border-t border-gray-200"
+              aria-label="Login to Patel Sales"
             >
-              <div className="mobile-drawer__app-phone" aria-hidden="true">
-                <div className="mobile-drawer__app-phone-notch" />
-                <div className="mobile-drawer__app-phone-bar">Patel Sales</div>
-                <div className="mobile-drawer__app-phone-body">
-                  <div className="mobile-drawer__app-phone-card" />
-                  <div className="mobile-drawer__app-phone-grid">
-                    <span /><span /><span /><span />
-                  </div>
-                </div>
-              </div>
-              <div className="mobile-drawer__app-copy">
-                <p className="mobile-drawer__app-title">Get the App</p>
-                <p className="mobile-drawer__app-sub">Stock up from anywhere, anytime.</p>
-                <div className="mobile-drawer__app-badges">
-                  <span className="mobile-drawer__store-badge">App Store</span>
-                  <span className="mobile-drawer__store-badge">Google Play</span>
-                </div>
-              </div>
+              <img
+                src="/images/login-registration/login.png"
+                alt="Login to Patel Sales"
+                className="w-full h-auto rounded-lg"
+              />
             </Link>
           </div>
         </>

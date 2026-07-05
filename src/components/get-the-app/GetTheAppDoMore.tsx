@@ -37,7 +37,7 @@ const doMoreFeatures = [
 export default function GetTheAppDoMore() {
   return (
     <section className="bg-gradient-to-br from-[#f0f4f8] to-[#e8f0f8] py-16 lg:py-24">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+      <div className="max-w-7xl md:max-w-5xl lg:max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
             Do more with the app
@@ -51,9 +51,9 @@ export default function GetTheAppDoMore() {
           {doMoreFeatures.map((feature) => (
             <div
               key={feature.title}
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 text-center"
             >
-              <div className="w-14 h-14 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 mx-auto">
                 <Icon name={feature.icon as any} size={28} className="text-white" />
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-[#003087] transition-colors">{feature.title}</h3>

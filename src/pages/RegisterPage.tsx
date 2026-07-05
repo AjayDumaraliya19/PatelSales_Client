@@ -1,8 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import RegisterForm from '../components/register/RegisterForm';
 
 export default function RegisterPage() {
+  const location = useLocation();
+  const emailFromState = location.state?.email || '';
+
   return (
     <div className="min-h-full bg-gradient-to-br from-gray-50 to-gray-100 pt-8 pb-12 sm:pt-12 sm:pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -22,7 +25,7 @@ export default function RegisterPage() {
 
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">
-            <RegisterForm />
+            <RegisterForm initialEmail={emailFromState} />
           </div>
         </div>
       </div>

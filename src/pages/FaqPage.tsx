@@ -24,13 +24,13 @@ export default function FaqPage() {
         { label: 'FAQ' },
       ]}
     >
-      <div className="flex flex-wrap gap-3 mb-8">
+      <div className="flex overflow-x-auto gap-3 mb-8 pb-2 scrollbar-hide sm:flex-wrap sm:pb-0">
         {categories.map((category) => (
           <button
             key={category}
             type="button"
             onClick={() => setActiveCategory(category)}
-            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 min-h-[44px] ${
+            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 min-h-[44px] shrink-0 ${
               activeCategory === category
                 ? 'bg-gradient-to-r from-[#003087] to-[#0040a0] text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm'

@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
 
 export default function GetTheAppEmailSignup() {
+  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    if (email) {
+      navigate('/register', { state: { email } });
+    } else {
+      navigate('/register');
+    }
+  };
+
   return (
     <section className="bg-gradient-to-r from-[#003087] to-[#0040a0] py-16 lg:py-20">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+      <div className="max-w-7xl md:max-w-5xl lg:max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-4 flex-1">
             <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center shrink-0">
@@ -21,9 +33,14 @@ export default function GetTheAppEmailSignup() {
             <input
               type="email"
               placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="flex-1 px-6 py-4 border-0 rounded-xl text-base outline-none focus:ring-2 focus:ring-white/30 shadow-lg"
             />
-            <button className="bg-gradient-to-r from-[#e8471e] to-[#ff5722] hover:from-[#c73a17] hover:to-[#e8471e] text-white font-bold text-base px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap">
+            <button
+              onClick={handleSignUp}
+              className="bg-gradient-to-r from-[#e8471e] to-[#ff5722] hover:from-[#c73a17] hover:to-[#e8471e] text-white font-bold text-base px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
+            >
               Sign Up
             </button>
           </div>

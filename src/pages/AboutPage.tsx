@@ -59,7 +59,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Banner */}
-      <section className="relative py-20 lg:py-32">
+      <section className="relative py-16 sm:py-20 lg:py-32">
         <div className="absolute inset-0">
           <img
             src="/images/about/background.png"
@@ -69,10 +69,10 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#003087]/50 to-[#0040a0]/40" />
         </div>
         <div className="relative max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
             About Patel Sales LLC
           </h1>
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto">
             Your Trusted Partner for Premium Food Packaging & Disposable Supplies
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -93,24 +93,24 @@ export default function AboutPage() {
       </section>
 
       {/* Company Introduction */}
-      <section className="py-10 lg:py-16 bg-white">
+      <section className="py-8 sm:py-10 lg:py-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="rounded-2xl overflow-hidden shadow-xl">
               <img
                 src="/images/about/ware-house.png"
                 alt="Patel Sales Warehouse"
-                className="w-full h-[400px] object-cover"
+                className="w-full h-[250px] sm:h-[300px] md:h-[400px] object-cover"
               />
             </div>
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4 sm:mb-6">
                 Who We Are
               </h2>
-              <p className="text-gray-600 text-lg leading-relaxed mb-6">
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
                 Patel Sales LLC is a trusted supplier of food packaging products and disposable supplies.
               </p>
-              <p className="text-gray-600 text-lg leading-relaxed mb-8">
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8">
                 We help restaurants, cafés, hotels, grocery stores, food trucks, bakeries, catering businesses, wholesalers and retailers by providing high-quality packaging solutions.
               </p>
               <div className="grid grid-cols-2 gap-4">
@@ -141,7 +141,7 @@ export default function AboutPage() {
       </section>
 
       {/* What Makes Us Great */}
-      <section className="py-10 lg:py-16 bg-gray-50">
+      <section className="py-8 sm:py-10 lg:py-16 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
@@ -151,7 +151,7 @@ export default function AboutPage() {
               Discover the advantages of choosing Patel Sales LLC
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 icon: 'TruckIcon',
@@ -194,7 +194,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Mission */}
-      <section className="py-10 lg:py-16 relative overflow-hidden">
+      <section className="py-8 sm:py-10 lg:py-16 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="/images/about/our-mission.png"
@@ -213,7 +213,7 @@ export default function AboutPage() {
               We are dedicated to providing premium quality packaging products while supporting food businesses with affordable prices and excellent customer service.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             {[
               { icon: 'StarIcon', title: 'Premium Quality', desc: 'Top-tier products' },
               { icon: 'BuildingStorefrontIcon', title: 'Support Businesses', desc: 'Your growth partner' },
@@ -237,7 +237,7 @@ export default function AboutPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-10 lg:py-16 bg-gray-50">
+      <section className="py-8 sm:py-10 lg:py-16 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -247,7 +247,7 @@ export default function AboutPage() {
               Discover the advantages of partnering with Patel Sales LLC for your packaging needs
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               { icon: 'ShieldCheckIcon', title: 'Premium Quality', desc: 'Only the best products for your business' },
               { icon: 'TagIcon', title: 'Competitive Pricing', desc: 'Affordable rates without compromising quality' },
@@ -272,7 +272,7 @@ export default function AboutPage() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-10 lg:py-16 bg-gray-50">
+      <section className="py-8 sm:py-10 lg:py-16 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -282,7 +282,7 @@ export default function AboutPage() {
               Explore our wide range of food packaging and disposable products
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { name: 'Portion Cups & Lids', slug: 'portion-cups-and-lids', image: 'portion-cups-and-lids.png' },
               { name: 'Plastic Containers', slug: 'plastic-containers', image: 'plastic-containers.png' },
@@ -323,7 +323,7 @@ export default function AboutPage() {
       </section>
 
       {/* Sustainability */}
-      <section className="py-10 lg:py-16 relative overflow-hidden">
+      <section className="py-8 sm:py-10 lg:py-16 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="/images/about/commitement.png"
@@ -342,7 +342,7 @@ export default function AboutPage() {
               We are dedicated to protecting the environment through eco-friendly packaging solutions
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { icon: 'ArrowPathIcon', title: 'Reusable Packaging', desc: 'Reduce waste with reusable options' },
               { icon: 'ArchiveBoxIcon', title: 'Recyclable Materials', desc: 'Made from recycled content' },
@@ -365,7 +365,7 @@ export default function AboutPage() {
       </section>
 
       {/* Company Statistics */}
-      <section ref={sectionRef} className="py-10 lg:py-16 bg-white">
+      <section ref={sectionRef} className="py-8 sm:py-10 lg:py-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
@@ -375,7 +375,7 @@ export default function AboutPage() {
               Trusted by thousands of businesses across the nation
             </p>
           </div>
-          <div className="grid md:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
             {[
               { value: '5000+', label: 'Products', icon: 'CubeIcon' },
               { value: '1000+', label: 'Happy Customers', icon: 'UserGroupIcon' },
@@ -398,7 +398,7 @@ export default function AboutPage() {
       </section>
 
       {/* Call To Action */}
-      <section className="py-10 lg:py-16 bg-white">
+      <section className="py-8 sm:py-10 lg:py-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
             Ready to Order Quality Food Packaging?
