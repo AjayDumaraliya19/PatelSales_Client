@@ -65,31 +65,43 @@ function ActionTileBanner({
 
 export default function ActionTilesSection() {
   return (
-    <section className="bg-white py-6 md:py-8">
+    <section className="bg-gradient-to-br from-[#f0f4f8] to-[#e8f0f8] py-10 md:py-12">
       <div className="mx-auto max-w-[1600px] px-3 sm:px-4 md:px-6">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {actionTiles.map((tile) => (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {actionTiles.map((tile, index) => (
             <Link
               key={tile.title}
               to={tile.href}
-              className="group block overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-xl transition-all duration-300"
+              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
             >
+              {/* Card Background */}
               <div
-                className={`flex min-h-[10rem] flex-col items-center justify-center px-4 py-6 text-center sm:min-h-[9rem] lg:min-h-[8rem] ${bannerClassByVariant[tile.bannerVariant] ?? 'bg-gray-700'}`}
+                className={`relative min-h-[180px] flex flex-col items-center justify-center px-6 py-8 text-center ${bannerClassByVariant[tile.bannerVariant] ?? 'bg-gray-700'}`}
               >
-                <ActionTileBanner
-                  bannerVariant={tile.bannerVariant}
-                  bannerEyebrow={tile.bannerEyebrow}
-                  bannerTitle={tile.bannerTitle}
-                />
+                {/* Decorative pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full blur-xl -translate-x-1/2 translate-y-1/2" />
+                </div>
+
+                <div className="relative z-10">
+                  <ActionTileBanner
+                    bannerVariant={tile.bannerVariant}
+                    bannerEyebrow={tile.bannerEyebrow}
+                    bannerTitle={tile.bannerTitle}
+                  />
+                </div>
               </div>
 
-              <div className="border-t border-gray-100 bg-white px-4 py-4 text-center">
-                <p className="mb-2 text-sm sm:text-base leading-snug text-gray-600">{tile.description}</p>
-                <span className="text-sm sm:text-base font-bold text-[#2f7d32] group-hover:text-[#1a5c1e] group-hover:underline transition-all duration-300">
-                  {tile.ctaLabel}
-                  <span aria-hidden="true" className="ml-1">→</span>
-                </span>
+              {/* Card Content */}
+              <div className="bg-white px-5 py-5 border-t-0 text-center">
+                <p className="mb-3 text-sm leading-relaxed text-gray-600 line-clamp-2">{tile.description}</p>
+                <div className="flex items-center justify-center">
+                  <span className="text-sm font-bold text-[#003087] group-hover:text-[#e8471e] transition-all duration-300 flex items-center gap-1">
+                    {tile.ctaLabel}
+                    <Icon name="ArrowRightIcon" size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                </div>
               </div>
             </Link>
           ))}

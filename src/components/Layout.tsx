@@ -16,14 +16,12 @@ import ContactPage from '../pages/ContactPage';
 import TrackOrderPage from '../pages/TrackOrderPage';
 import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
 import TermsOfServicePage from '../pages/TermsOfServicePage';
-import SitemapPage from '../pages/SitemapPage';
 import ShippingPage from '../pages/ShippingPage';
 import ReturnsPage from '../pages/ReturnsPage';
 import FaqPage from '../pages/FaqPage';
 import CookiePolicyPage from '../pages/CookiePolicyPage';
 import BusinessAccountsPage from '../pages/BusinessAccountsPage';
 import BulkOrderPage from '../pages/BulkOrderPage';
-import LocationPage from '../pages/LocationPage';
 import WholesaleFlyerPage from '../pages/WholesaleFlyerPage';
 import AccountPage from '../pages/AccountPage';
 import OrderHistoryPage from '../pages/OrderHistoryPage';
@@ -50,14 +48,12 @@ export default function Layout() {
         <Route path="/account/orders" element={<OrderHistoryPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
-        <Route path="/sitemap" element={<SitemapPage />} />
         <Route path="/shipping" element={<ShippingPage />} />
         <Route path="/returns" element={<ReturnsPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
         <Route path="/business-accounts" element={<BusinessAccountsPage />} />
         <Route path="/bulk-order" element={<BulkOrderPage />} />
-        <Route path="/location" element={<LocationPage />} />
         <Route path="/wholesale-flyer" element={<WholesaleFlyerPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

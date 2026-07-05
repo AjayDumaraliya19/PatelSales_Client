@@ -48,8 +48,8 @@ export default function ProductsSidebar({
               <input
                 type="radio"
                 name="category"
-                checked={filter.category === cat._id}
-                onChange={() => onFilterChange({ category: cat._id })}
+                checked={filter.category === cat.slug}
+                onChange={() => onFilterChange({ category: cat.slug })}
                 className="w-4 h-4 text-[#003087] border-gray-300 focus:ring-[#003087]"
               />
               <span className="text-sm text-gray-700">{cat.name}</span>

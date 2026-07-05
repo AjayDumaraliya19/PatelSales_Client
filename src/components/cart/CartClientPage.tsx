@@ -25,21 +25,21 @@ export default function CartClientPage() {
   }
 
   return (
-    <div className="w-full px-4 py-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
       {/* Breadcrumb */}
-      <div className="wss-breadcrumb mb-4">
-        <Link to="/">Home</Link>
-        <span className="mx-2">/</span>
-        <span>Shopping Cart ({getItemCount()} items)</span>
+      <div className="wss-breadcrumb mb-6">
+        <Link to="/" className="text-gray-600 hover:text-[#003087] transition-colors">Home</Link>
+        <span className="mx-2 text-gray-400">/</span>
+        <span className="text-gray-900 font-semibold">Shopping Cart ({getItemCount()} items)</span>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-white border border-gray-200 rounded-sm">
-            <div className="p-4 border-b border-gray-200 bg-[#003087]">
-              <h1 className="text-white font-bold text-lg">Shopping Cart</h1>
-              <p className="text-white/70 text-sm">{getItemCount()} items</p>
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-[#003087] to-[#0040a0] p-6 lg:p-8">
+              <h1 className="text-white font-bold text-xl lg:text-2xl mb-1">Shopping Cart</h1>
+              <p className="text-white/80 text-base">{getItemCount()} items</p>
             </div>
             <div className="divide-y divide-gray-100">
               {items.map((item) => (
@@ -49,8 +49,9 @@ export default function CartClientPage() {
           </div>
 
           {/* Promo Code */}
-          <div className="mt-4 bg-white border border-gray-200 rounded-sm p-4">
-            <form onSubmit={handlePromoSubmit} className="flex gap-2">
+          <div className="mt-6 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Promo Code</h3>
+            <form onSubmit={handlePromoSubmit} className="flex gap-3">
               <input
                 type="text"
                 placeholder="Promo code (try: SAVE10)"
@@ -58,12 +59,12 @@ export default function CartClientPage() {
                 onChange={(e) => setPromoCode(e.target.value)}
                 className="input-field flex-1"
               />
-              <button type="submit" className="btn-secondary">
+              <button type="submit" className="btn-secondary min-h-[44px] px-6">
                 Apply
               </button>
             </form>
             {promoMessage && (
-              <p className={`text-sm mt-2 ${promoMessage.includes('applied') ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`text-sm mt-3 font-medium ${promoMessage.includes('applied') ? 'text-green-600' : 'text-red-600'}`}>
                 {promoMessage}
               </p>
             )}

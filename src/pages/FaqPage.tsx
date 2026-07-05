@@ -24,16 +24,16 @@ export default function FaqPage() {
         { label: 'FAQ' },
       ]}
     >
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-3 mb-8">
         {categories.map((category) => (
           <button
             key={category}
             type="button"
             onClick={() => setActiveCategory(category)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors min-h-[36px] ${
+            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 min-h-[44px] ${
               activeCategory === category
-                ? 'bg-[var(--secondary)] text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#003087] to-[#0040a0] text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm'
             }`}
           >
             {category}
@@ -41,17 +41,17 @@ export default function FaqPage() {
         ))}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {filteredFaqs.map((faq) => (
-          <details key={faq.question} className="app-card group">
-            <summary className="p-4 sm:p-5 cursor-pointer list-none flex items-center justify-between gap-3">
-              <span className="text-sm font-bold text-gray-900">{faq.question}</span>
-              <span className="text-[var(--secondary)] text-lg font-bold group-open:rotate-45 transition-transform">
+          <details key={faq.question} className="bg-white rounded-2xl shadow-lg border border-gray-100 group overflow-hidden">
+            <summary className="p-5 lg:p-6 cursor-pointer list-none flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+              <span className="text-base font-bold text-gray-900">{faq.question}</span>
+              <span className="text-[#003087] text-xl font-bold group-open:rotate-45 transition-transform duration-300 shrink-0">
                 +
               </span>
             </summary>
-            <div className="px-4 sm:px-5 pb-4 sm:pb-5 -mt-1">
-              <p className="text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+            <div className="px-5 lg:px-6 pb-5 lg:pb-6 pt-0">
+              <p className="text-base text-gray-600 leading-relaxed">{faq.answer}</p>
             </div>
           </details>
         ))}

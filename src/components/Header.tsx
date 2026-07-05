@@ -11,13 +11,13 @@ const wholesaleOfferItems = [
 
 const drawerMainMenuItems = [
   { label: 'Home', href: '/' },
-  // { label: 'About', href: '/about' },
+  { label: 'About', href: '/about' },
   { label: 'Categories', href: PRODUCTS_PAGE_PATH, hasDropdown: true, dropdownType: 'categories' as const },
   { label: 'Wholesale Offer', href: '/wholesale-flyer', hasDropdown: true, dropdownType: 'wholesale' as const },
 ];
 
 const drawerQuickLinks = [
-  // { label: 'Get the App', href: '/get-the-app' },
+  { label: 'Get the App', href: '/get-the-app' },
   { label: 'Track Your Order', href: '/track-order' },
   { label: 'Wholesale Flyer', href: '/wholesale-flyer' },
   { label: 'Business Accounts', href: '/business-accounts' },
@@ -26,11 +26,11 @@ const drawerQuickLinks = [
 
 const mainMenu = [
   { label: 'Home', href: '/' },
-  // { label: 'About', href: '/about' },
+  { label: 'About', href: '/about' },
   { label: 'Categories', href: PRODUCTS_PAGE_PATH, hasDropdown: true, dropdownType: 'categories' as const },
   { label: 'Wholesale Offer', href: '/wholesale-flyer', hasDropdown: true, dropdownType: 'wholesale' as const },
   { label: 'Track Order', href: '/track-order' },
-  // { label: 'Get the App', href: '/get-the-app' },
+  { label: 'Get the App', href: '/get-the-app' },
   { label: 'Contact Us', href: '/contact' },
 ];
 
@@ -217,7 +217,7 @@ export default function Header() {
       </div>
 
       {/* ── Utility bar ── hidden on mobile | md+: full info | lg+: utility links */}
-      <div className="hidden md:block wss-utility-bar bg-gradient-to-r from-[#002244] to-[#003087]">
+      <div className="hidden md:block wss-utility-bar bg-gradient-to-r from-[#003087]/95 to-[#0040a0]/95">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-1.5 md:py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 overflow-hidden">
             <a
@@ -244,7 +244,7 @@ export default function Header() {
       </div>
 
       {/* ── Main header ── mobile: 2 rows | md+: single row | lg+: full layout */}
-      <div className="hidden md:block wss-header bg-gradient-to-r from-[#003087] to-[#0040a0] shadow-lg">
+      <div className="hidden md:block wss-header bg-gradient-to-r from-[#003087]/90 to-[#0040a0]/90 shadow-lg">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           {/* Row 1: logo + actions */}
           <div className="flex items-center justify-between gap-2 py-2.5 md:py-3 lg:py-3.5">
@@ -386,7 +386,7 @@ export default function Header() {
                 {/* Categories Dropdown */}
                 {item.hasDropdown && item.dropdownType === 'categories' && (
                   <div
-                    className={`absolute top-full left-0 w-full min-w-[900px] max-w-[1200px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 transition-all duration-300 ease-out ${
+                    className={`absolute top-full left-0 w-full min-w-[1200px] max-w-[1400px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 transition-all duration-300 ease-out ${
                       categoriesDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none'
                     }`}
                     onMouseEnter={() => setCategoriesDropdownOpen(true)}
@@ -395,23 +395,24 @@ export default function Header() {
                     aria-label="Categories menu"
                   >
                     <div className="flex">
-                      {/* Left Section - 40% */}
-                      <div className="w-[40%] p-6 border-r border-gray-100">
-                        <div className="grid grid-cols-3 gap-x-4 gap-y-6">
+                      {/* Left Section - 60% */}
+                      <div className="w-[60%] p-6 border-r border-gray-100">
+                        <h3 className="text-lg font-bold text-gray-800 mb-4">Popular Categories</h3>
+                        <div className="grid grid-cols-3 gap-4">
                           {disposablesCategoryNav.subMenu.main.map((category) => (
                             <Link
                               key={category.slug}
                               to={category.href}
-                              className="group flex flex-col items-center text-center p-3 rounded-lg border border-transparent hover:bg-[#F8FFF6] hover:border-[#2F7D32] transition-all duration-300"
+                              className="group flex flex-row items-center p-3 rounded-xl border border-gray-100 hover:bg-gradient-to-r hover:from-[#F8FFF6] hover:to-white hover:border-[#2F7D32] hover:shadow-md transition-all duration-300"
                             >
-                              <div className="w-[90px] h-[90px] bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-center mb-3 overflow-hidden group-hover:shadow-md group-hover:border-[#2F7D32]/30 transition-all duration-300">
+                              <div className="w-[50px] h-[50px] bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center mr-3 overflow-hidden group-hover:shadow-lg group-hover:border-[#2F7D32]/40 transition-all duration-300 shrink-0">
                                 <img
                                   src={category.image}
                                   alt={category.title}
-                                  className="w-full h-full object-contain p-1"
+                                  className="w-full h-full object-contain p-0"
                                 />
                               </div>
-                              <span className="text-[#2F7D32] font-semibold text-sm group-hover:text-[#1a5c1e] transition-colors">
+                              <span className="text-gray-700 font-semibold text-base group-hover:text-[#2F7D32] transition-colors leading-tight">
                                 {category.title}
                               </span>
                             </Link>
@@ -419,8 +420,8 @@ export default function Header() {
                         </div>
                       </div>
 
-                      {/* Right Section - 60% */}
-                      <div className="w-[60%] p-8 bg-[#F7F7F5] rounded-r-xl">
+                      {/* Right Section - 40% */}
+                      <div className="w-[40%] p-8 bg-[#F7F7F5] rounded-r-xl">
                         <h3 className="text-lg font-bold text-[#333] mb-6">
                           More in {disposablesCategoryNav.label}
                         </h3>
@@ -642,7 +643,7 @@ export default function Header() {
             </div>
 
             {/* Get the App promo — bottom banner */}
-            {/* <Link
+            <Link
               to="/get-the-app"
               onClick={closeMobileMenu}
               className="mobile-drawer__app-promo"
@@ -666,7 +667,7 @@ export default function Header() {
                   <span className="mobile-drawer__store-badge">Google Play</span>
                 </div>
               </div>
-            </Link> */}
+            </Link>
           </div>
         </>
       )}

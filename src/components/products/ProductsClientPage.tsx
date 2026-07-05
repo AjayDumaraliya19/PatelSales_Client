@@ -121,7 +121,7 @@ export default function ProductsClientPage({
         {filter.category && (
           <>
             <span className="mx-2">/</span>
-            <span>{categories.find((c) => c._id === filter.category)?.name}</span>
+            <span>{categories.find((c) => c.slug === filter.category)?.name}</span>
           </>
         )}
       </div>
@@ -131,7 +131,7 @@ export default function ProductsClientPage({
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
             {filter.category
-              ? categories.find((c) => c._id === filter.category)?.name
+              ? categories.find((c) => c.slug === filter.category)?.name
               : 'All Products'}
           </h1>
           <p className="text-sm text-gray-500">{filteredProducts.length} products</p>
@@ -181,7 +181,7 @@ export default function ProductsClientPage({
               onClick={() => handleFilterChange({ category: '' })}
               className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-sm text-xs font-medium transition-colors"
             >
-              {categories.find((c) => c._id === filter.category)?.name}
+              {categories.find((c) => c.slug === filter.category)?.name}
               <Icon name="XMarkIcon" size={12} />
             </button>
           )}

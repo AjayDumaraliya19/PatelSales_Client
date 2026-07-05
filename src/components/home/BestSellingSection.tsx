@@ -18,7 +18,7 @@ export default function BestSellingSection({ products }: BestSellingSectionProps
   return (
     <section className="bg-[#f5f5f5] py-8">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800 text-center mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">
           Best Selling Products
         </h2>
 

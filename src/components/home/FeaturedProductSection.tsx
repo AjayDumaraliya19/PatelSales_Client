@@ -22,10 +22,10 @@ export default function FeaturedProductSection({ products }: FeaturedProductSect
     <section className="bg-white py-8 md:py-10">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center mb-6 md:mb-8">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
             Featured Products
           </h2>
-          <p className="text-sm md:text-base text-gray-600 mt-2">
+          <p className="text-base md:text-lg text-gray-600 mt-2">
             Top picks for your business
           </p>
         </div>

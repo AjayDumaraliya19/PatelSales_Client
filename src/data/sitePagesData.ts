@@ -346,7 +346,6 @@ export const sitemapGroups: SitemapGroup[] = [
       { label: 'FAQ', href: '/faq' },
       { label: 'Bulk Order Inquiry', href: '/bulk-order' },
       { label: 'Business Accounts', href: '/business-accounts' },
-      { label: 'Our Location', href: '/location' },
     ],
   },
   {
@@ -363,7 +362,6 @@ export const sitemapGroups: SitemapGroup[] = [
       { label: 'Privacy Policy', href: '/privacy-policy' },
       { label: 'Terms of Service', href: '/terms-of-service' },
       { label: 'Cookie Policy', href: '/cookie-policy' },
-      { label: 'Sitemap', href: '/sitemap' },
     ],
   },
 ];

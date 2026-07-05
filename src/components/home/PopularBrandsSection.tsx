@@ -11,10 +11,10 @@ export default function PopularBrandsSection() {
     <section className="bg-white py-10 md:py-12 overflow-hidden">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center mb-8 md:mb-10">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
             Shop Popular Brands
           </h2>
-          <p className="text-sm md:text-base text-gray-600 mt-2">
+          <p className="text-base md:text-lg text-gray-600 mt-2">
             Quality products from trusted manufacturers
           </p>
         </div>

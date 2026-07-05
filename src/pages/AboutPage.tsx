@@ -1,13 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../components/ui/AppIcon';
+import { getCategoryProductHref } from '../data/productCategories';
 
 export default function AboutPage() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  const CountUpAnimation = ({ value, duration = 2000 }: { value: string; duration?: number }) => {
+    const [count, setCount] = useState(0);
+    const numericValue = parseInt(value.replace(/\D/g, '')) || 0;
+    const suffix = value.replace(/[\d]/g, '');
+
+    useEffect(() => {
+      if (!isVisible) return;
+
+      let startTime: number;
+      let animationFrame: number;
+
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        setCount(Math.floor(easeOutQuart * numericValue));
+
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        }
+      };
+
+      animationFrame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrame);
+    }, [isVisible, numericValue, duration]);
+
+    return <span>{count}{suffix}</span>;
+  };
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Banner */}
-      <section className="relative bg-gradient-to-r from-[#003087] to-[#0040a0] py-20 lg:py-32">
-        <div className="absolute inset-0 bg-black/30" />
+      <section className="relative py-20 lg:py-32">
+        <div className="absolute inset-0">
+          <img
+            src="/images/about/background.png"
+            alt="About Patel Sales LLC"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#003087]/50 to-[#0040a0]/40" />
+        </div>
         <div className="relative max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             About Patel Sales LLC
@@ -33,14 +93,15 @@ export default function AboutPage() {
       </section>
 
       {/* Company Introduction */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-10 lg:py-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="bg-gray-100 rounded-2xl h-[400px] flex items-center justify-center">
-              <div className="text-gray-400 text-center">
-                <Icon name="BuildingOffice2Icon" size={64} />
-                <p className="mt-4">Warehouse Image</p>
-              </div>
+            <div className="rounded-2xl overflow-hidden shadow-xl">
+              <img
+                src="/images/about/ware-house.png"
+                alt="Patel Sales Warehouse"
+                className="w-full h-[400px] object-cover"
+              />
             </div>
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
@@ -79,33 +140,96 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Mission */}
-      <section className="py-16 lg:py-24 bg-gray-50">
+      {/* What Makes Us Great */}
+      <section className="py-10 lg:py-16 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              Our Mission
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+              What Makes Us Great?
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Discover the advantages of choosing Patel Sales LLC
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: 'TruckIcon',
+                title: 'Fast Shipping',
+                desc: 'For more details about shipping from each of our warehouse locations check out the Ground and Common Carrier estimated shipping times to your area.',
+              },
+              {
+                icon: 'CurrencyDollarIcon',
+                title: 'Low Prices',
+                desc: 'We have hundreds of thousands of products on our website and add more every day. Our large volume of inventory means we get to offer you exceptionally low prices.',
+              },
+              {
+                icon: 'DocumentTextIcon',
+                title: 'High Quality Content',
+                desc: 'We provide you with the relevant info you need to make the right purchasing decisions. Every one of our product descriptions is written by a dedicated content writer.',
+              },
+              {
+                icon: 'HeadsetIcon',
+                title: 'Customer Support',
+                desc: 'Our friendly, knowledgeable Customer Solutions Specialists are here to assist with your questions and concerns. Contact us for a quick, simple solution.',
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group text-center"
+              >
+                {/* Icon/Image Section - 20% */}
+                <div className="h-32 bg-gradient-to-br from-[#003087] to-[#0040a0] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                  <Icon name={item.icon as any} size={48} className="text-white" />
+                </div>
+                {/* Content Section - 80% */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Our Mission */}
+      <section className="py-10 lg:py-16 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/images/about/our-mission.png"
+            alt="Our Mission"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#003087]/80 to-[#0040a0]/50" />
+        </div>
+
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+              Our Mission
+            </h2>
+            <p className="text-white/90 text-lg max-w-3xl mx-auto">
               We are dedicated to providing premium quality packaging products while supporting food businesses with affordable prices and excellent customer service.
             </p>
           </div>
           <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
             {[
-              { icon: 'StarIcon', title: 'Premium Quality' },
-              { icon: 'BuildingStorefrontIcon', title: 'Support Businesses' },
-              { icon: 'CurrencyDollarIcon', title: 'Affordable Prices' },
-              { icon: 'HeartIcon', title: 'Customer Service' },
-              { icon: 'LeafIcon', title: 'Eco-Friendly' },
+              { icon: 'StarIcon', title: 'Premium Quality', desc: 'Top-tier products' },
+              { icon: 'BuildingStorefrontIcon', title: 'Support Businesses', desc: 'Your growth partner' },
+              { icon: 'CurrencyDollarIcon', title: 'Affordable Prices', desc: 'Best value guaranteed' },
+              { icon: 'HeartIcon', title: 'Customer Service', desc: '24/7 dedicated support' },
+              { icon: 'LeafIcon', title: 'Eco-Friendly', desc: 'Sustainable solutions' },
             ].map((item, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center"
+                className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 text-center group"
               >
-                <div className="w-16 h-16 bg-[#2F7D32]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Icon name={item.icon as any} size={32} className="text-[#2F7D32]" />
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-colors">
+                  <Icon name={item.icon as any} size={32} className="text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-800">{item.title}</h3>
+                <h3 className="font-bold text-white text-base mb-1">{item.title}</h3>
+                <p className="text-white/80 text-xs">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -113,7 +237,7 @@ export default function AboutPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-10 lg:py-16 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -134,13 +258,13 @@ export default function AboutPage() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 p-6 rounded-xl hover:bg-[#2F7D32]/5 hover:shadow-md transition-all group"
+                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group border border-gray-100 text-center"
               >
-                <div className="w-14 h-14 bg-[#003087] rounded-lg flex items-center justify-center mb-4 group-hover:bg-[#2F7D32] transition-colors">
-                  <Icon name={item.icon as any} size={28} className="text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Icon name={item.icon as any} size={32} className="text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-[#003087] transition-colors">{item.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -148,7 +272,7 @@ export default function AboutPage() {
       </section>
 
       {/* Product Categories */}
-      <section className="py-16 lg:py-24 bg-gray-50">
+      <section className="py-10 lg:py-16 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -160,28 +284,29 @@ export default function AboutPage() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[
-              'Portion Cups & Lids',
-              'Plastic Containers',
-              'Paper Napkins',
-              'Paper Towels',
-              'Paper Bags',
-              'Foil Products',
-              'Disposable Plastic Cups',
-              'Take-Out Containers',
+              { name: 'Portion Cups & Lids', slug: 'portion-cups-and-lids', image: 'portion-cups-and-lids.png' },
+              { name: 'Plastic Containers', slug: 'plastic-containers', image: 'plastic-containers.png' },
+              { name: 'Paper Napkins', slug: 'paper-napkins-and-towels', image: 'paper-napkins-and-towels.png' },
+              { name: 'Paper Towels', slug: 'paper-napkins-and-towels', image: 'paper-napkins-and-towels.png' },
+              { name: 'Paper Bags', slug: 'paper-bags', image: 'paper-bags.png' },
+              { name: 'Foil Products', slug: 'foil-products', image: 'foil-products.png' },
+              { name: 'Disposable Plastic Cups', slug: 'disposable-plastic-cups', image: 'disposable-plastic-cups.png' },
+              { name: 'Take-Out Containers', slug: 'foam-containers', image: 'foam-containers.png' },
             ].map((category, index) => (
               <Link
                 key={index}
-                to="/products"
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all group"
+                to={getCategoryProductHref(category.slug)}
+                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden"
               >
-                <div className="bg-gray-100 rounded-lg h-32 mb-4 flex items-center justify-center group-hover:bg-[#2F7D32]/10 transition-colors">
-                  <Icon name="CubeIcon" size={40} className="text-gray-400 group-hover:text-[#2F7D32] transition-colors" />
+                <div className="relative rounded-lg h-32 mb-4 overflow-hidden bg-gray-100">
+                  <img
+                    src={`/images/categories/${category.image}`}
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-2">{category}</h3>
-                <p className="text-sm text-gray-500 mb-4">Quality packaging solutions</p>
-                <span className="text-[#003087] font-semibold text-sm group-hover:text-[#2F7D32] transition-colors">
-                  Shop Now →
-                </span>
+                <h3 className="font-bold text-lg text-gray-800 mb-2 text-center">{category.name}</h3>
+                <p className="text-sm text-gray-500 mb-4 text-center">Quality packaging solutions</p>
               </Link>
             ))}
           </div>
@@ -197,122 +322,73 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Industries We Serve */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              Industries We Serve
+      {/* Sustainability */}
+      <section className="py-10 lg:py-16 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/images/about/commitement.png"
+            alt="Sustainability"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2F7D32]/60 to-[#1a5c1e]/50" />
+        </div>
+
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 relative z-10">
+          <div className="text-center text-white mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+              Our Commitment to Sustainability
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Trusted by businesses across various industries
+            <p className="text-lg text-white/90 max-w-3xl mx-auto">
+              We are dedicated to protecting the environment through eco-friendly packaging solutions
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              'Restaurants',
-              'Hotels',
-              'Food Trucks',
-              'Cafes',
-              'Catering Services',
-              'Hospitals',
-              'Schools',
-              'Corporate Offices',
-              'Supermarkets',
-              'Wholesale Distributors',
-            ].map((industry, index) => (
+              { icon: 'ArrowPathIcon', title: 'Reusable Packaging', desc: 'Reduce waste with reusable options' },
+              { icon: 'ArchiveBoxIcon', title: 'Recyclable Materials', desc: 'Made from recycled content' },
+              { icon: 'SproutIcon', title: 'Compostable Products', desc: 'Biodegradable packaging solutions' },
+              { icon: 'GlobeAmericasIcon', title: 'Protecting Environment', desc: 'Eco-conscious business practices' },
+            ].map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 p-6 rounded-xl text-center hover:bg-[#003087]/5 transition-colors"
+                className="bg-white/15 backdrop-blur-md p-8 rounded-2xl border border-white/20 hover:bg-white/25 hover:scale-105 transition-all duration-300 text-center group"
               >
-                <div className="w-12 h-12 bg-[#003087] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Icon name="BuildingOfficeIcon" size={24} className="text-white" />
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-colors">
+                  <Icon name={item.icon as any} size={36} className="text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-800">{industry}</h3>
+                <h3 className="font-bold text-white text-lg mb-2">{item.title}</h3>
+                <p className="text-white/80 text-sm">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Sustainability */}
-      <section className="py-16 lg:py-24 bg-gradient-to-r from-[#2F7D32] to-[#1a5c1e]">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-          <div className="text-center text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Our Commitment to Sustainability
-            </h2>
-            <p className="text-lg text-white/90 max-w-3xl mx-auto mb-12">
-              We are dedicated to protecting the environment through eco-friendly packaging solutions
-            </p>
-            <div className="grid md:grid-cols-4 gap-6">
-              {[
-                { icon: 'ArrowPathIcon', title: 'Reusable Packaging' },
-                { icon: 'RecycleIcon', title: 'Recyclable Materials' },
-                { icon: 'LeafIcon', title: 'Compostable Products' },
-                { icon: 'GlobeAmericasIcon', title: 'Protecting Environment' },
-              ].map((item, index) => (
-                <div key={index} className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
-                  <Icon name={item.icon as any} size={40} className="text-white mb-3" />
-                  <h3 className="font-semibold text-white">{item.title}</h3>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Process */}
-      <section className="py-16 lg:py-24 bg-white">
+      {/* Company Statistics */}
+      <section ref={sectionRef} className="py-10 lg:py-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              Our Process
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+              Our Numbers Speak
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              From sourcing to delivery, we ensure quality at every step
+              Trusted by thousands of businesses across the nation
             </p>
           </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {[
-              { step: '1', title: 'Product Sourcing' },
-              { step: '2', title: 'Quality Inspection' },
-              { step: '3', title: 'Warehouse Storage' },
-              { step: '4', title: 'Fast Packaging' },
-              { step: '5', title: 'Doorstep Delivery' },
-            ].map((item, index) => (
-              <React.Fragment key={index}>
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-[#003087] rounded-full flex items-center justify-center text-white font-bold text-xl mb-3">
-                    {item.step}
-                  </div>
-                  <h3 className="font-semibold text-gray-800">{item.title}</h3>
-                </div>
-                {index < 4 && (
-                  <div className="hidden md:block text-[#2F7D32]">
-                    <Icon name="ChevronDownIcon" size={24} className="md:rotate-90" />
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Company Statistics */}
-      <section className="py-16 lg:py-24 bg-gray-50">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
           <div className="grid md:grid-cols-5 gap-6">
             {[
-              { value: '5000+', label: 'Products' },
-              { value: '1000+', label: 'Happy Customers' },
-              { value: '50+', label: 'Trusted Brands' },
-              { value: '10+', label: 'Years Experience' },
-              { value: '100%', label: 'Quality Assurance' },
+              { value: '5000+', label: 'Products', icon: 'CubeIcon' },
+              { value: '1000+', label: 'Happy Customers', icon: 'UserGroupIcon' },
+              { value: '50+', label: 'Trusted Brands', icon: 'BuildingStorefrontIcon' },
+              { value: '10+', label: 'Years Experience', icon: 'CalendarIcon' },
+              { value: '100%', label: 'Quality Assurance', icon: 'ShieldCheckIcon' },
             ].map((stat, index) => (
-              <div key={index} className="bg-white p-8 rounded-xl text-center shadow-sm">
+              <div key={index} className="bg-gray-50 p-8 rounded-2xl border border-gray-100 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Icon name={stat.icon as any} size={28} className="text-white" />
+                </div>
                 <div className="text-4xl md:text-5xl font-bold text-[#003087] mb-2">
-                  {stat.value}
+                  <CountUpAnimation value={stat.value} />
                 </div>
                 <div className="text-gray-600 font-medium">{stat.label}</div>
               </div>
@@ -321,20 +397,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Customer Promise */}
-      <section className="py-16 lg:py-24 bg-[#003087]">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Our Commitment
-          </h2>
-          <p className="text-lg text-white/90 max-w-3xl mx-auto">
-            We are committed to providing premium disposable food packaging products with exceptional customer service, competitive pricing, and fast nationwide delivery.
-          </p>
-        </div>
-      </section>
-
       {/* Call To Action */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-10 lg:py-16 bg-white">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
             Ready to Order Quality Food Packaging?

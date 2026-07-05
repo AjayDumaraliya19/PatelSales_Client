@@ -10,10 +10,10 @@ export default function ResourcesSection() {
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 md:mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               Foodservice Resources
             </h2>
-            <p className="text-base md:text-lg text-gray-600">
+            <p className="text-lg md:text-xl text-gray-600">
               Expert guides and tips for your business
             </p>
           </div>

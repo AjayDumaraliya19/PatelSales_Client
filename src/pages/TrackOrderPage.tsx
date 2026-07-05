@@ -47,112 +47,142 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="min-h-full bg-[var(--background)] py-4 sm:py-6 pb-6">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <PageHeader
-          title="Track Your Order"
-          breadcrumbs={[
-            { label: 'Patel Sales', href: '/' },
-            { label: 'Track Order' },
-          ]}
-        />
-
-        <form onSubmit={handleTrack} className="app-card p-4 sm:p-5 mb-5 animate-fade-in">
-          <label htmlFor="tracking-query" className="app-label">
-            Order or Tracking Number
-          </label>
-          <div className="flex flex-col sm:flex-row gap-2 mt-1.5">
-            <input
-              id="tracking-query"
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="e.g. PSNJ7840123456"
-              className="input-field flex-1 min-h-[44px]"
-              autoComplete="off"
-            />
-            <button
-              type="submit"
-              disabled={viewState === 'loading'}
-              className="btn-primary min-h-[44px] px-6 shrink-0 disabled:opacity-70"
-            >
-              {viewState === 'loading' ? (
-                <>
-                  <Icon name="ArrowPathIcon" size={16} className="animate-spin" />
-                  Tracking...
-                </>
-              ) : (
-                <>
-                  <Icon name="MagnifyingGlassIcon" size={16} />
-                  Track Order
-                </>
-              )}
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Try sample: <span className="font-mono font-semibold text-gray-700">PSNJ7840123456</span>
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4f8] to-[#e8f0f8]">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#003087] to-[#0040a0] py-12 md:py-16">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+            Track Your Order
+          </h1>
+          <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto">
+            Enter your order number to see real-time delivery status
           </p>
-        </form>
+        </div>
+      </div>
 
-        {viewState === 'loading' && (
-          <div className="space-y-4 animate-pulse">
-            <div className="app-card p-6 h-32 skeleton-pulse rounded-xl" />
-            <div className="app-card p-6 h-64 skeleton-pulse rounded-xl" />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="app-card p-6 h-40 skeleton-pulse rounded-xl" />
-              <div className="app-card p-6 h-40 skeleton-pulse rounded-xl" />
+      {/* Content */}
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-10 md:py-12">
+        <div className="max-w-2xl mx-auto">
+          {/* Search Form */}
+          <form onSubmit={handleTrack} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+            <label htmlFor="tracking-query" className="block text-sm font-bold text-gray-800 mb-3">
+              Order or Tracking Number
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                id="tracking-query"
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="e.g. PSNJ7840123456"
+                className="flex-1 min-h-[52px] px-4 border-2 border-gray-200 rounded-xl focus:border-[#003087] focus:outline-none transition-colors text-gray-900"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                disabled={viewState === 'loading'}
+                className="min-h-[52px] px-8 bg-gradient-to-r from-[#003087] to-[#0040a0] hover:from-[#002244] hover:to-[#003087] text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0"
+              >
+                {viewState === 'loading' ? (
+                  <>
+                    <Icon name="ArrowPathIcon" size={20} className="animate-spin" />
+                    Tracking...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="MagnifyingGlassIcon" size={20} />
+                    Track Order
+                  </>
+                )}
+              </button>
             </div>
-          </div>
-        )}
+            <p className="text-sm text-gray-500 mt-3">
+              Try sample: <span className="font-mono font-semibold text-[#003087]">PSNJ7840123456</span>
+            </p>
+          </form>
 
-        {viewState === 'error' && (
-          <EmptyState
-            icon="ExclamationTriangleIcon"
-            title="Order Not Found"
-            description={errorMessage}
-            action={
-              <button type="button" onClick={() => handleTrack()} className="btn-secondary">
+          {viewState === 'loading' && (
+            <div className="space-y-4">
+              <div className="bg-gray-200 rounded-2xl shadow-lg p-6 h-32 animate-pulse" />
+              <div className="bg-gray-200 rounded-2xl shadow-lg p-6 h-64 animate-pulse" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-gray-200 rounded-2xl shadow-lg p-6 h-40 animate-pulse" />
+                <div className="bg-gray-200 rounded-2xl shadow-lg p-6 h-40 animate-pulse" />
+              </div>
+            </div>
+          )}
+
+          {viewState === 'error' && (
+            <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#e8471e] to-[#ff5722] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Icon name="ExclamationTriangleIcon" size={32} className="text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Not Found</h2>
+              <p className="text-gray-600 mb-6">{errorMessage}</p>
+              <button
+                type="button"
+                onClick={() => handleTrack()}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#003087] to-[#0040a0] hover:from-[#002244] hover:to-[#003087] text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <Icon name="ArrowPathIcon" size={20} />
                 Try Again
               </button>
-            }
-          />
-        )}
-
-        {viewState === 'success' && order && (
-          <div className="space-y-4 animate-fade-in">
-            <div className="app-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Current Status</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  <StatusBadge label={order.orderStatus} variant={getOrderStatusVariant(order.orderStatus)} />
-                  <span className="text-sm text-gray-600">
-                    {order.products.length} item{order.products.length !== 1 ? 's' : ''} ·{' '}
-                    <span className="font-semibold text-gray-900">${order.totalAmount.toFixed(2)}</span>
-                  </span>
-                </div>
-              </div>
-              <Link to="/products" className="btn-outline min-h-[44px] text-center">
-                Order Again
-              </Link>
             </div>
+          )}
 
-            <TrackingTimeline steps={order.timeline} />
-            <OrderTrackingDetails order={order} />
-          </div>
-        )}
+          {viewState === 'success' && order && (
+            <div className="space-y-6 animate-fade-in">
+              {/* Order Status Card */}
+              <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#2F7D32] to-[#1a5c1e] rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Icon name="CheckCircleIcon" size={24} className="text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Current Status</p>
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <StatusBadge label={order.orderStatus} variant={getOrderStatusVariant(order.orderStatus)} />
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {order.products.length} item{order.products.length !== 1 ? 's' : ''} ·{' '}
+                      <span className="font-semibold text-gray-900">${order.totalAmount.toFixed(2)}</span>
+                    </span>
+                  </div>
+                </div>
+                <Link
+                  to="/products"
+                  className="inline-flex items-center gap-2 bg-white border-2 border-[#003087] text-[#003087] hover:bg-[#003087] hover:text-white font-bold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  <Icon name="ShoppingBagIcon" size={20} />
+                  Order Again
+                </Link>
+              </div>
 
-        {viewState === 'idle' && (
-          <EmptyState
-            icon="TruckIcon"
-            title="Track Your Wholesale Order"
-            description="Enter your order number or tracking ID above to see real-time delivery status, estimated arrival, and order details."
-            action={
-              <button type="button" onClick={() => handleTrack()} className="btn-primary min-h-[44px]">
+              <TrackingTimeline steps={order.timeline} />
+              <OrderTrackingDetails order={order} />
+            </div>
+          )}
+
+          {viewState === 'idle' && (
+            <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Icon name="TruckIcon" size={32} className="text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Track Your Wholesale Order</h2>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Enter your order number or tracking ID above to see real-time delivery status, estimated arrival, and order details.
+              </p>
+              <button
+                type="button"
+                onClick={() => handleTrack()}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#003087] to-[#0040a0] hover:from-[#002244] hover:to-[#003087] text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <Icon name="MagnifyingGlassIcon" size={20} />
                 Track Sample Order
               </button>
-            }
-          />
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
