@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../components/ui/PageHeader';
 import Icon from '../components/ui/AppIcon';
 import { useCartStore } from '../store/cartStore';
+import { useOrders } from '../hooks/useOrders';
+import { useAuthStore } from '../store/authStore';
+import type { Order } from '../services/ordersService';
 
 function generateOrderNumber() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -12,13 +15,16 @@ function generateOrderNumber() {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuthStore();
   const items = useCartStore((s) => s.items);
   const getSubtotal = useCartStore((s) => s.getSubtotal);
   const getTax = useCartStore((s) => s.getTax);
   const getShipping = useCartStore((s) => s.getShipping);
   const getTotal = useCartStore((s) => s.getTotal);
   const clearCart = useCartStore((s) => s.clearCart);
+  const { createOrder, isCreatingOrder, error } = useOrders();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   if (items.length === 0) {
     return (
@@ -33,23 +39,88 @@ export default function CheckoutPage() {
     );
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <div className="bg-white border border-red-200 rounded-lg p-8">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Icon name="ExclamationTriangleIcon" size={32} className="text-red-600" />
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">Login Required</h1>
+          <p className="text-sm text-gray-600 mb-6">
+            Please log in to place an order. Your cart items will be preserved after login.
+          </p>
+          <Link to="/login" className="btn-primary min-h-[44px] inline-flex">
+            Log In
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    setFormError(null);
 
-    const orderNumber = generateOrderNumber();
-    const orderSummary = {
-      orderNumber,
-      total: getTotal(),
-      itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
-      email: (event.currentTarget.elements.namedItem('email') as HTMLInputElement).value,
+    // Get form data
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const phone = formData.get('phone') as string;
+    const fullName = formData.get('fullName') as string;
+    const company = formData.get('company') as string;
+    const street = formData.get('street') as string;
+    const city = formData.get('city') as string;
+    const state = formData.get('state') as string;
+    const zip = formData.get('zip') as string;
+    const cardNumber = formData.get('cardNumber') as string;
+
+    if (!email || !phone || !fullName || !street || !city || !state || !zip) {
+      setFormError('Please fill in all required fields');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Build order items
+    const orderItems = items.map((item) => ({
+      product: item.productId,
+      name: item.product.name,
+      image: item.product.images?.[0] || '',
+      price: item.product.price,
+      quantity: item.quantity,
+    }));
+
+    // Build shipping address
+    const shippingAddress: Order['shippingAddress'] = {
+      street,
+      city,
+      state,
+      zip,
+      country: 'US',
+      phone,
     };
 
-    sessionStorage.setItem('lastOrder', JSON.stringify(orderSummary));
-    clearCart();
-    setIsSubmitting(false);
-    navigate('/order-confirmation', { state: orderSummary });
+    // Build order data
+    const orderData = {
+      items: orderItems,
+      shippingAddress,
+      paymentMethod: 'card',
+      notes: company ? `Business: ${company}` : '',
+    };
+
+    try {
+      const result = await createOrder(orderData);
+      if (result.success) {
+        clearCart();
+        navigate('/order-confirmation', { state: { order: result.order } });
+      } else {
+        setFormError(result.error || 'Failed to create order. Please try again.');
+      }
+    } catch (err) {
+      setFormError('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,6 +136,11 @@ export default function CheckoutPage() {
         />
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {formError && (
+            <div className="lg:col-span-5 bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-700 text-sm font-medium">{formError}</p>
+            </div>
+          )}
           <div className="lg:col-span-3 space-y-4">
             <section className="app-card p-5 sm:p-6">
               <h2 className="text-sm font-bold text-gray-900 mb-4">Contact Information</h2>
@@ -163,10 +239,10 @@ export default function CheckoutPage() {
               </div>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isCreatingOrder}
                 className="btn-primary w-full justify-center mt-4 min-h-[44px] disabled:opacity-70"
               >
-                {isSubmitting ? 'Placing Order...' : 'Place Order'}
+                {isSubmitting || isCreatingOrder ? 'Placing Order...' : 'Place Order'}
               </button>
               <p className="text-xs text-gray-500 mt-3 text-center">
                 By placing your order, you agree to our{' '}

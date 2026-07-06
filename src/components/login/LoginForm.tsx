@@ -42,7 +42,7 @@ export default function LoginForm() {
 
   if (isLoggedIn) {
     return (
-      <div className="app-card p-8 sm:p-12 text-center max-w-lg mx-auto">
+      <div className="app-card p-8 sm:p-12 text-center max-w-lg mx-auto animate-fade-in">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Icon name="CheckCircleIcon" size={32} className="text-green-600" />
         </div>
@@ -58,7 +58,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="app-card overflow-hidden">
+    <form onSubmit={handleSubmit} className="app-card overflow-hidden animate-fade-in">
       {error && (
         <div className="p-4 sm:p-6 md:p-8 pb-0">
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
@@ -118,9 +118,9 @@ export default function LoginForm() {
             />
             <span className="text-sm text-gray-700">Remember me</span>
           </label>
-          <button type="button" className="text-sm font-semibold text-[var(--secondary)] hover:underline text-left">
+          <Link to="/forgot-password" className="text-sm font-semibold text-[var(--secondary)] hover:text-[var(--primary)] hover:underline">
             Forgot password?
-          </button>
+          </Link>
         </div>
 
         <button

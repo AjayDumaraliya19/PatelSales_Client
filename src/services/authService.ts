@@ -59,6 +59,16 @@ export interface ResetPasswordData {
   password: string;
 }
 
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
 // Authentication Service
 class AuthService {
   /**
@@ -112,16 +122,16 @@ class AuthService {
   /**
    * Forgot password - sends reset email
    */
-  async forgotPassword(data: ForgotPasswordData): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.post('/auth/forgot-password', data);
+  async forgotPassword(data: ForgotPasswordData): Promise<ForgotPasswordResponse> {
+    const response = await apiClient.post<ForgotPasswordResponse>('/auth/forgot-password', data);
     return response.data;
   }
 
   /**
    * Reset password with token
    */
-  async resetPassword(token: string, data: ResetPasswordData): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.put(`/auth/reset-password/${token}`, data);
+  async resetPassword(token: string, data: ResetPasswordData): Promise<ResetPasswordResponse> {
+    const response = await apiClient.put<ResetPasswordResponse>(`/auth/reset-password/${token}`, data);
     return response.data;
   }
 }

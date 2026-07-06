@@ -12,6 +12,8 @@ import GetTheAppPage from '../pages/GetTheAppPage';
 import DisposablesPage from '../pages/DisposablesPage';
 import RegisterPage from '../pages/RegisterPage';
 import LoginPage from '../pages/LoginPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 import ContactPage from '../pages/ContactPage';
 import TrackOrderPage from '../pages/TrackOrderPage';
 import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
@@ -25,7 +27,9 @@ import BulkOrderPage from '../pages/BulkOrderPage';
 import WholesaleFlyerPage from '../pages/WholesaleFlyerPage';
 import AccountPage from '../pages/AccountPage';
 import OrderHistoryPage from '../pages/OrderHistoryPage';
+import OrderDetailsPage from '../pages/OrderDetailsPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import ProtectedRoute from './auth/ProtectedRoute';
 
 export default function Layout() {
   return (
@@ -42,10 +46,13 @@ export default function Layout() {
         <Route path="/get-the-app" element={<GetTheAppPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/track-order" element={<TrackOrderPage />} />
-        <Route path="/account" element={<AccountPage />} />
-        <Route path="/account/orders" element={<OrderHistoryPage />} />
+        <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+        <Route path="/account/orders" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
+        <Route path="/account/orders/:orderId" element={<ProtectedRoute><OrderDetailsPage /></ProtectedRoute>} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/shipping" element={<ShippingPage />} />

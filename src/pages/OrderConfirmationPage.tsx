@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Icon from '../components/ui/AppIcon';
+import type { Order } from '../services/ordersService';
 
 interface OrderSummaryState {
   orderNumber: string;
@@ -9,21 +10,54 @@ interface OrderSummaryState {
   email: string;
 }
 
+interface OrderConfirmationState {
+  order?: Order;
+}
+
 export default function OrderConfirmationPage() {
   const location = useLocation();
-  const stateOrder = location.state as OrderSummaryState | null;
+  const stateOrder = location.state as OrderConfirmationState | null;
 
-  const storedOrder = React.useMemo(() => {
-    if (stateOrder) return stateOrder;
+  const orderData = React.useMemo(() => {
+    // First check if we have a full order object from backend
+    if (stateOrder?.order) return stateOrder.order;
+
+    // Fallback to sessionStorage for mock data
     try {
       const raw = sessionStorage.getItem('lastOrder');
-      return raw ? (JSON.parse(raw) as OrderSummaryState) : null;
+      if (raw) {
+        const parsed = JSON.parse(raw) as OrderSummaryState;
+        return {
+          _id: '',
+          user: { _id: '', name: '', email: parsed.email } as any,
+          orderNumber: parsed.orderNumber,
+          items: [],
+          shippingAddress: {
+            street: '',
+            city: '',
+            state: '',
+            zip: '',
+            country: 'US',
+          },
+          paymentMethod: 'card',
+          paymentStatus: 'pending',
+          subtotal: parsed.total,
+          shipping: 0,
+          tax: 0,
+          discount: 0,
+          total: parsed.total,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        } as Order;
+      }
     } catch {
-      return null;
+      // Fall through to null
     }
+    return null;
   }, [stateOrder]);
 
-  if (!storedOrder) {
+  if (!orderData) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <h1 className="text-xl font-bold text-gray-900 mb-2">No Order Found</h1>
@@ -45,22 +79,22 @@ export default function OrderConfirmationPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Order Confirmed!</h1>
         <p className="text-sm text-gray-600 mb-8">
           Thank you for your order. A confirmation email has been sent to{' '}
-          <span className="font-semibold">{storedOrder.email}</span>.
+          <span className="font-semibold">{orderData.shippingAddress?.phone ? 'your registered email' : 'your email'}</span>.
         </p>
 
         <div className="app-card p-6 text-left mb-8">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-gray-500 mb-1">Order Number</p>
-              <p className="font-bold text-gray-900">{storedOrder.orderNumber}</p>
+              <p className="font-bold text-gray-900">{orderData.orderNumber}</p>
             </div>
             <div>
               <p className="text-gray-500 mb-1">Items</p>
-              <p className="font-bold text-gray-900">{storedOrder.itemCount}</p>
+              <p className="font-bold text-gray-900">{orderData.items.length}</p>
             </div>
             <div>
               <p className="text-gray-500 mb-1">Total</p>
-              <p className="font-bold text-[var(--secondary)]">${storedOrder.total.toFixed(2)}</p>
+              <p className="font-bold text-[var(--secondary)]">${orderData.total.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-gray-500 mb-1">Status</p>
