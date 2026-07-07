@@ -115,7 +115,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 4028,
+    port: 4001,
     open: true,
   },
   build: {

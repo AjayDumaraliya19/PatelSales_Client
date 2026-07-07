@@ -28,6 +28,7 @@ import WholesaleFlyerPage from '../pages/WholesaleFlyerPage';
 import AccountPage from '../pages/AccountPage';
 import OrderHistoryPage from '../pages/OrderHistoryPage';
 import OrderDetailsPage from '../pages/OrderDetailsPage';
+import AddressPage from '../pages/AddressPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 
@@ -41,8 +42,8 @@ export default function Layout() {
         <Route path="/products/:productId" element={<ProductDetailPage />} />
         <Route path="/disposables" element={<DisposablesPage />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+        <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+        <Route path="/order-confirmation" element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>} />
         <Route path="/get-the-app" element={<GetTheAppPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -53,6 +54,7 @@ export default function Layout() {
         <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
         <Route path="/account/orders" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
         <Route path="/account/orders/:orderId" element={<ProtectedRoute><OrderDetailsPage /></ProtectedRoute>} />
+        <Route path="/account/addresses" element={<ProtectedRoute><AddressPage /></ProtectedRoute>} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/shipping" element={<ShippingPage />} />

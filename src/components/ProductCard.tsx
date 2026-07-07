@@ -29,8 +29,10 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
   };
 
   const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    ? Math.round(((product.originalPrice - (product.displayPrice || product.price)) / product.originalPrice) * 100)
     : 0;
+
+  const displayPrice = product.displayPrice || product.price;
 
   if (variant === 'list') {
     return (
@@ -83,7 +85,7 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
 
             <div className="flex items-center justify-between mt-2 gap-3">
               <div>
-                <span className="wss-price">${product.price.toFixed(2)}</span>
+                <span className="wss-price">${displayPrice.toFixed(2)}</span>
                 {product.originalPrice && (
                   <span className="wss-original-price ml-2">${product.originalPrice.toFixed(2)}</span>
                 )}
@@ -126,7 +128,7 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
             {product.isOnSale && discount > 0 && (
               <span className="wss-sale-badge">{discount}% OFF</span>
             )}
-            {product.isNew && (
+            {product.isProductNew && (
               <span className="wss-new-badge">NEW</span>
             )}
           </div>
@@ -170,7 +172,7 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
 
           {/* Price */}
           <div className="mb-2">
-            <span className="wss-price">${product.price.toFixed(2)}</span>
+            <span className="wss-price">${displayPrice.toFixed(2)}</span>
             {product.originalPrice && (
               <span className="wss-original-price ml-2">${product.originalPrice.toFixed(2)}</span>
             )}

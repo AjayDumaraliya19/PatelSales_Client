@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Elements } from '@stripe/react-stripe-js';
 import PageHeader from '../components/ui/PageHeader';
 import Icon from '../components/ui/AppIcon';
+import PaymentForm from '../components/checkout/PaymentForm';
 import { useCartStore } from '../store/cartStore';
 import { useOrders } from '../hooks/useOrders';
 import { useAuthStore } from '../store/authStore';
+import { getStripe, isStripeConfigured } from '../lib/stripe';
 import type { Order } from '../services/ordersService';
-
-function generateOrderNumber() {
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-  const random = Math.floor(1000 + Math.random() * 9000);
-  return `PS-${date}-${random}`;
-}
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -25,6 +22,9 @@ export default function CheckoutPage() {
   const { createOrder, isCreatingOrder, error } = useOrders();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [stripePromise, setStripePromise] = useState<Promise<any> | null>(null);
+  const [paymentStep, setPaymentStep] = useState(false);
 
   if (items.length === 0) {
     return (
@@ -63,7 +63,6 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     setFormError(null);
 
-    // Get form data
     const formData = new FormData(event.currentTarget);
     const email = formData.get('email') as string;
     const phone = formData.get('phone') as string;
@@ -73,7 +72,6 @@ export default function CheckoutPage() {
     const city = formData.get('city') as string;
     const state = formData.get('state') as string;
     const zip = formData.get('zip') as string;
-    const cardNumber = formData.get('cardNumber') as string;
 
     if (!email || !phone || !fullName || !street || !city || !state || !zip) {
       setFormError('Please fill in all required fields');
@@ -81,7 +79,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Build order items
     const orderItems = items.map((item) => ({
       product: item.productId,
       name: item.product.name,
@@ -90,7 +87,6 @@ export default function CheckoutPage() {
       quantity: item.quantity,
     }));
 
-    // Build shipping address
     const shippingAddress: Order['shippingAddress'] = {
       street,
       city,
@@ -100,7 +96,6 @@ export default function CheckoutPage() {
       phone,
     };
 
-    // Build order data
     const orderData = {
       items: orderItems,
       shippingAddress,
@@ -110,9 +105,21 @@ export default function CheckoutPage() {
 
     try {
       const result = await createOrder(orderData);
-      if (result.success) {
-        clearCart();
-        navigate('/order-confirmation', { state: { order: result.order } });
+      if (result.success && result.order) {
+        setCreatedOrderId(result.order._id);
+        if (isStripeConfigured()) {
+          const stripe = await getStripe();
+          if (stripe) {
+            setStripePromise(Promise.resolve(stripe));
+            setPaymentStep(true);
+          } else {
+            clearCart();
+            navigate('/order-confirmation', { state: { order: result.order } });
+          }
+        } else {
+          clearCart();
+          navigate('/order-confirmation', { state: { order: result.order } });
+        }
       } else {
         setFormError(result.error || 'Failed to create order. Please try again.');
       }
@@ -121,6 +128,16 @@ export default function CheckoutPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handlePaymentSuccess = (paymentIntentId: string) => {
+    clearCart();
+    navigate('/order-confirmation', { state: { paymentIntentId } });
+  };
+
+  const handlePaymentError = (error: string) => {
+    setFormError(error);
+    setPaymentStep(false);
   };
 
   return (
@@ -190,17 +207,40 @@ export default function CheckoutPage() {
 
             <section className="app-card p-5 sm:p-6">
               <h2 className="text-sm font-bold text-gray-900 mb-4">Payment</h2>
-              <p className="text-sm text-gray-600 mb-3">
-                Demo checkout — no real payment is processed. Business accounts may use net-30 terms.
-              </p>
-              <input
-                name="cardNumber"
-                type="text"
-                placeholder="Card number (demo)"
-                className="input-field w-full min-h-[44px]"
-                defaultValue="4111 1111 1111 1111"
-                readOnly
-              />
+              {paymentStep && createdOrderId ? (
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Complete your payment to finalize the order.
+                  </p>
+                  {stripePromise && (
+                    <Elements stripe={stripePromise}>
+                      <PaymentForm
+                        orderId={createdOrderId}
+                        amount={getTotal()}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                        onBack={() => setPaymentStep(false)}
+                      />
+                    </Elements>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {isStripeConfigured()
+                      ? 'Your card will be charged after placing the order.'
+                      : 'Demo checkout — no real payment is processed. Business accounts may use net-30 terms.'}
+                  </p>
+                  <input
+                    name="cardNumber"
+                    type="text"
+                    placeholder="Card number (demo)"
+                    className="input-field w-full min-h-[44px]"
+                    defaultValue="4111 1111 1111 1111"
+                    readOnly
+                  />
+                </div>
+              )}
             </section>
           </div>
 
@@ -239,11 +279,16 @@ export default function CheckoutPage() {
               </div>
               <button
                 type="submit"
-                disabled={isSubmitting || isCreatingOrder}
+                disabled={isSubmitting || isCreatingOrder || paymentStep}
                 className="btn-primary w-full justify-center mt-4 min-h-[44px] disabled:opacity-70"
               >
                 {isSubmitting || isCreatingOrder ? 'Placing Order...' : 'Place Order'}
               </button>
+              {paymentStep && (
+                <p className="text-xs text-amber-600 mt-2 text-center">
+                  Complete the payment form above to finalize your order.
+                </p>
+              )}
               <p className="text-xs text-gray-500 mt-3 text-center">
                 By placing your order, you agree to our{' '}
                 <Link to="/terms-of-service" className="text-[var(--secondary)] hover:underline">

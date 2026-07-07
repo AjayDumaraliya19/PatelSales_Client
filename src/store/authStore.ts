@@ -8,6 +8,7 @@ interface AuthStore {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  deliveryPincode: string | null;
 
   // Actions
   register: (data: RegisterData) => Promise<void>;
@@ -20,6 +21,7 @@ interface AuthStore {
   resetPassword: (token: string, data: ResetPasswordData) => Promise<{ success: boolean; message: string }>;
   clearError: () => void;
   checkAuth: () => void;
+  setDeliveryPincode: (pincode: string) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -30,6 +32,7 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      deliveryPincode: null,
 
       /**
        * Register new user
@@ -241,10 +244,22 @@ export const useAuthStore = create<AuthStore>()(
        */
       checkAuth: () => {
         const token = localStorage.getItem('auth_token');
-        if (token && !get().isAuthenticated) {
-          // Auto-fetch user if token exists
-          get().fetchUser();
+        if (token) {
+          // Always verify token on app mount — persist may have stale data
+          if (!get().isLoading) {
+            get().fetchUser();
+          }
+        } else {
+          // No token — clear any stale persisted auth state
+          set({ user: null, token: null, isAuthenticated: false });
         }
+      },
+
+      /**
+       * Set delivery pincode for area-based pricing
+       */
+      setDeliveryPincode: (pincode: string) => {
+        set({ deliveryPincode: pincode });
       },
     }),
     {

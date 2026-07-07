@@ -14,6 +14,8 @@ export interface Product {
   description: string;
   price: number;
   compareAtPrice?: number;
+  displayPrice?: number;
+  areaPrice?: number;
   sku: string;
   images: string[];
   category: {
@@ -39,7 +41,7 @@ export interface Product {
   status?: 'active' | 'inactive';
   caseSize?: string;
   isOnSale?: boolean;
-  isNew?: boolean;
+  isProductNew?: boolean;
   rating?: number;
   reviewCount?: number;
 }

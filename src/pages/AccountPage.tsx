@@ -8,6 +8,7 @@ const accountLinks = [
   { icon: 'TruckIcon' as const, label: 'Track Order', href: '/track-order', desc: 'Check delivery status' },
   { icon: 'ShoppingCartIcon' as const, label: 'Shopping Cart', href: '/cart', desc: 'View current cart' },
   { icon: 'BuildingStorefrontIcon' as const, label: 'Business Account', href: '/business-accounts', desc: 'Wholesale benefits' },
+  { icon: 'MapPinIcon' as const, label: 'My Addresses', href: '/account/addresses', desc: 'Manage shipping addresses' },
   { icon: 'UserCircleIcon' as const, label: 'Profile Settings', href: '/register', desc: 'Update account info' },
   { icon: 'QuestionMarkCircleIcon' as const, label: 'Help & FAQ', href: '/faq', desc: 'Common questions' },
 ];

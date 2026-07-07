@@ -1,6 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { useEffect } from 'react';
 import { Loader } from '../ui/Loader';
 
 interface ProtectedRouteProps {
@@ -8,16 +7,11 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, token, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated, token, isLoading } = useAuthStore();
   const location = useLocation();
 
-  // Check auth status on mount
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  // Show loading state while checking auth
-  if (isLoading || (!token && !isAuthenticated)) {
+  // Show loading only while actively verifying a token
+  if (isLoading && token) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <Loader />
@@ -26,7 +20,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   // If not authenticated, redirect to login
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

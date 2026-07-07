@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icon from './ui/AppIcon';
 import { useCartStore } from '../store/cartStore';
-import { disposablesCategoryNav, PRODUCTS_PAGE_PATH } from '../data/productCategories';
+import { useAuthStore } from '../store/authStore';
+import categoriesService from '../services/categoriesService';
+import { getCategoryImagePath } from '../data/categoryImages';
+import type { Category } from '../types';
+
+const PRODUCTS_PAGE_PATH = '/products';
 
 const wholesaleOfferItems = [
   { label: 'Wholesale Flyer', href: '/wholesale-flyer' },
@@ -65,13 +70,37 @@ export default function Header() {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileWholesaleOpen, setMobileWholesaleOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
+  const [apiCategories, setApiCategories] = useState<Category[]>([]);
+  const [pincodeInputOpen, setPincodeInputOpen] = useState(false);
+  const [pincodeInput, setPincodeInput] = useState('');
 
   const itemCount = useCartStore((s) => s?.getItemCount());
+  const deliveryPincode = useAuthStore((state) => state.deliveryPincode);
+  const setDeliveryPincode = useAuthStore((state) => state.setDeliveryPincode);
   const searchRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState(56);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Fetch categories from API on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoriesService.getCategories();
+        if (response.categories?.length) {
+          setApiCategories(response.categories.filter((c) => c.isActive));
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories for header:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Split: first 6 with images, rest title-only
+  const categoriesWithImages = apiCategories.slice(0, 6);
+  const categoriesTitleOnly = apiCategories.slice(6);
 
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
@@ -159,6 +188,15 @@ export default function Header() {
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       closeMobileMenu();
+    }
+  };
+
+  const handlePincodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pincodeInput.trim()) {
+      setDeliveryPincode(pincodeInput.trim());
+      setPincodeInputOpen(false);
+      setPincodeInput('');
     }
   };
 
@@ -278,6 +316,66 @@ export default function Header() {
 
             {/* Action icons */}
             <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+              {/* Pincode Input */}
+              <div className="relative hidden md:block">
+                <button
+                  type="button"
+                  onClick={() => setPincodeInputOpen((prev) => !prev)}
+                  className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] md:min-w-[52px] px-1 text-white hover:bg-white/10 rounded-lg transition-colors"
+                  aria-label="Set delivery pincode"
+                >
+                  <Icon name="MapPinIcon" size={22} />
+                  <span className="text-[10px] font-medium hidden lg:block mt-0.5">
+                    {deliveryPincode ? deliveryPincode : 'Area'}
+                  </span>
+                </button>
+
+                {pincodeInputOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden animate-fade-in p-4">
+                    <form onSubmit={handlePincodeSubmit}>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Enter Delivery Pincode
+                      </label>
+                      <input
+                        type="text"
+                        value={pincodeInput}
+                        onChange={(e) => setPincodeInput(e.target.value)}
+                        placeholder="e.g., 08902"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003087] focus:border-transparent"
+                        maxLength={6}
+                      />
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          type="submit"
+                          className="flex-1 bg-[#003087] hover:bg-[#0040a0] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Set Pincode
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPincodeInputOpen(false)}
+                          className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      {deliveryPincode && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeliveryPincode('');
+                            setPincodeInputOpen(false);
+                          }}
+                          className="w-full mt-2 text-xs text-red-600 hover:text-red-700 text-center"
+                        >
+                          Clear pincode
+                        </button>
+                      )}
+                    </form>
+                  </div>
+                )}
+              </div>
+
               <div className="relative hidden md:block account-dropdown">
                 <button
                   type="button"
@@ -320,6 +418,15 @@ export default function Header() {
                   </div>
                 )}
               </div>
+
+              <Link
+                to="/account"
+                className="hidden md:flex flex-col items-center justify-center min-w-[44px] min-h-[44px] md:min-w-[52px] px-1 text-white hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Notifications"
+              >
+                <Icon name="BellIcon" size={22} />
+                <span className="text-[10px] font-medium hidden lg:block mt-0.5">Alerts</span>
+              </Link>
 
               <Link
                 to="/cart"
@@ -397,50 +504,51 @@ export default function Header() {
                     aria-label="Categories menu"
                   >
                     <div className="flex">
-                      {/* Left Section - 60% */}
+                      {/* Left Section - 60% — first 6 categories with images */}
                       <div className="w-[60%] p-6 border-r border-gray-100">
                         <h3 className="text-lg font-bold text-gray-800 mb-4">Popular Categories</h3>
                         <div className="grid grid-cols-3 gap-4">
-                          {disposablesCategoryNav.subMenu.main.map((category) => (
+                          {categoriesWithImages.map((category) => (
                             <Link
-                              key={category.slug}
-                              to={category.href}
+                              key={category._id}
+                              to={`/products?category=${category.slug}`}
+                              onClick={() => setCategoriesDropdownOpen(false)}
                               className="group flex flex-row items-center p-3 rounded-xl border border-gray-100 hover:bg-gradient-to-r hover:from-[#F8FFF6] hover:to-white hover:border-[#2F7D32] hover:shadow-md transition-all duration-300"
                             >
                               <div className="w-[50px] h-[50px] bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center mr-3 overflow-hidden group-hover:shadow-lg group-hover:border-[#2F7D32]/40 transition-all duration-300 shrink-0">
                                 <img
-                                  src={category.image}
-                                  alt={category.title}
+                                  src={category.image || getCategoryImagePath(category.slug)}
+                                  alt={category.name}
                                   className="w-full h-full object-contain p-0"
                                 />
                               </div>
                               <span className="text-gray-700 font-semibold text-base group-hover:text-[#2F7D32] transition-colors leading-tight">
-                                {category.title}
+                                {category.name}
                               </span>
                             </Link>
                           ))}
                         </div>
                       </div>
 
-                      {/* Right Section - 40% */}
+                      {/* Right Section - 40% — remaining categories title only */}
                       <div className="w-[40%] p-8 bg-[#F7F7F5] rounded-r-xl">
                         <h3 className="text-lg font-bold text-[#333] mb-6">
-                          More in {disposablesCategoryNav.label}
+                          More Categories
                         </h3>
                         <div className="grid grid-cols-2 gap-6">
                           {(() => {
-                            const moreLinks = disposablesCategoryNav.subMenu.more;
-                            const col1 = moreLinks.slice(0, 3);
-                            const col2 = moreLinks.slice(3, 6);
+                            const col1 = categoriesTitleOnly.slice(0, Math.ceil(categoriesTitleOnly.length / 2));
+                            const col2 = categoriesTitleOnly.slice(Math.ceil(categoriesTitleOnly.length / 2));
                             return [col1, col2].map((col, colIndex) => (
                               <div key={colIndex} className="space-y-1">
-                                {col.map((link) => (
+                                {col.map((category) => (
                                   <Link
-                                    key={link.slug}
-                                    to={link.href}
+                                    key={category._id}
+                                    to={`/products?category=${category.slug}`}
+                                    onClick={() => setCategoriesDropdownOpen(false)}
                                     className="block text-[15px] text-[#555] leading-8 hover:text-[#2F7D32] hover:translate-x-1 transition-all duration-300"
                                   >
-                                    {link.title}
+                                    {category.name}
                                   </Link>
                                 ))}
                               </div>
@@ -590,30 +698,20 @@ export default function Header() {
                         {isOpen && (
                           <div className="mobile-drawer__sub">
                             <Link
-                              to={disposablesCategoryNav.href}
+                              to="/products"
                               onClick={closeMobileMenu}
                               className="mobile-drawer__sub-row mobile-drawer__sub-row--heading"
                             >
-                              All {disposablesCategoryNav.label}
+                              All Categories
                             </Link>
-                            {disposablesCategoryNav.subMenu.main.map((subItem) => (
+                            {apiCategories.map((category) => (
                               <Link
-                                key={subItem.slug}
-                                to={subItem.href}
+                                key={category._id}
+                                to={`/products?category=${category.slug}`}
                                 onClick={closeMobileMenu}
                                 className="mobile-drawer__sub-row"
                               >
-                                {subItem.title}
-                              </Link>
-                            ))}
-                            {disposablesCategoryNav.subMenu.more.map((subItem) => (
-                              <Link
-                                key={subItem.slug}
-                                to={subItem.href}
-                                onClick={closeMobileMenu}
-                                className="mobile-drawer__sub-row"
-                              >
-                                {subItem.title}
+                                {category.name}
                               </Link>
                             ))}
                           </div>

@@ -36,14 +36,10 @@ apiClient.interceptors.response.use(
   (error: AxiosError<any>) => {
     // Handle 401 Unauthorized - token expired or invalid
     if (error.response?.status === 401) {
-      // Clear auth token
+      // Clear auth token — do NOT redirect here; let ProtectedRoute or
+      // individual pages handle the redirect so guest browsing works.
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
-      
-      // Redirect to login if not already there
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login?session=expired';
-      }
     }
     
     // Handle network errors

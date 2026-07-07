@@ -3,72 +3,84 @@
     "slug": "portion-cups-and-lids",
     "fileName": "portion-cups-and-lids.png",
     "title": "Portion Cups & Lids",
+    "description": "Disposable portion cups and matching lids for sauces, dressings, condiments, and food samples.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "plastic-containers",
     "fileName": "plastic-containers.png",
     "title": "Plastic Containers",
+    "description": "Durable plastic food containers for storage, takeaway, meal prep, and food delivery.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "paper-napkins-and-towels",
     "fileName": "paper-napkins-and-towels.png",
     "title": "Paper Napkins & Towels",
+    "description": "High-quality paper napkins, towels, and disposable wipes for restaurants and commercial kitchens.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "paper-bags",
     "fileName": "paper-bags.png",
     "title": "Paper Bags",
+    "description": "Eco-friendly paper bags for takeout, grocery, bakery, and retail packaging needs.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "microwaveable-containers",
     "fileName": "microwaveable-containers.png",
     "title": "Microwaveable Containers",
+    "description": "Heat-resistant food containers designed for microwave use, meal prep, and food delivery.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "foam-products",
     "fileName": "foam-products.png",
     "title": "Foam Products",
+    "description": "Lightweight foam products including trays, cups, plates, and food packaging solutions.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "kens-salad-dressings",
     "fileName": "kens-salad-dressings.png",
     "title": "Ken's Salad Dressings",
+    "description": "A wide selection of premium Ken's salad dressings, sauces, and condiments for food service.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "foil-products",
     "fileName": "foil-products.png",
     "title": "Foil Products",
+    "description": "Aluminum foil containers, wraps, lids, and catering supplies for cooking and food storage.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "foam-containers",
     "fileName": "foam-containers.png",
     "title": "Foam Containers",
+    "description": "Insulated foam containers that help keep hot foods warm and cold foods fresh during transport.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "eco-friendly-products",
     "fileName": "eco-friendly-products.png",
     "title": "Eco Friendly Products",
+    "description": "Sustainable and biodegradable food packaging products made from environmentally responsible materials.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "disposable-plastic-cups",
     "fileName": "disposable-plastic-cups.png",
     "title": "Disposable Plastic Cups",
+    "description": "Clear and durable disposable plastic cups for cold beverages, parties, restaurants, and events.",
     "recommendedSize": "200x200"
   },
   {
     "slug": "disposable-gloves",
     "fileName": "disposable-gloves.png",
     "title": "Disposable Gloves",
+    "description": "Food-safe disposable gloves for hygiene, food preparation, cleaning, and industrial applications.",
     "recommendedSize": "200x200"
   }
 ]
