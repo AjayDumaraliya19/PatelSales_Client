@@ -44,6 +44,12 @@ export interface Product {
   isProductNew?: boolean;
   rating?: number;
   reviewCount?: number;
+  salesCount?: number;
+  bulkPricingTiers?: {
+    minQuantity: number;
+    price: number;
+    label: string;
+  }[];
 }
 
 export interface Category {

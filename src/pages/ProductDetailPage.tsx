@@ -2,94 +2,124 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AppImage from '../components/ui/AppImage';
 import Icon from '../components/ui/AppIcon';
-import PageHeader from '../components/ui/PageHeader';
 import productsService, { Product } from '../services/productsService';
 import { useCartStore } from '../store/cartStore';
+import BulkPricingTable from '../components/product/BulkPricingTable';
+import ReviewSection from '../components/product/ReviewSection';
+import QuestionSection from '../components/product/QuestionSection';
+import ProductSlider from '../components/product/ProductSlider';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
+  const [topProducts, setTopProducts] = useState<Product[]>([]);
+  const [bestReviewedProducts, setBestReviewedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews' | 'qa'>('description');
   const addItem = useCartStore((s) => s.addItem);
 
-  // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) return;
-      
       setLoading(true);
       setError(null);
-
       try {
         const response = await productsService.getProductById(productId);
         setProduct(response.product);
 
-        // Fetch related products from same category
-        if (response.product.category?._id) {
-          const relatedResponse = await productsService.getProducts({
-            category: response.product.category._id,
-            limit: 5,
-            active: true,
-          });
-          setRelatedProducts(
-            relatedResponse.products.filter((p) => p._id !== response.product._id).slice(0, 4)
-          );
-        }
+        // Fetch all recommendation sections in parallel
+        const [relatedRes, popularRes, topRes, bestRes] = await Promise.allSettled([
+          response.product.category?._id
+            ? productsService.getRelatedProducts(response.product.category._id, productId, 12)
+            : Promise.resolve({ products: [] }),
+          productsService.getPopularProducts(12, productId),
+          productsService.getTopProducts(12, productId),
+          productsService.getBestReviewedProducts(12, productId),
+        ]);
+
+        if (relatedRes.status === 'fulfilled') setRelatedProducts(relatedRes.value.products);
+        if (popularRes.status === 'fulfilled') setPopularProducts(popularRes.value.products);
+        if (topRes.status === 'fulfilled') setTopProducts(topRes.value.products);
+        if (bestRes.status === 'fulfilled') setBestReviewedProducts(bestRes.value.products);
       } catch (err: any) {
         setError(err.message || 'Failed to load product');
-        console.error('Failed to fetch product:', err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProduct();
+  }, [productId]);
+
+  useEffect(() => {
+    setSelectedImage(0);
+    setQuantity(1);
+    window.scrollTo(0, 0);
   }, [productId]);
 
   const handleAddToCart = async () => {
     if (!product || product.stock === 0 || isAdding) return;
-    
     setIsAdding(true);
     await new Promise((r) => setTimeout(r, 300));
-    
-    // Convert backend Product to cart Product format
+
+    let effectivePrice = product.price;
+    if (product.bulkPricingTiers && product.bulkPricingTiers.length > 0) {
+      const sorted = [...product.bulkPricingTiers].sort((a, b) => a.minQuantity - b.minQuantity);
+      for (const tier of sorted) {
+        if (quantity >= tier.minQuantity) effectivePrice = tier.price;
+      }
+    }
+
     const cartProduct = {
       ...product,
+      price: effectivePrice,
       categoryId: product.category._id,
       categoryName: product.category.name,
-      isNew: false,
-      isOnSale: product.compareAtPrice ? product.compareAtPrice > product.price : false,
+      isNew: product.isProductNew || false,
+      isOnSale: product.isOnSale || (product.compareAtPrice ? product.compareAtPrice > product.price : false),
       originalPrice: product.compareAtPrice,
-      caseSize: '', // TODO: Add caseSize to backend Product model
-      rating: undefined,
-      reviewCount: undefined,
+      caseSize: product.caseSize || '',
+      rating: product.rating,
+      reviewCount: product.reviewCount,
     };
-    
     addItem(cartProduct as any, quantity);
     setIsAdding(false);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
 
+  // Loading skeleton
   if (loading) {
     return (
-      <div className="min-h-full bg-[var(--background)]">
+      <div className="min-h-full bg-[#f5f5f5]">
         <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 pt-5 pb-10 sm:pt-8">
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-              <div className="aspect-square bg-gray-200 rounded"></div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-20 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/3 mb-6" />
+            <div className="bg-white rounded-xl p-6 mb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-5">
+                  <div className="aspect-square bg-gray-200 rounded-lg" />
+                  <div className="flex gap-2 mt-3">
+                    {[1, 2, 3, 4].map((i) => <div key={i} className="w-16 h-16 bg-gray-200 rounded-lg" />)}
+                  </div>
+                </div>
+                <div className="lg:col-span-7 space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-1/4" />
+                  <div className="h-8 bg-gray-200 rounded w-3/4" />
+                  <div className="h-6 bg-gray-200 rounded w-1/3" />
+                  <div className="h-24 bg-gray-200 rounded" />
+                  <div className="h-12 bg-gray-200 rounded w-1/2" />
+                </div>
               </div>
+            </div>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => <div key={i} className="h-48 bg-gray-200 rounded-xl" />)}
             </div>
           </div>
         </div>
@@ -97,152 +127,323 @@ export default function ProductDetailPage() {
     );
   }
 
+  // Error state
   if (error || !product) {
     return (
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-16 text-center">
-        <div className="bg-white border border-red-200 rounded-lg p-8">
+        <div className="bg-white border border-red-200 rounded-xl p-8">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="ExclamationTriangleIcon" size={32} className="text-red-600" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
-            {error || 'Product Not Found'}
-          </h1>
-          <p className="text-sm text-gray-600 mb-6">
-            This product may have been removed or the link is incorrect.
-          </p>
-          <Link to="/products" className="btn-primary min-h-[44px] inline-flex">
-            Browse Products
-          </Link>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{error || 'Product Not Found'}</h1>
+          <p className="text-sm text-gray-600 mb-6">This product may have been removed or the link is incorrect.</p>
+          <Link to="/products" className="btn-primary min-h-[44px] inline-flex">Browse Products</Link>
         </div>
       </div>
     );
   }
 
+  const images = product.images?.length ? product.images : ['/placeholder.png'];
   const discount = product.compareAtPrice
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
     : 0;
+  const inStock = product.stock > 0;
+  const lowStock = inStock && product.stock <= product.lowStockThreshold;
+
+  const getEffectivePrice = () => {
+    if (!product.bulkPricingTiers || product.bulkPricingTiers.length === 0) return product.price;
+    const sorted = [...product.bulkPricingTiers].sort((a, b) => a.minQuantity - b.minQuantity);
+    let bestPrice = product.price;
+    for (const tier of sorted) {
+      if (quantity >= tier.minQuantity) bestPrice = tier.price;
+    }
+    return bestPrice;
+  };
+
+  const effectivePrice = getEffectivePrice();
+
+  const tabs = [
+    { key: 'description', label: 'Description' },
+    { key: 'specs', label: 'Specifications' },
+    { key: 'reviews', label: `Reviews (${product.reviewCount || 0})` },
+    { key: 'qa', label: 'Q&A' },
+  ] as const;
 
   return (
-    <div className="min-h-full bg-[var(--background)]">
+    <div className="min-h-full bg-[#f5f5f5]">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 pt-5 pb-10 sm:pt-8">
-        <PageHeader
-          title={product.name}
-          breadcrumbs={[
-            { label: 'Patel Sales', href: '/' },
-            { label: 'Shop', href: '/products' },
-            { label: product.category?.name ?? 'Product' },
-          ]}
-        />
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-4 flex-wrap">
+          <Link to="/" className="hover:text-[#003087] transition-colors">Home</Link>
+          <span>/</span>
+          <Link to="/products" className="hover:text-[#003087] transition-colors">Shop</Link>
+          <span>/</span>
+          {product.category && (
+            <>
+              <Link to={`/products?category=${product.category.slug}`} className="hover:text-[#003087] transition-colors">{product.category.name}</Link>
+              <span>/</span>
+            </>
+          )}
+          <span className="text-gray-700 font-medium truncate max-w-[200px]">{product.name}</span>
+        </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 mb-10">
-          <div className="app-card overflow-hidden">
-            <div className="relative aspect-square bg-gray-50">
-              <AppImage
-                src={product.images[0] || '/placeholder.png'}
-                alt={product.name}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-contain p-6"
-                priority
-              />
-              {product.compareAtPrice && discount > 0 && (
-                <span className="absolute top-4 left-4 wss-sale-badge">{discount}% OFF</span>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {product.category?.name && (
-              <p className="text-xs font-bold text-[var(--secondary)] uppercase tracking-wide">
-                {product.category.name}
-              </p>
-            )}
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug">{product.name}</h1>
-
-            <div>
-              <span className="text-2xl font-bold text-[var(--secondary)]">${product.price.toFixed(2)}</span>
-              {product.compareAtPrice && (
-                <span className="text-lg text-gray-400 line-through ml-2">${product.compareAtPrice.toFixed(2)}</span>
-              )}
-              <span className="text-sm text-gray-500 block mt-1">per case</span>
-            </div>
-
-            {product.sku && (
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold">SKU:</span> {product.sku}
-              </p>
-            )}
-            {product.brand && (
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold">Brand:</span> {product.brand}
-              </p>
-            )}
-
-            <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
-
-            <div className="flex items-center gap-2 text-sm">
-              {product.stock > 0 ? (
-                <span className="text-green-600 font-semibold flex items-center gap-1">
-                  <Icon name="CheckCircleIcon" size={16} />
-                  In Stock ({product.stock} cases available)
-                </span>
-              ) : (
-                <span className="text-red-600 font-semibold">Out of Stock</span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="px-3 py-2 min-h-[44px] hover:bg-gray-50"
-                  aria-label="Decrease quantity"
-                >
-                  −
-                </button>
-                <span className="px-4 py-2 min-w-[48px] text-center font-semibold">{quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                  className="px-3 py-2 min-h-[44px] hover:bg-gray-50"
-                  aria-label="Increase quantity"
-                >
-                  +
-                </button>
+        {/* ===== MAIN PRODUCT CARD ===== */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+            {/* Image Gallery */}
+            <div className="lg:col-span-5 p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-gray-100">
+              <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 border border-gray-100">
+                <AppImage
+                  src={images[selectedImage]}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-contain p-4"
+                  priority
+                />
+                {discount > 0 && (
+                  <span className="absolute top-3 left-3 bg-[#e8471e] text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-md">
+                    {discount}% OFF
+                  </span>
+                )}
+                {product.isProductNew && (
+                  <span className="absolute top-3 right-3 bg-[#003087] text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">New</span>
+                )}
               </div>
-
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                disabled={product.stock === 0 || isAdding}
-                className="btn-primary min-h-[44px] flex-1 sm:flex-none disabled:opacity-70"
-              >
-                <Icon name={isAdded ? 'CheckIcon' : 'ShoppingCartIcon'} size={18} />
-                {isAdded ? 'Added to Cart!' : isAdding ? 'Adding...' : 'Add to Cart'}
-              </button>
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 overflow-hidden transition-all ${
+                        selectedImage === idx ? 'border-[#003087] shadow-md' : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <AppImage src={img} alt={`${product.name} ${idx + 1}`} fill className="object-contain p-1" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <Link to="/bulk-order" className="text-sm text-[var(--secondary)] font-semibold hover:underline inline-flex items-center gap-1">
-              <Icon name="CubeIcon" size={16} />
-              Need 50+ cases? Request bulk quote
-            </Link>
+            {/* Product Info */}
+            <div className="lg:col-span-7 p-4 sm:p-6 lg:p-8">
+              <div className="space-y-4">
+                {/* Title & Brand */}
+                <div>
+                  {product.brand && (
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Brand: {product.brand}</p>
+                  )}
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{product.name}</h1>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                    {product.sku && <span>SKU: {product.sku}</span>}
+                    {product.category?.name && (
+                      <Link to={`/products?category=${product.category.slug}`} className="text-[#003087] hover:underline">{product.category.name}</Link>
+                    )}
+                  </div>
+                </div>
+
+                {/* Rating */}
+                {product.reviewCount && product.reviewCount > 0 && (
+                  <button onClick={() => setActiveTab('reviews')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <div className="flex items-center gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <svg key={star} className={`w-4 h-4 ${star <= Math.round(product.rating || 0) ? 'text-yellow-400' : 'text-gray-200'}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700">{product.rating?.toFixed(1)}</span>
+                    <span className="text-sm text-gray-400">({product.reviewCount} reviews)</span>
+                  </button>
+                )}
+
+                {/* Price */}
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-[#e8471e]">${effectivePrice.toFixed(2)}</span>
+                    {product.compareAtPrice && (
+                      <>
+                        <span className="text-lg text-gray-400 line-through">${product.compareAtPrice.toFixed(2)}</span>
+                        <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded">Save ${(product.compareAtPrice - effectivePrice).toFixed(2)}</span>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">per case · wholesale pricing</p>
+                </div>
+
+                {/* Bulk Pricing */}
+                {product.bulkPricingTiers && product.bulkPricingTiers.length > 0 && (
+                  <BulkPricingTable tiers={product.bulkPricingTiers} basePrice={product.price} quantity={quantity} />
+                )}
+
+                {/* Stock */}
+                <div className="flex items-center gap-4">
+                  {inStock ? (
+                    <span className={`flex items-center gap-1.5 text-sm font-semibold ${lowStock ? 'text-amber-600' : 'text-green-600'}`}>
+                      <Icon name="CheckCircleIcon" size={16} />
+                      {lowStock ? `Low Stock — Only ${product.stock} left` : `In Stock — ${product.stock} cases available`}
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-sm font-semibold text-red-600">
+                      <Icon name="ExclamationTriangleIcon" size={16} /> Out of Stock
+                    </span>
+                  )}
+                </div>
+
+                {/* Quantity + Add to Cart */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                  <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden">
+                    <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="px-4 py-3 min-h-[48px] hover:bg-gray-50 text-lg font-bold text-gray-600 transition-colors" aria-label="Decrease">−</button>
+                    <span className="px-5 py-3 min-w-[56px] text-center font-bold text-lg border-x-2 border-gray-200">{quantity}</span>
+                    <button type="button" onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))} className="px-4 py-3 min-h-[48px] hover:bg-gray-50 text-lg font-bold text-gray-600 transition-colors" aria-label="Increase">+</button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    disabled={!inStock || isAdding}
+                    className={`flex-1 min-h-[48px] px-6 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                      isAdded ? 'bg-green-500 text-white' : inStock ? 'bg-[#e8471e] hover:bg-[#c73a17] text-white shadow-lg hover:shadow-xl' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    <Icon name={isAdded ? 'CheckIcon' : 'ShoppingCartIcon'} size={18} />
+                    {isAdded ? 'Added to Cart!' : isAdding ? 'Adding...' : 'Add to Cart'}
+                  </button>
+                </div>
+
+                {/* Bulk Order CTA */}
+                <Link to="/bulk-order" className="flex items-center gap-2 bg-[#003087]/5 hover:bg-[#003087]/10 text-[#003087] text-sm font-semibold px-4 py-3 rounded-lg transition-colors border border-[#003087]/10">
+                  <Icon name="CubeIcon" size={18} />
+                  Need 50+ cases? Request a bulk quote
+                  <Icon name="ArrowRightIcon" size={14} className="ml-auto" />
+                </Link>
+
+                {/* Trust Signals */}
+                <div className="grid grid-cols-3 gap-3 pt-2">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <Icon name="TruckIcon" size={20} className="mx-auto text-[#003087] mb-1" />
+                    <p className="text-[11px] font-semibold text-gray-700">Free Shipping</p>
+                    <p className="text-[10px] text-gray-500">Orders $150+</p>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <Icon name="ShieldCheckIcon" size={20} className="mx-auto text-[#003087] mb-1" />
+                    <p className="text-[11px] font-semibold text-gray-700">Quality Guarantee</p>
+                    <p className="text-[10px] text-gray-500">100% satisfaction</p>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <Icon name="ClockIcon" size={20} className="mx-auto text-[#003087] mb-1" />
+                    <p className="text-[11px] font-semibold text-gray-700">Fast Delivery</p>
+                    <p className="text-[10px] text-gray-500">1-3 business days</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {relatedProducts.length > 0 && (
-          <section>
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Related Products</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {relatedProducts.map((item) => (
-                <Link key={item._id} to={`/products/${item._id}`} className="app-card p-3 hover:border-[var(--secondary)] transition-colors">
-                  <p className="text-xs font-semibold text-gray-900 line-clamp-2">{item.name}</p>
-                  <p className="text-sm font-bold text-[var(--secondary)] mt-1">${item.price.toFixed(2)}</p>
-                </Link>
-              ))}
+        {/* ===== TABS SECTION ===== */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+          <div className="flex border-b border-gray-200 overflow-x-auto">
+            {tabs.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`px-5 sm:px-6 py-3.5 text-sm font-semibold transition-colors relative whitespace-nowrap ${
+                  activeTab === key ? 'text-[#003087]' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {label}
+                {activeTab === key && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#003087]" />}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-5 sm:p-6">
+            {activeTab === 'description' && (
+              <div className="prose prose-sm max-w-none">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">{product.description}</p>
+                {product.metaDescription && <p className="text-gray-500 mt-4 text-sm italic">{product.metaDescription}</p>}
+              </div>
+            )}
+
+            {activeTab === 'specs' && (
+              <div className="space-y-0">
+                {[
+                  { label: 'Product Name', value: product.name },
+                  product.sku && { label: 'SKU', value: product.sku },
+                  product.brand && { label: 'Brand', value: product.brand },
+                  product.category?.name && { label: 'Category', value: product.category.name },
+                  { label: 'Price', value: `$${product.price.toFixed(2)} per case` },
+                  product.caseSize && { label: 'Case Size', value: product.caseSize },
+                  { label: 'Availability', value: inStock ? `${product.stock} cases in stock` : 'Out of Stock', highlight: inStock },
+                  ...(product.attributes ? Object.entries(product.attributes).map(([key, value]) => ({ label: key, value: String(value) })) : []),
+                ].filter(Boolean).map((item, idx) => (
+                  <div key={idx} className={`grid grid-cols-2 border-b border-gray-100 py-3 ${idx % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
+                    <span className="text-sm font-semibold text-gray-700">{(item as any).label}</span>
+                    <span className={`text-sm ${(item as any).highlight === false ? 'text-red-600 font-semibold' : (item as any).highlight === true ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                      {(item as any).value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'reviews' && <ReviewSection productId={product._id} productName={product.name} />}
+            {activeTab === 'qa' && <QuestionSection productId={product._id} />}
+          </div>
+        </div>
+
+        {/* ===== PRODUCT RECOMMENDATION SLIDERS ===== */}
+        <div className="space-y-2">
+          {relatedProducts.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
+              <ProductSlider
+                title="Related Products"
+                subtitle={`More from ${product.category?.name || 'this category'}`}
+                products={relatedProducts}
+                viewAllLink={`/products?category=${product.category?.slug}`}
+                viewAllLabel={`View all ${product.category?.name || ''}`}
+              />
             </div>
-          </section>
-        )}
+          )}
+
+          {popularProducts.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
+              <ProductSlider
+                title="Popular Products"
+                subtitle="Most purchased by our customers"
+                products={popularProducts}
+                viewAllLink="/products?sort=popular"
+                viewAllLabel="View all popular"
+              />
+            </div>
+          )}
+
+          {topProducts.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
+              <ProductSlider
+                title="Top Products"
+                subtitle="Featured and trending items"
+                products={topProducts}
+                viewAllLink="/products?sort=top"
+                viewAllLabel="View all top"
+              />
+            </div>
+          )}
+
+          {bestReviewedProducts.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
+              <ProductSlider
+                title="Best Reviewed Products"
+                subtitle="Highest rated by customers"
+                products={bestReviewedProducts}
+                viewAllLink="/products?sort=best-reviewed"
+                viewAllLabel="View all reviewed"
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

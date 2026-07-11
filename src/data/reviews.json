@@ -1,0 +1,488 @@
+{
+  "reviews": [
+    {
+      "_id": "rev-1",
+      "productId": "prod-1",
+      "user": { "name": "Marcus Johnson", "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Best foil we've ever used",
+      "comment": "We've been using this foil in our deli for over a year now. It's thick, doesn't tear easily, and holds up well in the oven. The 1000ft roll lasts us about 2 weeks with heavy use. Great value for the price.",
+      "isVerifiedPurchase": true,
+      "helpful": 24,
+      "createdAt": "2025-11-15T10:30:00Z"
+    },
+    {
+      "_id": "rev-2",
+      "productId": "prod-1",
+      "user": { "name": "Sarah Chen", "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Great value for commercial use",
+      "comment": "Running a busy catering business means we go through foil fast. This roll is exactly what we need — consistent quality, no weird spots or thin areas. Ships fast too.",
+      "isVerifiedPurchase": true,
+      "helpful": 18,
+      "createdAt": "2025-10-22T14:15:00Z"
+    },
+    {
+      "_id": "rev-3",
+      "productId": "prod-1",
+      "user": { "name": "David Park", "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Good foil, minor issue",
+      "comment": "The foil itself is excellent quality. My only complaint is the dispenser box could be sturdier — it ripped when we were pulling a long sheet. But the foil performance is top-notch.",
+      "isVerifiedPurchase": true,
+      "helpful": 11,
+      "createdAt": "2025-09-18T09:45:00Z"
+    },
+    {
+      "_id": "rev-4",
+      "productId": "prod-1",
+      "user": { "name": "Lisa Rodriguez", "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect for meal prep",
+      "comment": "I buy this for my restaurant's meal prep station. The 12-inch width is ideal for covering half pans and wrapping sandwiches. Reynolds never disappoints.",
+      "isVerifiedPurchase": true,
+      "helpful": 15,
+      "createdAt": "2025-08-05T16:20:00Z"
+    },
+    {
+      "_id": "rev-5",
+      "productId": "prod-1",
+      "user": { "name": "Tom Wilson", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Reliable and consistent",
+      "comment": "We switch from a generic brand to Reynolds and the difference is noticeable. The foil doesn't stick to food as much and tears cleanly. Worth the extra couple of dollars.",
+      "isVerifiedPurchase": true,
+      "helpful": 9,
+      "createdAt": "2025-07-12T11:00:00Z"
+    },
+
+    {
+      "_id": "rev-6",
+      "productId": "prod-2",
+      "user": { "name": "Priya Mehta", "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect size for espresso drinks",
+      "comment": "We use these for our 4oz tasting cups at the bakery. They're the right size for sample portions and the insulation keeps hot samples warm without burning fingers. Ordering our third case.",
+      "isVerifiedPurchase": true,
+      "helpful": 31,
+      "createdAt": "2025-12-01T08:30:00Z"
+    },
+    {
+      "_id": "rev-7",
+      "productId": "prod-2",
+      "user": { "name": "James Murphy", "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Good cups but slightly thin",
+      "comment": "These work well for coffee samples at our store. The foam insulation is decent. Wish they were a tiny bit thicker but for the price they're solid.",
+      "isVerifiedPurchase": true,
+      "helpful": 14,
+      "createdAt": "2025-11-10T13:45:00Z"
+    },
+    {
+      "_id": "rev-8",
+      "productId": "prod-2",
+      "user": { "name": "Angela Torres", "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Bulk pricing can't be beat",
+      "comment": "We go through 2000 of these a month at our coffee shop for free samples. The 1000/case pack and Patel's pricing makes it affordable. Dart quality is always consistent.",
+      "isVerifiedPurchase": true,
+      "helpful": 22,
+      "createdAt": "2025-10-05T10:00:00Z"
+    },
+    {
+      "_id": "rev-9",
+      "productId": "prod-2",
+      "user": { "name": "Robert Kim", "avatar": "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Great for condiment portions",
+      "comment": "Use these for ketchup and sauce portions at our food truck. Perfect size, sturdy enough that they don't collapse when customers hold them. Highly recommend.",
+      "isVerifiedPurchase": true,
+      "helpful": 17,
+      "createdAt": "2025-09-20T15:30:00Z"
+    },
+
+    {
+      "_id": "rev-10",
+      "productId": "prod-3",
+      "user": { "name": "Tony Carvalho", "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Our go-to coffee cup",
+      "comment": "We serve 500+ coffees a day at the hotel and these 8oz cups are our standard. They keep coffee hot, don't leak, and customers love the comfortable rim. Best foam cup on the market.",
+      "isVerifiedPurchase": true,
+      "helpful": 45,
+      "createdAt": "2025-12-10T07:15:00Z"
+    },
+    {
+      "_id": "rev-11",
+      "productId": "prod-3",
+      "user": { "name": "Emily Foster", "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect for our bakery",
+      "comment": "These 8oz cups are the ideal size for our coffee servings. Customers can hold them comfortably without a sleeve even for hot drinks. We've tried cheaper alternatives — none compare to Dart.",
+      "isVerifiedPurchase": true,
+      "helpful": 33,
+      "createdAt": "2025-11-25T12:00:00Z"
+    },
+    {
+      "_id": "rev-12",
+      "productId": "prod-3",
+      "user": { "name": "Michael Santos", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Solid quality, fast shipping",
+      "comment": "Good cups, consistent sizing. We use them for both hot cocoa and coffee. The insulation is noticeably better than off-brand cups we used before. Arrived in 2 days.",
+      "isVerifiedPurchase": true,
+      "helpful": 19,
+      "createdAt": "2025-10-18T09:30:00Z"
+    },
+    {
+      "_id": "rev-13",
+      "productId": "prod-3",
+      "user": { "name": "Karen White", "avatar": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "No more burned fingers!",
+      "comment": "My staff used to complain about customers complaining burned fingers with our old cups. Switched to Dart 8oz and those complaints stopped. The insulation really works.",
+      "isVerifiedPurchase": true,
+      "helpful": 27,
+      "createdAt": "2025-09-08T14:45:00Z"
+    },
+    {
+      "_id": "rev-14",
+      "productId": "prod-3",
+      "user": { "name": "Alex Nguyen", "avatar": "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Best in class",
+      "comment": "We've tested at least 5 different brands of foam cups. Dart 8J8 is the best — walls are thick, lip is smooth, and they stack perfectly in our dispenser. Worth every penny.",
+      "isVerifiedPurchase": true,
+      "helpful": 21,
+      "createdAt": "2025-08-22T16:00:00Z"
+    },
+
+    {
+      "_id": "rev-15",
+      "productId": "prod-4",
+      "user": { "name": "Rachel Adams", "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect for our soup station",
+      "comment": "We just launched a soup bar at our deli and these 5oz bowls are perfect for tasting portions. They're sturdy, don't leak, and customers can try different soups without committing to a full bowl.",
+      "isVerifiedPurchase": true,
+      "helpful": 16,
+      "createdAt": "2025-12-05T11:30:00Z"
+    },
+    {
+      "_id": "rev-16",
+      "productId": "prod-4",
+      "user": { "name": "Jason Lee", "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Good size, good price",
+      "comment": "We use these for side dishes and condiments at our BBQ restaurant. They hold up well with saucy foods. Wish they came in a few more colors but the white looks clean.",
+      "isVerifiedPurchase": true,
+      "helpful": 12,
+      "createdAt": "2025-11-15T08:45:00Z"
+    },
+    {
+      "_id": "rev-17",
+      "productId": "prod-4",
+      "user": { "name": "Maria Garcia", "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Great for portion control",
+      "comment": "These bowls help us control portions for our meal prep service. 5oz is exactly the right size for sides. They stack nicely and don't stick together. Highly recommend for restaurants.",
+      "isVerifiedPurchase": true,
+      "helpful": 19,
+      "createdAt": "2025-10-20T13:15:00Z"
+    },
+
+    {
+      "_id": "rev-18",
+      "productId": "prod-5",
+      "user": { "name": "Tony Carvalho", "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Game changer for our catering",
+      "comment": "We switched to these bagasse containers for all our catering events and the feedback has been incredible. Guests love that they're eco-friendly, and they're sturdy enough for heavy entrées. No more soggy bottoms!",
+      "isVerifiedPurchase": true,
+      "helpful": 38,
+      "createdAt": "2025-12-08T10:00:00Z"
+    },
+    {
+      "_id": "rev-19",
+      "productId": "prod-5",
+      "user": { "name": "Jennifer Walsh", "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Sturdy and truly compostable",
+      "comment": "Our restaurant wanted to go plastic-free for takeout. These bagasse boxes hold up to greasy foods, don't leak, and our customers love that they can compost them. Best eco container we've found.",
+      "isVerifiedPurchase": true,
+      "helpful": 29,
+      "createdAt": "2025-11-20T14:30:00Z"
+    },
+    {
+      "_id": "rev-20",
+      "productId": "prod-5",
+      "user": { "name": "Chris Anderson", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Great product, minor issue with lids",
+      "comment": "The containers themselves are excellent — sturdy, compostable, and look professional. The matching lids (sold separately) could fit a bit tighter but overall very happy with the switch from styrofoam.",
+      "isVerifiedPurchase": true,
+      "helpful": 15,
+      "createdAt": "2025-10-12T09:15:00Z"
+    },
+    {
+      "_id": "rev-21",
+      "productId": "prod-5",
+      "user": { "name": "Amanda Foster", "avatar": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Worth every penny",
+      "comment": "Yes, these cost more than styrofoam. But our customers notice the quality and appreciate that we care about the environment. We've gotten 5-star reviews specifically mentioning our eco-friendly packaging. Worth it.",
+      "isVerifiedPurchase": true,
+      "helpful": 23,
+      "createdAt": "2025-09-28T16:45:00Z"
+    },
+
+    {
+      "_id": "rev-22",
+      "productId": "prod-6",
+      "user": { "name": "Patricia Hernandez", "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Best deli containers we've found",
+      "comment": "We use these for our deli's prepared salads and sides. The clear plastic shows off the food beautifully, and the airtight seal keeps everything fresh. Customers love reusing them at home.",
+      "isVerifiedPurchase": true,
+      "helpful": 22,
+      "createdAt": "2025-12-03T12:00:00Z"
+    },
+    {
+      "_id": "rev-23",
+      "productId": "prod-6",
+      "user": { "name": "Kevin O'Brien", "avatar": "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Stackable and durable",
+      "comment": "Great containers for our meal prep service. They stack without tipping, don't crack when dropped, and the 32oz size is perfect for large portions. Only wish they came with lids included.",
+      "isVerifiedPurchase": true,
+      "helpful": 16,
+      "createdAt": "2025-11-12T10:30:00Z"
+    },
+    {
+      "_id": "rev-24",
+      "productId": "prod-6",
+      "user": { "name": "Sandra Mitchell", "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Good quality, competitive price",
+      "comment": "We compared these to similar containers from our local supplier and Patel Sales beats them on both quality and price. The plastic is crystal clear and the containers are uniform in size.",
+      "isVerifiedPurchase": true,
+      "helpful": 13,
+      "createdAt": "2025-10-25T15:15:00Z"
+    },
+
+    {
+      "_id": "rev-25",
+      "productId": "prod-7",
+      "user": { "name": "Priya Mehta", "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect for our bakery chain",
+      "comment": "We order these for all 4 of our bakery locations. The #16 size is ideal for our standard pastry orders. The handles are strong — we've had no tearing issues even with heavy loads. Bundle of 500 is great value.",
+      "isVerifiedPurchase": true,
+      "helpful": 28,
+      "createdAt": "2025-12-06T09:00:00Z"
+    },
+    {
+      "_id": "rev-26",
+      "productId": "prod-7",
+      "user": { "name": "Daniel Kim", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Sturdy bags, good for groceries",
+      "comment": "We switched from plastic bags to these kraft paper bags for our deli. Customers prefer them and they're much sturdier than the thin grocery store bags. The #16 size fits a sandwich and drink perfectly.",
+      "isVerifiedPurchase": true,
+      "helpful": 18,
+      "createdAt": "2025-11-18T11:45:00Z"
+    },
+    {
+      "_id": "rev-27",
+      "productId": "prod-7",
+      "user": { "name": "Michelle Brown", "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Great for takeout orders",
+      "comment": "These bags are the backbone of our takeout operation. They hold multiple containers without ripping, the flat bottom keeps everything upright, and they look professional. Will keep ordering.",
+      "isVerifiedPurchase": true,
+      "helpful": 21,
+      "createdAt": "2025-10-30T14:00:00Z"
+    },
+
+    {
+      "_id": "rev-28",
+      "productId": "prod-8",
+      "user": { "name": "Marcus Johnson", "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Best gloves for food prep",
+      "comment": "We use these throughout our deli — for sandwich making, salad prep, and handling ready-to-eat foods. They fit well, don't rip easily, and the powder-free design means no residue on food. Great price for 100 gloves.",
+      "isVerifiedPurchase": true,
+      "helpful": 35,
+      "createdAt": "2025-12-02T08:15:00Z"
+    },
+    {
+      "_id": "rev-29",
+      "productId": "prod-8",
+      "user": { "name": "Samantha Price", "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Good value, decent durability",
+      "comment": "We go through a box a week at our restaurant. These gloves hold up well for most tasks but can tear if you're handling sharp items. For general food prep, they're perfect. The price can't be beat.",
+      "isVerifiedPurchase": true,
+      "helpful": 20,
+      "createdAt": "2025-11-08T13:30:00Z"
+    },
+    {
+      "_id": "rev-30",
+      "productId": "prod-8",
+      "user": { "name": "Brian Taylor", "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Latex-free is a must",
+      "comment": "With food allergies being so common, going latex-free was important for us. These vinyl gloves work great and we haven't had any allergic reactions from staff. They're comfortable for long shifts too.",
+      "isVerifiedPurchase": true,
+      "helpful": 14,
+      "createdAt": "2025-10-15T10:45:00Z"
+    },
+    {
+      "_id": "rev-31",
+      "productId": "prod-8",
+      "user": { "name": "Nancy Clark", "avatar": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect for our food truck",
+      "comment": "Space is tight on our food truck and these gloves fit perfectly in our dispenser. We use them for every order — they're strong enough for handling greasy foods and don't slip. Highly recommend.",
+      "isVerifiedPurchase": true,
+      "helpful": 17,
+      "createdAt": "2025-09-15T16:00:00Z"
+    },
+
+    {
+      "_id": "rev-32",
+      "productId": "prod-9",
+      "user": { "name": "Tony Carvalho", "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Essential for our hotel buffet",
+      "comment": "We use these half-size steam table pans for every buffet service. They fit perfectly in our warming stations, distribute heat evenly, and clean up easily. We order a case every month.",
+      "isVerifiedPurchase": true,
+      "helpful": 32,
+      "createdAt": "2025-12-07T07:30:00Z"
+    },
+    {
+      "_id": "rev-33",
+      "productId": "prod-9",
+      "user": { "name": "Linda Martinez", "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Professional quality at great price",
+      "comment": "These pans are restaurant-grade quality. We use them for catering events — they go from oven to serving line without warping. The 100/case quantity keeps our per-unit cost low. Excellent product.",
+      "isVerifiedPurchase": true,
+      "helpful": 25,
+      "createdAt": "2025-11-22T11:15:00Z"
+    },
+    {
+      "_id": "rev-34",
+      "productId": "prod-9",
+      "user": { "name": "Steve Johnson", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Good pans, occasional denting",
+      "comment": "The pans themselves work great — good depth, sturdy walls, and they don't warp in the oven. Occasionally a few in the case arrive with minor dents from shipping but they still function perfectly.",
+      "isVerifiedPurchase": true,
+      "helpful": 11,
+      "createdAt": "2025-10-08T14:30:00Z"
+    },
+
+    {
+      "_id": "rev-35",
+      "productId": "prod-10",
+      "user": { "name": "Rachel Adams", "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Zero leaks, perfect for soup",
+      "comment": "We serve soup daily at our deli and these cups have never leaked on us. The poly lining is solid and the 12oz size is perfect for a cup of soup. Customers love that they can take it to go without worries.",
+      "isVerifiedPurchase": true,
+      "helpful": 26,
+      "createdAt": "2025-12-04T10:00:00Z"
+    },
+    {
+      "_id": "rev-36",
+      "productId": "prod-10",
+      "user": { "name": "George Wilson", "avatar": "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Reliable soup cups",
+      "comment": "We've been using these for over 6 months and they're consistently good. The paper is thick enough to hold hot liquids without getting soggy. The white color looks clean and professional.",
+      "isVerifiedPurchase": true,
+      "helpful": 18,
+      "createdAt": "2025-11-05T13:45:00Z"
+    },
+    {
+      "_id": "rev-37",
+      "productId": "prod-10",
+      "user": { "name": "Catherine Lee", "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Great for our food truck",
+      "comment": "These soup cups are perfect for our food truck's chili and chowder service. They stack compactly, hold heat well, and the poly lining means no soggy cups even after 20 minutes. Highly recommend.",
+      "isVerifiedPurchase": true,
+      "helpful": 20,
+      "createdAt": "2025-10-18T15:30:00Z"
+    },
+
+    {
+      "_id": "rev-38",
+      "productId": "prod-11",
+      "user": { "name": "Angela Torres", "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Perfect for sauce portions",
+      "comment": "We portion out 500+ sauce cups daily at our food truck. These 2oz cups with lids are the perfect size for ketchup, mustard, and hot sauce. The lids snap on tight — no spills in the bag.",
+      "isVerifiedPurchase": true,
+      "helpful": 29,
+      "createdAt": "2025-12-09T09:15:00Z"
+    },
+    {
+      "_id": "rev-39",
+      "productId": "prod-11",
+      "user": { "name": "Jeffrey Clark", "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Great value for 2500 count",
+      "comment": "The per-unit price on these is excellent. We use them for condiments, dressings, and sample portions. The lids fit securely and the cups are clear enough to see the contents. Minor issue — occasionally one cracks when popping out of the stack.",
+      "isVerifiedPurchase": true,
+      "helpful": 15,
+      "createdAt": "2025-11-14T11:30:00Z"
+    },
+    {
+      "_id": "rev-40",
+      "productId": "prod-11",
+      "user": { "name": "Maria Santos", "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Restaurant essential",
+      "comment": "These portion cups are a daily essential for our restaurant. We use them for everything from sauce portions to salad dressing to sample cups. The 2500/case quantity means we don't have to reorder constantly. Great product.",
+      "isVerifiedPurchase": true,
+      "helpful": 23,
+      "createdAt": "2025-10-28T14:00:00Z"
+    },
+
+    {
+      "_id": "rev-41",
+      "productId": "prod-12",
+      "user": { "name": "Jennifer Walsh", "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Stunning presentation",
+      "comment": "These palm leaf plates are absolutely beautiful. They have a natural, elegant look that elevates our catering presentations. Guests always comment on them. They're also surprisingly sturdy — no bending even with heavy food.",
+      "isVerifiedPurchase": true,
+      "helpful": 34,
+      "createdAt": "2025-12-11T08:00:00Z"
+    },
+    {
+      "_id": "rev-42",
+      "productId": "prod-12",
+      "user": { "name": "David Park", "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop" },
+      "rating": 5,
+      "title": "Eco-friendly and elegant",
+      "comment": "We use these for our farm-to-table restaurant's outdoor events. They're 100% compostable and look amazing with our farm-fresh dishes. The natural leaf pattern makes every plate Instagram-worthy. Worth the premium price.",
+      "isVerifiedPurchase": true,
+      "helpful": 27,
+      "createdAt": "2025-11-28T12:30:00Z"
+    },
+    {
+      "_id": "rev-43",
+      "productId": "prod-12",
+      "user": { "name": "Amanda Foster", "avatar": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=80&h=80&fit=crop" },
+      "rating": 4,
+      "title": "Beautiful plates, handle with care",
+      "comment": "These plates are gorgeous and our customers love the eco-friendly aspect. They're sturdy enough for full meals but be careful stacking them too high — the natural material can crack under too much pressure. Perfect for events and upscale takeout.",
+      "isVerifiedPurchase": true,
+      "helpful": 16,
+      "createdAt": "2025-10-22T15:45:00Z"
+    }
+  ]
+}
