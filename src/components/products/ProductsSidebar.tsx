@@ -16,8 +16,8 @@ export default function ProductsSidebar({
   activeFilterCount,
 }: ProductsSidebarProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 sticky top-[140px]">
-      <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-100">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 pt-0 sticky top-[180px] max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
+      <div className="sticky top-0 bg-white z-10 -mt-5 -mx-5 px-5 pt-5 pb-4 border-b border-gray-100 mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon name="FunnelIcon" size={20} className="text-[#003087]" />
           <h2 className="font-bold text-xl text-gray-800">Filters</h2>
@@ -35,32 +35,54 @@ export default function ProductsSidebar({
 
       {/* Category Filter */}
       <div className="mb-6">
-        <h3 className="font-semibold text-base text-gray-800 mb-3 flex items-center gap-2">
-          <Icon name="TagIcon" size={18} className="text-gray-500" />
-          Category
-        </h3>
-        <div className="space-y-3">
+        <div className="space-y-3 pt-4">
           <label className="flex items-center gap-3 cursor-pointer group">
-            <input
-              type="radio"
-              name="category"
-              checked={!filter.category}
-              onChange={() => onFilterChange({ category: '' })}
-              className="w-5 h-5 text-[#003087] border-gray-300 focus:ring-[#003087] focus:ring-2"
-            />
-            <span className="text-base text-gray-700 group-hover:text-[#003087] transition-colors">All Categories</span>
-          </label>
-          {categories.map((cat) => (
-            <label key={cat._id} className="flex items-center gap-3 cursor-pointer group">
+            <div className="relative flex items-center justify-center">
               <input
                 type="radio"
                 name="category"
-                checked={filter.category === cat.slug}
-                onChange={() => onFilterChange({ category: cat.slug })}
-                className="w-5 h-5 text-[#003087] border-gray-300 focus:ring-[#003087] focus:ring-2"
+                checked={!filter.category}
+                onChange={() => onFilterChange({ category: '' })}
+                className="sr-only"
               />
-              <span className="text-base text-gray-700 group-hover:text-[#003087] transition-colors flex-1">{cat.name}</span>
-              <span className="text-sm text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">({cat.productCount})</span>
+              <div className={`w-5 h-5 rounded-full border-2 transition-all duration-200 flex items-center justify-center ${!filter.category
+                ? 'border-[#003087] bg-white'
+                : 'border-gray-300 group-hover:border-[#003087]/50'
+                }`}>
+                {!filter.category && (
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#003087]" />
+                )}
+              </div>
+            </div>
+            <span className={`text-base transition-colors ${!filter.category ? 'text-[#003087] font-bold' : 'text-gray-700 group-hover:text-[#003087]'}`}>
+              All Categories
+            </span>
+          </label>
+          {categories.map((cat) => (
+            <label key={cat._id} className="flex items-center gap-3 cursor-pointer group">
+              <div className="relative flex items-center justify-center">
+                <input
+                  type="radio"
+                  name="category"
+                  checked={filter.category === cat.slug}
+                  onChange={() => onFilterChange({ category: cat.slug })}
+                  className="sr-only"
+                />
+                <div className={`w-5 h-5 rounded-full border-2 transition-all duration-200 flex items-center justify-center ${filter.category === cat.slug
+                  ? 'border-[#003087] bg-white'
+                  : 'border-gray-300 group-hover:border-[#003087]/50'
+                  }`}>
+                  {filter.category === cat.slug && (
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#003087]" />
+                  )}
+                </div>
+              </div>
+              <span className={`text-base transition-colors flex-1 ${filter.category === cat.slug ? 'text-[#003087] font-bold' : 'text-gray-700 group-hover:text-[#003087]'}`}>
+                {cat.name}
+              </span>
+              <span className={`text-sm bg-gray-100 px-2 py-0.5 rounded-full transition-all ${filter.category === cat.slug ? 'text-[#003087] font-bold bg-[#003087]/10' : 'text-gray-400'}`}>
+                ({cat.productCount})
+              </span>
             </label>
           ))}
         </div>
@@ -125,14 +147,35 @@ export default function ProductsSidebar({
           <Icon name="CheckCircleIcon" size={18} className="text-gray-500" />
           Availability
         </h3>
-        <label className="flex items-center gap-3 cursor-pointer group p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-          <input
-            type="checkbox"
-            checked={filter.minPrice > 0}
-            onChange={(e) => onFilterChange({ minPrice: e.target.checked ? 1 : 0 })}
-            className="w-5 h-5 text-[#003087] border-gray-300 focus:ring-[#003087] focus:ring-2 rounded"
-          />
-          <span className="text-base text-gray-700 group-hover:text-[#003087] transition-colors font-medium">In Stock Only</span>
+        <label className={`flex items-center gap-3 cursor-pointer group p-3 rounded-xl transition-all duration-300 ${
+          filter.minPrice > 0
+            ? 'bg-[#003087]/5 border border-[#003087]/20'
+            : 'bg-gray-50 hover:bg-gray-100 border border-transparent'
+        }`}>
+          <div className="relative flex items-center justify-center">
+            <input
+              type="checkbox"
+              checked={filter.minPrice > 0}
+              onChange={(e) => onFilterChange({ minPrice: e.target.checked ? 1 : 0 })}
+              className="sr-only"
+            />
+            <div className={`w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center ${
+              filter.minPrice > 0
+                ? 'border-[#003087] bg-[#003087] text-white'
+                : 'border-gray-300 bg-white group-hover:border-[#003087]/50'
+            }`}>
+              {filter.minPrice > 0 && (
+                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/>
+                </svg>
+              )}
+            </div>
+          </div>
+          <span className={`text-base transition-colors font-semibold ${
+            filter.minPrice > 0 ? 'text-[#003087]' : 'text-gray-700 group-hover:text-[#003087]'
+          }`}>
+            In Stock Only
+          </span>
         </label>
       </div>
 

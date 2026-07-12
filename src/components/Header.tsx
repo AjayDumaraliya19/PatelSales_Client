@@ -258,7 +258,7 @@ export default function Header() {
 
       {/* ── Utility bar ── hidden on mobile | md+: full info | lg+: utility links */}
       <div className="hidden md:block wss-utility-bar bg-gradient-to-r from-[#003087]/95 to-[#0040a0]/95">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-1.5 md:py-2 flex items-center justify-between gap-2">
+        <div className="w-full px-3 sm:px-4 md:px-6 py-1.5 md:py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 overflow-hidden">
             <a
               href="tel:+17327627840"
@@ -285,7 +285,7 @@ export default function Header() {
 
       {/* ── Main header ── mobile: 2 rows | md+: single row | lg+: full layout */}
       <div className="hidden md:block wss-header bg-gradient-to-r from-[#003087]/90 to-[#0040a0]/90 shadow-lg">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+        <div className="w-full px-3 sm:px-4 md:px-6">
           {/* Row 1: logo + actions */}
           <div className="flex items-center justify-between gap-2 py-2.5 md:py-3 lg:py-3.5">
             <HeaderBrand variant="desktop" />
@@ -460,7 +460,7 @@ export default function Header() {
 
       {/* ── Main navigation bar */}
       <div className="hidden md:block bg-white shadow-md border-b border-gray-200">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+        <div className="w-full px-3 sm:px-4 md:px-6">
           <div className="flex items-center">
             {mainMenu.map((item) => (
               <div

@@ -3,23 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
 import { useAuthStore } from '../../store/authStore';
 
-interface FieldLabelProps {
-  label: string;
-  required?: boolean;
-  htmlFor: string;
-}
-
-function FieldLabel({ label, required = false, htmlFor }: FieldLabelProps) {
-  return (
-    <label htmlFor={htmlFor} className="app-label mb-1.5 block">
-      {label}
-      {required && <span className="text-[var(--primary)] ml-0.5">*</span>}
-    </label>
-  );
-}
-
-const inputClass = 'input-field w-full min-h-[44px]';
-
 interface RegisterFormProps {
   initialEmail?: string;
 }
@@ -27,12 +10,15 @@ interface RegisterFormProps {
 export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
   const navigate = useNavigate();
   const { register } = useAuthStore();
-  
+
   const [showPassword, setShowPassword] = useState(false);
-  const [receiveCoupons, setReceiveCoupons] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [passwordValue, setPasswordValue] = useState('');
+
+  const passwordStrength = getPasswordStrength(passwordValue);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,13 +32,11 @@ export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
     const phone = formData.get('phone') as string;
 
     try {
-      await register({ name, email, password, phone });
+      await register({ name, email, password, phone: phone || undefined });
       setIsSubmitted(true);
-      
-      // Redirect to products after 1.5 seconds
       setTimeout(() => {
         navigate('/products');
-      }, 1500);
+      }, 2000);
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
       setIsSubmitting(false);
@@ -61,81 +45,109 @@ export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
 
   if (isSubmitted) {
     return (
-      <div className="app-card p-8 sm:p-12 text-center max-w-lg mx-auto animate-fade-in">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Icon name="CheckCircleIcon" size={32} className="text-green-600" />
+      <div className="text-center py-10 animate-fade-in">
+        <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-green-100">
+          <Icon name="CheckCircleIcon" size={32} className="text-green-500" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Account Created!</h2>
-        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-          Welcome to Patel Sales. You can now shop wholesale food service supplies at bulk pricing.
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Account Created!</h2>
+        <p className="text-sm text-gray-500 mb-5 leading-relaxed max-w-xs mx-auto">
+          Welcome to Patel Sales! Redirecting you to our product catalog...
         </p>
-        <Link to="/products" className="btn-primary inline-flex min-h-[44px]">
-          Start Shopping
-        </Link>
+        <div className="w-40 h-1 bg-gray-100 rounded-full mx-auto overflow-hidden">
+          <div className="h-full bg-green-500 rounded-full animate-pulse w-full" />
+        </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="app-card overflow-hidden animate-fade-in">
+    <div className="animate-fade-in">
       {error && (
-        <div className="px-4 sm:px-6 md:px-8 pt-6 pb-0">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
-            <Icon name="ExclamationTriangleIcon" size={18} className="flex-shrink-0 mt-0.5" />
-            <span>{error}</span>
-          </div>
+        <div className="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2.5">
+          <Icon name="ExclamationTriangleIcon" size={16} className="flex-shrink-0 mt-0.5 text-red-500" />
+          <span className="leading-relaxed">{error}</span>
         </div>
       )}
-      
-      <div className="p-4 sm:p-6 md:px-8 space-y-5">
-        <div>
-          <FieldLabel label="Email Address" required htmlFor="register-email" />
-          <input
-            id="register-email"
-            type="email"
-            name="email"
-            required
-            autoComplete="email"
-            defaultValue={initialEmail}
-            className={inputClass}
-            placeholder="you@company.com"
-          />
-        </div>
 
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
         <div>
-          <FieldLabel label="Full Name" required htmlFor="register-name" />
-          <input id="register-name" type="text" name="name" required autoComplete="name" className={inputClass} placeholder="Full name" />
-        </div>
-
-        <div>
-          <FieldLabel label="Phone" required htmlFor="register-phone" />
-          <input
-            id="register-phone"
-            type="tel"
-            name="phone"
-            autoComplete="tel"
-            className={inputClass}
-            placeholder="(732) 000-0000"
-          />
-        </div>
-      </div>
-
-      <div className="px-4 sm:px-6 md:px-8 py-6 border-t border-gray-200 bg-gray-50">
-        <div className="mb-4">
-          <label className="flex items-center gap-2.5 cursor-pointer min-h-[44px]">
-            <input
-              type="checkbox"
-              checked={receiveCoupons}
-              onChange={(e) => setReceiveCoupons(e.target.checked)}
-              className="w-4 h-4 accent-[var(--secondary)] rounded shrink-0"
-            />
-            <span className="text-sm text-gray-700">Receive coupons & promotional offers</span>
+          <label htmlFor="register-name" className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Full name <span className="text-red-500">*</span>
           </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Icon name="UserIcon" size={16} className={`transition-colors ${focusedField === 'name' ? 'text-[#003087]' : 'text-gray-400'}`} />
+            </div>
+            <input
+              id="register-name"
+              type="text"
+              name="name"
+              required
+              autoComplete="name"
+              onFocus={() => setFocusedField('name')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#003087] focus:ring-2 focus:ring-[#003087]/10 transition-all"
+              placeholder="John Smith"
+            />
+          </div>
         </div>
 
+        {/* Email */}
         <div>
-          <FieldLabel label="Password" required htmlFor="register-password" />
+          <label htmlFor="register-email" className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Email address <span className="text-red-500">*</span>
+          </label>
           <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Icon name="EnvelopeIcon" size={16} className={`transition-colors ${focusedField === 'email' ? 'text-[#003087]' : 'text-gray-400'}`} />
+            </div>
+            <input
+              id="register-email"
+              type="email"
+              name="email"
+              required
+              autoComplete="email"
+              defaultValue={initialEmail}
+              onFocus={() => setFocusedField('email')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#003087] focus:ring-2 focus:ring-[#003087]/10 transition-all"
+              placeholder="you@company.com"
+            />
+          </div>
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label htmlFor="register-phone" className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Phone number <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Icon name="PhoneIcon" size={16} className={`transition-colors ${focusedField === 'phone' ? 'text-[#003087]' : 'text-gray-400'}`} />
+            </div>
+            <input
+              id="register-phone"
+              type="tel"
+              name="phone"
+              autoComplete="tel"
+              onFocus={() => setFocusedField('phone')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#003087] focus:ring-2 focus:ring-[#003087]/10 transition-all"
+              placeholder="(732) 000-0000"
+            />
+          </div>
+        </div>
+
+        {/* Password */}
+        <div>
+          <label htmlFor="register-password" className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Password <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <Icon name="LockClosedIcon" size={16} className={`transition-colors ${focusedField === 'password' ? 'text-[#003087]' : 'text-gray-400'}`} />
+            </div>
             <input
               id="register-password"
               type={showPassword ? 'text' : 'password'}
@@ -143,41 +155,110 @@ export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
               required
               minLength={8}
               autoComplete="new-password"
-              className={`${inputClass} pr-11`}
+              value={passwordValue}
+              onChange={(e) => setPasswordValue(e.target.value)}
+              onFocus={() => setFocusedField('password')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full pl-10 pr-12 py-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#003087] focus:ring-2 focus:ring-[#003087]/10 transition-all"
               placeholder="Minimum 8 characters"
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="absolute right-0 inset-y-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              <Icon name={showPassword ? 'EyeSlashIcon' : 'EyeIcon'} size={18} />
+              <Icon name={showPassword ? 'EyeSlashIcon' : 'EyeIcon'} size={16} />
             </button>
           </div>
+          {/* Password Strength */}
+          {passwordValue.length > 0 && (
+            <div className="mt-2">
+              <div className="flex gap-1">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                      i <= passwordStrength.score
+                        ? passwordStrength.score <= 1
+                          ? 'bg-red-400'
+                          : passwordStrength.score === 2
+                          ? 'bg-orange-400'
+                          : passwordStrength.score === 3
+                          ? 'bg-yellow-400'
+                          : 'bg-green-500'
+                        : 'bg-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className={`text-xs mt-1 font-medium ${
+                passwordStrength.score <= 1 ? 'text-red-500' :
+                passwordStrength.score === 2 ? 'text-orange-500' :
+                passwordStrength.score === 3 ? 'text-yellow-600' :
+                'text-green-600'
+              }`}>
+                {passwordStrength.label}
+              </p>
+            </div>
+          )}
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="btn-primary w-full min-h-[44px] justify-center disabled:opacity-70 mt-6"
+          className="w-full py-3 px-4 bg-[#e8471e] hover:bg-[#c73a17] active:bg-[#b03010] text-white font-bold text-sm rounded-lg transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow"
         >
-          {isSubmitting ? 'Creating Account...' : 'Create Account'}
+          {isSubmitting ? (
+            <>
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Creating account...
+            </>
+          ) : (
+            'Create Account'
+          )}
         </button>
-      </div>
+      </form>
 
-      <div className="px-4 sm:px-6 md:px-8 py-6 border-t border-gray-200 bg-gray-50 text-center">
-        <p className="text-xs text-gray-500 mb-3 leading-relaxed">
-          This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.
-        </p>
-
-        <div className="pt-5 border-t border-gray-200">
-          <p className="text-sm text-gray-600 mb-3">Already have an account?</p>
-          <Link to="/login" className="btn-outline min-h-[44px] inline-flex">
-            Sign In
-          </Link>
+      {/* Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-white px-3 text-gray-400 font-medium">Already have an account?</span>
         </div>
       </div>
-    </form>
+
+      {/* Login Link */}
+      <Link
+        to="/login"
+        className="w-full py-3 px-4 bg-white border border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 font-semibold text-sm rounded-lg transition-all duration-150 flex items-center justify-center gap-2"
+      >
+        <Icon name="ArrowRightOnRectangleIcon" size={16} className="text-gray-400" />
+        Sign in to existing account
+      </Link>
+    </div>
   );
+}
+
+function getPasswordStrength(password: string): { score: number; label: string } {
+  if (!password) return { score: 0, label: '' };
+
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  score = Math.min(score, 4);
+  if (password.length < 8) score = Math.max(score, 1);
+
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  return { score, label: labels[score] || 'Weak' };
 }

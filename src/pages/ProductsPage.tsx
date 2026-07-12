@@ -7,7 +7,7 @@ import { catalogCategories } from '../data/productCategories';
 import type { Product, Category } from '../types';
 import { useAuthStore } from '../store/authStore';
 
-const PRODUCTS_PER_PAGE = 20;
+const PRODUCTS_PER_PAGE = 52;
 
 export default function ProductsPage() {
   const [searchParams] = useSearchParams();

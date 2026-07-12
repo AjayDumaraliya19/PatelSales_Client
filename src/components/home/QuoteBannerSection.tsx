@@ -5,7 +5,7 @@ import Icon from '../ui/AppIcon';
 export default function QuoteBannerSection() {
   return (
     <section className="py-6 md:py-8">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         <div className="bg-gradient-to-r from-[#e8471e] via-[#ff5722] to-[#e8471e] rounded-2xl py-6 md:py-8 relative overflow-hidden">
           {/* Decorative background pattern */}
           <div className="absolute inset-0 opacity-10">

@@ -66,7 +66,7 @@ function ActionTileBanner({
 export default function ActionTilesSection() {
   return (
     <section className="bg-gradient-to-br from-[#f0f4f8] to-[#e8f0f8] py-10 md:py-12">
-      <div className="mx-auto max-w-[1600px] px-3 sm:px-4 md:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {actionTiles.map((tile, index) => (
             <Link

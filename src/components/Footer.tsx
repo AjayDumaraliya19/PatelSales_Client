@@ -32,7 +32,7 @@ export default function Footer() {
     <footer className="bg-gradient-to-br from-[#001a33] to-[#003087]">
       {/* Trust bar */}
       <div className="bg-gradient-to-r from-[#003087] to-[#0040a0] border-b border-white/10">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-6">
+        <div className="w-full px-3 sm:px-4 md:px-6 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { icon: 'TruckIcon' as const, title: 'Free Shipping $150+', sub: 'NJ, NY, CT & PA' },
@@ -40,7 +40,7 @@ export default function Footer() {
               { icon: 'ShieldCheckIcon' as const, title: 'FDA Compliant', sub: 'All products certified' },
               { icon: 'PhoneIcon' as const, title: '(732) 762-7840', sub: 'Mon–Sat 8am–6pm' },
             ].map((item) => (
-              <div key={item.title} className="flex items-center gap-4 group">
+              <div key={item.title} className="flex flex-col items-center text-center gap-3 group">
                 <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
                   <Icon name={item.icon} size={24} className="text-white" />
                 </div>
@@ -55,34 +55,34 @@ export default function Footer() {
       </div>
 
       {/* Main footer */}
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-12">
+      <div className="w-full px-3 sm:px-4 md:px-6 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand column */}
-          <div>
+          <div className="flex flex-col items-center text-center">
             <Link to="/" className="inline-block mb-5">
               <div className="bg-white rounded-2xl px-3 py-1 inline-block shadow-lg">
                 <img src="/brand_logo.png" alt="Patel Sales Logo" className="h-12 w-auto object-contain" />
               </div>
             </Link>
-            <p className="text-white/70 text-sm leading-relaxed mb-5">
+            <p className="text-white/70 text-sm leading-relaxed mb-5 max-w-sm">
               Your trusted source for bulk disposable food service supplies in New Jersey. Serving restaurants, delis, bakeries, and hotels since 2021.
             </p>
-            <div className="space-y-3 mb-5">
+            <div className="flex flex-col items-center gap-3 mb-5">
               <a href="tel:+17327627840" className="flex items-center gap-3 text-white/80 hover:text-white text-sm transition-colors group">
                 <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-colors">
                   <Icon name="PhoneIcon" size={16} className="text-white" />
                 </div>
                 (732) 762-7840
               </a>
-              <div className="flex items-start gap-3 text-white/80 text-sm">
-                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="flex items-center gap-3 text-white/80 text-sm text-center">
+                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Icon name="MapPinIcon" size={16} className="text-white" />
                 </div>
-                102-103 North Center Dr,<br />North Brunswick, NJ 08902
+                <span>102-103 North Center Dr, North Brunswick, NJ 08902</span>
               </div>
             </div>
             {/* Social Media */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <a href="#" className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-white/20 hover:scale-110 transition-all duration-300" aria-label="Facebook">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-white">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -108,14 +108,14 @@ export default function Footer() {
 
           {/* Link columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
+            <div key={title} className="text-center">
               <h3 className="text-white font-bold text-base mb-5 uppercase tracking-wider">{title}</h3>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className="text-white/70 hover:text-white text-sm transition-colors hover:translate-x-1 inline-block duration-300"
+                      className="text-white/70 hover:text-white text-sm transition-colors inline-block duration-300"
                     >
                       {link.label}
                     </Link>
@@ -129,11 +129,11 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="w-full px-3 sm:px-4 md:px-6 py-5 flex flex-col items-center justify-center text-center gap-3">
           <p className="text-white/60 text-sm">
             © 2026 Patel Sales LLC · All Rights Reserved · North Brunswick, NJ 08902
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center gap-4">
             <Link to="/privacy-policy" className="text-white/60 hover:text-white text-sm transition-colors">Privacy Policy</Link>
             <span className="text-white/20">|</span>
             <Link to="/terms-of-service" className="text-white/60 hover:text-white text-sm transition-colors">Terms of Service</Link>

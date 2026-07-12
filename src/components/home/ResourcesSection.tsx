@@ -7,7 +7,7 @@ import { resourceArticles } from '../../data/homePageData';
 export default function ResourcesSection() {
   return (
     <section className="bg-white py-10 md:py-12">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 md:mb-10">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">

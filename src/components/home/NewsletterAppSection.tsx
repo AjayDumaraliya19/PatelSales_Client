@@ -28,7 +28,7 @@ export default function NewsletterAppSection() {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#1098E3] rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 relative z-10">
+      <div className="w-full px-3 sm:px-4 md:px-6 relative z-10">
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Stay Connected</h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">Join our community for exclusive deals, updates, and more</p>

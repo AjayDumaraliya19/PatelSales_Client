@@ -13,7 +13,7 @@ export default function FeaturedCategoriesSection() {
     const fetchCategories = async () => {
       try {
         const response = await categoriesService.getCategories();
-        const activeCategories = (response.categories || []).filter((c) => c.isActive).slice(0, 6);
+        const activeCategories = (response.categories || []).filter((c) => c.isActive);
         setCategories(activeCategories);
       } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -28,7 +28,7 @@ export default function FeaturedCategoriesSection() {
 
   return (
     <section className="bg-white py-10">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">
           Featured Categories
         </h2>

@@ -13,18 +13,24 @@ import productsService from '../services/productsService';
 import type { Product } from '../types';
 
 export default function HomePage() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [bestReviewedProducts, setBestReviewedProducts] = useState<Product[]>([]);
   const [bestSellingProducts, setBestSellingProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [featured, bestSelling] = await Promise.all([
-          productsService.getFeaturedProducts(8),
-          productsService.getProducts({ limit: 10, sort: 'newest', active: true }),
+        const [bestReviewed, bestSelling] = await Promise.all([
+          productsService.getBestReviewedProducts(20),
+          productsService.getProducts({ limit: 20, sort: 'newest', active: true }),
         ]);
-        setFeaturedProducts(featured.products);
+        
+        let bestReviewedList = bestReviewed.products || [];
+        if (bestReviewedList.length === 0 && bestSelling.products && bestSelling.products.length > 0) {
+          bestReviewedList = bestSelling.products.slice(0, 20);
+        }
+
+        setBestReviewedProducts(bestReviewedList);
         setBestSellingProducts(bestSelling.products);
       } catch (error) {
         console.error('Failed to fetch home page products:', error);
@@ -40,7 +46,7 @@ export default function HomePage() {
       <HeroSection />
       <PromoGridSection />
       <PlusBannerSection />
-      <FeaturedProductSection products={featuredProducts} />
+      <FeaturedProductSection products={bestReviewedProducts} />
       <ActionTilesSection />
       <FeaturedCategoriesSection />
       <BestSellingSection products={bestSellingProducts} />

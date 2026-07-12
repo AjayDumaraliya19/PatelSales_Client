@@ -28,11 +28,11 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
     setTimeout(() => setAdded(false), 1800);
   };
 
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - (product.displayPrice || product.price)) / product.originalPrice) * 100)
-    : 0;
+  const displayPrice = typeof product.displayPrice === 'number' ? product.displayPrice : (typeof product.price === 'number' ? product.price : 0);
 
-  const displayPrice = product.displayPrice || product.price;
+  const discount = typeof product.originalPrice === 'number' && product.originalPrice > 0
+    ? Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100)
+    : 0;
 
   if (variant === 'list') {
     return (
@@ -72,24 +72,46 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
             )}
 
             {/* Rating */}
-            {product.rating && (
-              <div className="flex items-center gap-1 mt-1">
-                <div className="flex wss-stars">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star}>{star <= Math.round(product.rating!) ? '★' : '☆'}</span>
-                  ))}
-                </div>
-                <span className="text-xs text-gray-500">({product.reviewCount})</span>
+            <div className="flex items-center gap-1 mt-1">
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`text-xs ${
+                      star <= Math.round(product.rating || 0)
+                        ? 'text-amber-400'
+                        : 'text-gray-300'
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
               </div>
-            )}
+              <span className="text-xs text-gray-500">({product.reviewCount || 0})</span>
+            </div>
 
             <div className="flex items-center justify-between mt-2 gap-3">
               <div>
                 <span className="wss-price">${displayPrice.toFixed(2)}</span>
-                {product.originalPrice && (
+                {typeof product.originalPrice === 'number' && product.originalPrice > 0 && (
                   <span className="wss-original-price ml-2">${product.originalPrice.toFixed(2)}</span>
                 )}
-                <span className="text-xs text-gray-500 block">/case</span>
+                <span className="text-xs text-gray-500 block">
+                  {(() => {
+                    const size = (product.caseSize || '').toLowerCase();
+                    if (size.includes('bundle')) return '/bundle';
+                    if (size.includes('pack')) return '/pack';
+                    if (size.includes('box')) return '/box';
+                    if (size.includes('each') || size.includes('piece')) return '/each';
+                    
+                    const name = (product.name || '').toLowerCase();
+                    if (name.includes('/bundle') || name.includes('bundle')) return '/bundle';
+                    if (name.includes('/pack') || name.includes('pack')) return '/pack';
+                    if (name.includes('/box') || name.includes('box')) return '/box';
+                    
+                    return '/case';
+                  })()}
+                </span>
               </div>
               <button
                 onClick={handleAddToCart}
@@ -159,24 +181,46 @@ export default function ProductCard({ product, variant = 'grid' }: ProductCardPr
           )}
 
           {/* Rating */}
-          {product.rating && (
-            <div className="flex items-center gap-1 mb-2">
-              <div className="flex wss-stars">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span key={star}>{star <= Math.round(product.rating!) ? '★' : '☆'}</span>
-                ))}
-              </div>
-              <span className="text-xs text-gray-500">({product.reviewCount})</span>
+          <div className="flex items-center gap-1 mb-2">
+            <div className="flex items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`text-xs ${
+                    star <= Math.round(product.rating || 0)
+                      ? 'text-amber-400'
+                      : 'text-gray-300'
+                  }`}
+                >
+                  ★
+                </span>
+              ))}
             </div>
-          )}
+            <span className="text-xs text-gray-500">({product.reviewCount || 0})</span>
+          </div>
 
           {/* Price */}
           <div className="mb-2">
             <span className="wss-price">${displayPrice.toFixed(2)}</span>
-            {product.originalPrice && (
+            {typeof product.originalPrice === 'number' && product.originalPrice > 0 && (
               <span className="wss-original-price ml-2">${product.originalPrice.toFixed(2)}</span>
             )}
-            <span className="text-xs text-gray-500 block">/case</span>
+            <span className="text-xs text-gray-500 block">
+              {(() => {
+                const size = (product.caseSize || '').toLowerCase();
+                if (size.includes('bundle')) return '/bundle';
+                if (size.includes('pack')) return '/pack';
+                if (size.includes('box')) return '/box';
+                if (size.includes('each') || size.includes('piece')) return '/each';
+                
+                const name = (product.name || '').toLowerCase();
+                if (name.includes('/bundle') || name.includes('bundle')) return '/bundle';
+                if (name.includes('/pack') || name.includes('pack')) return '/pack';
+                if (name.includes('/box') || name.includes('box')) return '/box';
+                
+                return '/case';
+              })()}
+            </span>
           </div>
 
           {/* Add to Cart */}

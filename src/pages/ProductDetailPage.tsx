@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AppImage from '../components/ui/AppImage';
 import Icon from '../components/ui/AppIcon';
@@ -8,6 +8,8 @@ import BulkPricingTable from '../components/product/BulkPricingTable';
 import ReviewSection from '../components/product/ReviewSection';
 import QuestionSection from '../components/product/QuestionSection';
 import ProductSlider from '../components/product/ProductSlider';
+
+const isVideoUrl = (url: string) => /\.(mp4|webm|ogg|mov|avi)(\?|$)/i.test(url);
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -21,8 +23,12 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews' | 'qa'>('description');
+  const [lightBoxIndex, setLightBoxIndex] = useState<number | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const isSwiping = useRef(false);
   const addItem = useCartStore((s) => s.addItem);
 
   useEffect(() => {
@@ -34,7 +40,6 @@ export default function ProductDetailPage() {
         const response = await productsService.getProductById(productId);
         setProduct(response.product);
 
-        // Fetch all recommendation sections in parallel
         const [relatedRes, popularRes, topRes, bestRes] = await Promise.allSettled([
           response.product.category?._id
             ? productsService.getRelatedProducts(response.product.category._id, productId, 12)
@@ -58,10 +63,22 @@ export default function ProductDetailPage() {
   }, [productId]);
 
   useEffect(() => {
-    setSelectedImage(0);
+    setCurrentSlide(0);
     setQuantity(1);
+    setLightBoxIndex(null);
     window.scrollTo(0, 0);
   }, [productId]);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightBoxIndex(null);
+      if (lightBoxIndex === null) return;
+      if (e.key === 'ArrowRight') setLightBoxIndex((i) => (i !== null && product ? Math.min(i + 1, images.length - 1) : i));
+      if (e.key === 'ArrowLeft') setLightBoxIndex((i) => (i !== null ? Math.max(i - 1, 0) : i));
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [lightBoxIndex, product]);
 
   const handleAddToCart = async () => {
     if (!product || product.stock === 0 || isAdding) return;
@@ -94,7 +111,34 @@ export default function ProductDetailPage() {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  // Loading skeleton
+  const goToSlide = useCallback((idx: number) => {
+    if (!product) return;
+    const max = (product.images?.length || 1) - 1;
+    setCurrentSlide(Math.max(0, Math.min(idx, max)));
+  }, [product]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+    isSwiping.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const delta = e.touches[0].clientX - touchStartX.current;
+    touchDeltaX.current = delta;
+    if (Math.abs(delta) > 10) isSwiping.current = true;
+  };
+
+  const handleTouchEnd = () => {
+    const threshold = 50;
+    if (touchDeltaX.current < -threshold) {
+      goToSlide(currentSlide + 1);
+    } else if (touchDeltaX.current > threshold) {
+      goToSlide(currentSlide - 1);
+    }
+    isSwiping.current = false;
+  };
+
   if (loading) {
     return (
       <div className="min-h-full bg-[#f5f5f5]">
@@ -127,7 +171,6 @@ export default function ProductDetailPage() {
     );
   }
 
-  // Error state
   if (error || !product) {
     return (
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-16 text-center">
@@ -190,37 +233,109 @@ export default function ProductDetailPage() {
         {/* ===== MAIN PRODUCT CARD ===== */}
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
-            {/* Image Gallery */}
+            {/* Image Slider */}
             <div className="lg:col-span-5 p-4 sm:p-6 border-b lg:border-b-0 lg:border-r border-gray-100">
-              <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3 border border-gray-100">
-                <AppImage
-                  src={images[selectedImage]}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="object-contain p-4"
-                  priority
-                />
-                {discount > 0 && (
-                  <span className="absolute top-3 left-3 bg-[#e8471e] text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-md">
-                    {discount}% OFF
+              {/* Main slider area */}
+              <div className="relative rounded-lg bg-gray-50 border border-gray-100 overflow-hidden select-none">
+                {/* Slides track */}
+                <div
+                  className="flex transition-transform duration-300 ease-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  {images.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="flex-shrink-0 w-full aspect-square relative cursor-pointer"
+                      onClick={() => { if (!isSwiping.current) setLightBoxIndex(idx); }}
+                    >
+                      <div className="w-full h-full flex items-center justify-center p-4">
+                        {isVideoUrl(img) ? (
+                          <video src={img} controls preload="metadata" className="max-w-full max-h-full object-contain" />
+                        ) : (
+                          <img src={img} alt={`${product.name} ${idx + 1}`} className="max-w-full max-h-full object-contain" loading={idx === 0 ? 'eager' : 'lazy'} />
+                        )}
+                      </div>
+                      {discount > 0 && idx === 0 && (
+                        <span className="absolute top-3 left-3 bg-[#e8471e] text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-md z-10">
+                          {discount}% OFF
+                        </span>
+                      )}
+                      {product.isProductNew && idx === 0 && (
+                        <span className="absolute top-3 right-3 bg-[#003087] text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider z-10">New</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Navigation arrows (desktop) */}
+                {images.length > 1 && (
+                  <>
+                    {currentSlide > 0 && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); goToSlide(currentSlide - 1); }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-md rounded-full w-8 h-8 flex items-center justify-center z-10 transition-opacity"
+                        aria-label="Previous image"
+                      >
+                        <svg className="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                      </button>
+                    )}
+                    {currentSlide < images.length - 1 && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); goToSlide(currentSlide + 1); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-md rounded-full w-8 h-8 flex items-center justify-center z-10 transition-opacity"
+                        aria-label="Next image"
+                      >
+                        <svg className="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {/* Counter badge */}
+                {images.length > 1 && (
+                  <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs font-medium px-2 py-0.5 rounded-full z-10">
+                    {currentSlide + 1} / {images.length}
                   </span>
                 )}
-                {product.isProductNew && (
-                  <span className="absolute top-3 right-3 bg-[#003087] text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">New</span>
-                )}
               </div>
+
+              {/* Dots */}
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1">
+                <div className="flex items-center justify-center gap-1.5 mt-3">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => goToSlide(idx)}
+                      className={`rounded-full transition-all duration-200 ${
+                        currentSlide === idx ? 'w-5 h-2 bg-[#003087]' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      aria-label={`Go to image ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Thumbnail strip */}
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-1 mt-3" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {images.map((img, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 overflow-hidden transition-all ${
-                        selectedImage === idx ? 'border-[#003087] shadow-md' : 'border-gray-200 hover:border-gray-300'
+                      onClick={() => goToSlide(idx)}
+                      className={`relative flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-lg border-2 overflow-hidden transition-all ${
+                        currentSlide === idx ? 'border-[#003087] shadow-md' : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <AppImage src={img} alt={`${product.name} ${idx + 1}`} fill className="object-contain p-1" />
+                      {isVideoUrl(img) ? (
+                        <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /></svg>
+                        </div>
+                      ) : (
+                        <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-contain p-1" />
+                      )}
                     </button>
                   ))}
                 </div>
@@ -245,19 +360,23 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Rating */}
-                {product.reviewCount && product.reviewCount > 0 && (
-                  <button onClick={() => setActiveTab('reviews')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <div className="flex items-center gap-0.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <svg key={star} className={`w-4 h-4 ${star <= Math.round(product.rating || 0) ? 'text-yellow-400' : 'text-gray-200'}`} fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <span className="text-sm font-semibold text-gray-700">{product.rating?.toFixed(1)}</span>
-                    <span className="text-sm text-gray-400">({product.reviewCount} reviews)</span>
-                  </button>
-                )}
+                <button onClick={() => setActiveTab('reviews')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className="w-4 h-4"
+                        style={{ color: star <= Math.round(product.rating || 0) ? '#f5a623' : '#d1d5db' }}
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="text-sm font-semibold text-gray-700">{(product.rating || 0).toFixed(1)}</span>
+                  <span className="text-sm text-gray-450">({product.reviewCount || 0} reviews)</span>
+                </button>
 
                 {/* Price */}
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
@@ -445,6 +564,100 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {/* ===== FULL-SCREEN LIGHTBOX ===== */}
+      {lightBoxIndex !== null && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
+          onClick={() => setLightBoxIndex(null)}
+        >
+          {/* Top bar */}
+          <div className="flex items-center justify-between px-4 py-3 bg-black/80">
+            <span className="text-white text-sm font-medium">
+              {lightBoxIndex + 1} / {images.length}
+            </span>
+            <button
+              onClick={() => setLightBoxIndex(null)}
+              className="text-white/80 hover:text-white p-1"
+              aria-label="Close"
+            >
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Main content area */}
+          <div
+            className="flex-1 flex items-center justify-center relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {lightBoxIndex > 0 && (
+              <button
+                onClick={() => setLightBoxIndex((i) => i! - 1)}
+                className="absolute left-2 sm:left-4 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3 transition-colors"
+                aria-label="Previous image"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+
+            <div className="w-full h-full flex items-center justify-center px-12 py-4">
+              {isVideoUrl(images[lightBoxIndex]) ? (
+                <video
+                  src={images[lightBoxIndex]}
+                  controls
+                  autoPlay
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+              ) : (
+                <img
+                  src={images[lightBoxIndex]}
+                  alt={`${product.name} ${lightBoxIndex + 1}`}
+                  className="max-w-full max-h-full object-contain"
+                />
+              )}
+            </div>
+
+            {lightBoxIndex < images.length - 1 && (
+              <button
+                onClick={() => setLightBoxIndex((i) => i! + 1)}
+                className="absolute right-2 sm:right-4 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full p-2 sm:p-3 transition-colors"
+                aria-label="Next image"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Bottom thumbnail strip */}
+          {images.length > 1 && (
+            <div className="px-4 py-3 bg-black/80 flex items-center justify-center gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => { e.stopPropagation(); setLightBoxIndex(idx); }}
+                  className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border-2 transition-all ${
+                    lightBoxIndex === idx ? 'border-white scale-105' : 'border-white/30 hover:border-white/60'
+                  }`}
+                >
+                  {isVideoUrl(img) ? (
+                    <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /></svg>
+                    </div>
+                  ) : (
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/ui/PageHeader';
 import EmptyState from '../components/ui/EmptyState';
@@ -6,22 +6,148 @@ import StatusBadge, { getOrderStatusVariant } from '../components/ui/StatusBadge
 import TrackingTimeline from '../components/tracking/TrackingTimeline';
 import OrderTrackingDetails from '../components/tracking/OrderTrackingDetails';
 import Icon from '../components/ui/AppIcon';
-import { trackOrder, getSampleTrackingNumber } from '../services/orderTrackingService';
+import ordersService from '../services/ordersService';
 import { usePWA } from '../hooks/usePWA';
-import type { TrackedOrder } from '../types/tracking';
+import type { TrackedOrder, TrackingStep } from '../types/tracking';
 
 type ViewState = 'idle' | 'loading' | 'success' | 'error';
 
+function mapOrderToTrackedOrder(order: any): TrackedOrder {
+  const customerName = order.user && typeof order.user === 'object'
+    ? order.user.name
+    : 'Guest Customer';
+  const customerEmail = order.user && typeof order.user === 'object'
+    ? order.user.email
+    : (order.shippingAddress?.email || '');
+  const customerPhone = order.user && typeof order.user === 'object'
+    ? order.user.phone || ''
+    : (order.shippingAddress?.phone || '');
+
+  const products = (order.items || []).map((item: any) => ({
+    productId: item.product || '',
+    name: item.name || '',
+    price: item.price || 0,
+    quantity: item.quantity || 0,
+    image: item.image || '',
+  }));
+
+  const status = order.status || 'pending';
+  const timeline: TrackingStep[] = [
+    {
+      key: 'placed',
+      label: 'Order Placed',
+      description: 'Your order was received.',
+      timestamp: order.createdAt,
+      state: 'completed',
+    },
+    {
+      key: 'confirmed',
+      label: 'Confirmed',
+      description: ['confirmed', 'packed', 'shipped', 'delivered'].includes(status)
+        ? 'Payment verified and order confirmed.'
+        : status === 'pending'
+        ? 'Awaiting payment verification.'
+        : 'Order status updated.',
+      timestamp: ['confirmed', 'packed', 'shipped', 'delivered'].includes(status)
+        ? order.updatedAt
+        : undefined,
+      state: ['confirmed', 'packed', 'shipped', 'delivered'].includes(status)
+        ? 'completed'
+        : status === 'pending'
+        ? 'current'
+        : 'upcoming',
+    },
+    {
+      key: 'processing',
+      label: 'Processing',
+      description: ['packed', 'shipped', 'delivered'].includes(status)
+        ? 'Items picked and packed.'
+        : status === 'confirmed'
+        ? 'Items are being picked from warehouse.'
+        : 'Awaiting packing.',
+      timestamp: ['packed', 'shipped', 'delivered'].includes(status)
+        ? order.updatedAt
+        : undefined,
+      state: ['packed', 'shipped', 'delivered'].includes(status)
+        ? 'completed'
+        : status === 'confirmed'
+        ? 'current'
+        : 'upcoming',
+    },
+    {
+      key: 'shipped',
+      label: 'Shipped',
+      description: ['shipped', 'delivered'].includes(status)
+        ? order.trackingNumber
+          ? `Handed to carrier. Tracking: ${order.trackingNumber}`
+          : 'Handed to carrier for delivery.'
+        : 'Awaiting shipment.',
+      timestamp: ['shipped', 'delivered'].includes(status) ? order.updatedAt : undefined,
+      state: status === 'delivered'
+        ? 'completed'
+        : status === 'shipped'
+        ? 'current'
+        : 'upcoming',
+    },
+    {
+      key: 'delivered',
+      label: 'Delivered',
+      description: status === 'delivered'
+        ? 'Package delivered to your address.'
+        : 'Out for delivery soon.',
+      timestamp: status === 'delivered' ? order.deliveredAt || order.updatedAt : undefined,
+      state: status === 'delivered' ? 'completed' : 'upcoming',
+    },
+  ];
+
+  if (status === 'cancelled') {
+    timeline.length = 1;
+    timeline.push({
+      key: 'cancelled',
+      label: 'Cancelled',
+      description: 'Your order was cancelled.',
+      timestamp: order.updatedAt,
+      state: 'completed',
+    });
+  }
+
+  return {
+    _id: order._id,
+    orderNumber: order.orderNumber,
+    trackingNumber: order.trackingNumber || 'Pending',
+    orderStatus: order.status,
+    paymentStatus: order.paymentStatus,
+    products,
+    totalAmount: order.total,
+    subtotal: order.subtotal,
+    tax: order.tax,
+    shipping: order.shipping,
+    shippingAddress: {
+      street: order.shippingAddress?.street || '',
+      city: order.shippingAddress?.city || '',
+      state: order.shippingAddress?.state || '',
+      zip: order.shippingAddress?.zipCode || order.shippingAddress?.zip || '',
+      country: order.shippingAddress?.country || '',
+      phone: order.shippingAddress?.phone || '',
+    },
+    customerName,
+    customerEmail,
+    customerPhone,
+    carrier: order.carrier || 'Patel Sales Delivery',
+    estimatedDeliveryDate: order.estimatedDelivery || '',
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    timeline,
+  };
+}
+
 export default function TrackOrderPage() {
   const { isOnline } = usePWA();
-  const [query, setQuery] = useState('');
+  const [orderNumber, setOrderNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [viewState, setViewState] = useState<ViewState>('idle');
   const [order, setOrder] = useState<TrackedOrder | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    getSampleTrackingNumber().then(setQuery);
-  }, []);
 
   const handleTrack = async (event?: React.FormEvent) => {
     event?.preventDefault();
@@ -32,16 +158,31 @@ export default function TrackOrderPage() {
       return;
     }
 
+    if (!orderNumber.trim() || !email.trim()) {
+      setViewState('error');
+      setErrorMessage('Please enter both your order number and email address.');
+      return;
+    }
+
     setViewState('loading');
     setErrorMessage('');
     setOrder(null);
 
-    const result = await trackOrder(query);
-    if (result.success && result.order) {
-      setOrder(result.order);
-      setViewState('success');
-    } else {
-      setErrorMessage(result.message ?? 'Unable to find order.');
+    try {
+      const result = await ordersService.trackOrder(orderNumber.trim(), email.trim());
+      if (result.success && result.order) {
+        setOrder(mapOrderToTrackedOrder(result.order));
+        setViewState('success');
+      } else {
+        setErrorMessage((result as any).message ?? 'Unable to find order.');
+        setViewState('error');
+      }
+    } catch (err: any) {
+      setErrorMessage(
+        err.response?.data?.message ||
+        err.message ||
+        'Unable to find order. Please verify your order number and email address.'
+      );
       setViewState('error');
     }
   };
@@ -55,7 +196,7 @@ export default function TrackOrderPage() {
             Track Your Order
           </h1>
           <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto">
-            Enter your order number to see real-time delivery status
+            Enter your order details to see real-time delivery status
           </p>
         </div>
       </div>
@@ -64,41 +205,54 @@ export default function TrackOrderPage() {
       <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-10 md:py-12">
         <div className="max-w-2xl mx-auto">
           {/* Search Form */}
-          <form onSubmit={handleTrack} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
-            <label htmlFor="tracking-query" className="block text-sm font-bold text-gray-800 mb-3">
-              Order or Tracking Number
-            </label>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                id="tracking-query"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. PSNJ7840123456"
-                className="flex-1 min-h-[52px] px-4 border-2 border-gray-200 rounded-xl focus:border-[#003087] focus:outline-none transition-colors text-gray-900"
-                autoComplete="off"
-              />
-              <button
-                type="submit"
-                disabled={viewState === 'loading'}
-                className="min-h-[52px] px-8 bg-gradient-to-r from-[#003087] to-[#0040a0] hover:from-[#002244] hover:to-[#003087] text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0"
-              >
-                {viewState === 'loading' ? (
-                  <>
-                    <Icon name="ArrowPathIcon" size={20} className="animate-spin" />
-                    Tracking...
-                  </>
-                ) : (
-                  <>
-                    <Icon name="MagnifyingGlassIcon" size={20} />
-                    Track Order
-                  </>
-                )}
-              </button>
+          <form onSubmit={handleTrack} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="order-number" className="block text-sm font-bold text-gray-800 mb-2">
+                  Order Number
+                </label>
+                <input
+                  id="order-number"
+                  type="text"
+                  value={orderNumber}
+                  onChange={(e) => setOrderNumber(e.target.value)}
+                  placeholder="e.g. PS-20260315-1001"
+                  className="w-full min-h-[52px] px-4 border-2 border-gray-200 rounded-xl focus:border-[#003087] focus:outline-none transition-colors text-gray-900"
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <label htmlFor="customer-email" className="block text-sm font-bold text-gray-800 mb-2">
+                  Email Address
+                </label>
+                <input
+                  id="customer-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. customer@example.com"
+                  className="w-full min-h-[52px] px-4 border-2 border-gray-200 rounded-xl focus:border-[#003087] focus:outline-none transition-colors text-gray-900"
+                  autoComplete="off"
+                />
+              </div>
             </div>
-            <p className="text-sm text-gray-500 mt-3">
-              Try sample: <span className="font-mono font-semibold text-[#003087]">PSNJ7840123456</span>
-            </p>
+            <button
+              type="submit"
+              disabled={viewState === 'loading'}
+              className="w-full min-h-[52px] px-8 bg-gradient-to-r from-[#003087] to-[#0040a0] hover:from-[#002244] hover:to-[#003087] text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {viewState === 'loading' ? (
+                <>
+                  <Icon name="ArrowPathIcon" size={20} className="animate-spin" />
+                  Tracking...
+                </>
+              ) : (
+                <>
+                  <Icon name="MagnifyingGlassIcon" size={20} />
+                  Track Order
+                </>
+              )}
+            </button>
           </form>
 
           {viewState === 'loading' && (
@@ -169,17 +323,9 @@ export default function TrackOrderPage() {
                 <Icon name="TruckIcon" size={32} className="text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Track Your Wholesale Order</h2>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Enter your order number or tracking ID above to see real-time delivery status, estimated arrival, and order details.
+              <p className="text-gray-600 max-w-md mx-auto">
+                Enter your order number and email address above to see real-time delivery status, estimated arrival, and order details.
               </p>
-              <button
-                type="button"
-                onClick={() => handleTrack()}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#003087] to-[#0040a0] hover:from-[#002244] hover:to-[#003087] text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                <Icon name="MagnifyingGlassIcon" size={20} />
-                Track Sample Order
-              </button>
             </div>
           )}
         </div>

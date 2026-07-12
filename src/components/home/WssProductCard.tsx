@@ -24,15 +24,11 @@ export default function WssProductCard({ product, showPlusBadge = true }: WssPro
               <svg width="36" height="24" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="bg-card" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#27B8F4"/>
-                    <stop offset="100%" stop-color="#1098E3"/>
+                    <stop offset="0%" stop-color="#27B8F4" />
+                    <stop offset="100%" stop-color="#1098E3" />
                   </linearGradient>
                 </defs>
-                <path
-                  d="M18 18 H108 L96 62 H8 Z"
-                  fill="url(#bg-card)"
-                  rx="6"
-                />
+                <path d="M18 18 H108 L96 62 H8 Z" fill="url(#bg-card)" rx="6" />
                 <text
                   x="60"
                   y="48"
@@ -50,21 +46,45 @@ export default function WssProductCard({ product, showPlusBadge = true }: WssPro
           )}
         </div>
         <div className="px-3 pb-3">
-          {product.rating && (
-            <div className="flex items-center gap-0.5 mb-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span key={star} className="text-[#f5a623] text-xs">
-                  {star <= Math.round(product.rating!) ? '★' : '☆'}
-                </span>
-              ))}
-              <span className="text-[10px] text-gray-500 ml-1">({product.reviewCount})</span>
-            </div>
-          )}
+          <div className="flex items-center gap-0.5 mb-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={`text-xs ${
+                  star <= Math.round(product.rating || 0)
+                    ? 'text-[#f5a623]'
+                    : 'text-gray-305'
+                }`}
+                style={{ color: star <= Math.round(product.rating || 0) ? '#f5a623' : '#d1d5db' }}
+              >
+                ★
+              </span>
+            ))}
+            <span className="text-[10px] text-gray-500 ml-1">({product.reviewCount || 0})</span>
+          </div>
           <h3 className="text-[13px] text-[#003087] hover:text-[#e8471e] leading-snug line-clamp-2 mb-1.5 min-h-[36px]">
             {product.name}
           </h3>
-          <div className="text-[#e8471e] font-bold text-base">${product.price.toFixed(2)}</div>
-          {product.originalPrice && (
+          <div className="text-[#e8471e] font-bold text-base">
+            ${(typeof product.price === 'number' ? product.price : 0).toFixed(2)}
+            <span className="text-[10px] text-gray-500 font-normal ml-0.5">
+              {(() => {
+                const size = (product.caseSize || '').toLowerCase();
+                if (size.includes('bundle')) return '/bundle';
+                if (size.includes('pack')) return '/pack';
+                if (size.includes('box')) return '/box';
+                if (size.includes('each') || size.includes('piece')) return '/each';
+                
+                const name = (product.name || '').toLowerCase();
+                if (name.includes('/bundle') || name.includes('bundle')) return '/bundle';
+                if (name.includes('/pack') || name.includes('pack')) return '/pack';
+                if (name.includes('/box') || name.includes('box')) return '/box';
+                
+                return '/case';
+              })()}
+            </span>
+          </div>
+          {typeof product.originalPrice === 'number' && product.originalPrice > 0 && (
             <div className="text-xs text-gray-400 line-through">${product.originalPrice.toFixed(2)}</div>
           )}
         </div>

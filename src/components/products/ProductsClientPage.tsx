@@ -62,40 +62,40 @@ export default function ProductsClientPage({
   const handleFilterChange = (updates: Partial<FilterState>) => {
     const newFilter = { ...filter, ...updates, page: 1 };
     setFilter(newFilter);
-    
+
     // Update URL params
     const newSearchParams = new URLSearchParams(searchParams);
-    
+
     if (newFilter.category) {
       newSearchParams.set('category', newFilter.category);
     } else {
       newSearchParams.delete('category');
     }
-    
+
     if (newFilter.search) {
       newSearchParams.set('search', newFilter.search);
     } else {
       newSearchParams.delete('search');
     }
-    
+
     if (newFilter.minPrice > 0) {
       newSearchParams.set('minPrice', newFilter.minPrice.toString());
     } else {
       newSearchParams.delete('minPrice');
     }
-    
+
     if (newFilter.maxPrice < 500) {
       newSearchParams.set('maxPrice', newFilter.maxPrice.toString());
     } else {
       newSearchParams.delete('maxPrice');
     }
-    
+
     if (newFilter.sortBy !== 'name') {
       newSearchParams.set('sort', newFilter.sortBy);
     } else {
       newSearchParams.delete('sort');
     }
-    
+
     setSearchParams(newSearchParams);
   };
 
@@ -112,7 +112,7 @@ export default function ProductsClientPage({
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 py-6">
+    <div className="w-full px-3 sm:px-4 md:px-6 py-6">
       {/* Breadcrumb */}
       <div className="wss-breadcrumb mb-4">
         <span>Home</span>
@@ -267,11 +267,10 @@ export default function ProductsClientPage({
           ) : (
             <>
               <div
-                className={`grid gap-3 ${
-                  viewMode === 'grid'
+                className={`grid gap-3 ${viewMode === 'grid'
                     ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
                     : 'grid-cols-1'
-                }`}
+                  }`}
               >
                 {filteredProducts.map((product) => (
                   <ProductCard key={product._id} product={product} variant={viewMode} />
@@ -280,7 +279,14 @@ export default function ProductsClientPage({
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-8 flex justify-center items-center gap-2">
+                <div className="mt-8 flex justify-center items-center flex-wrap gap-2">
+                  <button
+                    onClick={() => onPageChange && onPageChange(1)}
+                    disabled={page === 1}
+                    className="px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    First
+                  </button>
                   <button
                     onClick={() => onPageChange && onPageChange(Math.max(1, page - 1))}
                     disabled={page === 1}
@@ -288,42 +294,67 @@ export default function ProductsClientPage({
                   >
                     Previous
                   </button>
-                  
-                  <div className="flex gap-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else if (page <= 3) {
-                        pageNum = i + 1;
-                      } else if (page >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i;
+
+                  <div className="flex gap-1 items-center">
+                    {(() => {
+                      const pages: (number | string)[] = [];
+                      const maxVisiblePages = 7;
+
+                      if (totalPages <= maxVisiblePages) {
+                        for (let i = 1; i <= totalPages; i++) {
+                          pages.push(i);
+                        }
                       } else {
-                        pageNum = page - 2 + i;
+                        if (page <= 3) {
+                          pages.push(1, 2, 3, 4, '...', totalPages);
+                        } else if (page >= totalPages - 2) {
+                          pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                        } else {
+                          pages.push(1, '...', page - 1, page, page + 1, '...', totalPages);
+                        }
                       }
-                      
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => onPageChange && onPageChange(pageNum)}
-                          className={`px-3 py-2 border rounded-sm text-sm font-medium transition-colors ${
-                            page === pageNum
-                              ? 'bg-[#003087] text-white border-[#003087]'
-                              : 'border-gray-300 hover:bg-gray-50'
-                          }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+
+                      return pages.map((pageNum, index) => {
+                        if (pageNum === '...') {
+                          return (
+                            <span
+                              key={`ellipsis-${index}`}
+                              className="px-2 py-2 text-gray-400 text-sm font-medium select-none"
+                            >
+                              ...
+                            </span>
+                          );
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => onPageChange && onPageChange(pageNum as number)}
+                            className={`px-3 py-2 border rounded-sm text-sm font-medium transition-colors ${page === pageNum
+                                ? 'bg-[#003087] text-white border-[#003087]'
+                                : 'border-gray-300 hover:bg-gray-50'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      });
+                    })()}
                   </div>
-                  
+
                   <button
                     onClick={() => onPageChange && onPageChange(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                     className="px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
+                  </button>
+                  <button
+                    onClick={() => onPageChange && onPageChange(totalPages)}
+                    disabled={page === totalPages}
+                    className="px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Last
                   </button>
                 </div>
               )}

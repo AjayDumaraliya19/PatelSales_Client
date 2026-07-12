@@ -48,7 +48,7 @@ export default function HeroSection() {
 
   return (
     <section className="hero-home">
-      <div className="max-w-[1600px] mx-auto px-0 sm:px-4 md:px-6 pb-4">
+      <div className="w-full px-0 sm:px-4 md:px-6 pb-4">
         <div
           className="relative overflow-hidden sm:border sm:border-gray-200 sm:shadow-sm"
           onMouseEnter={() => setIsPaused(true)}

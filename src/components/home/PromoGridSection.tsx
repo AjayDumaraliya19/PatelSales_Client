@@ -7,7 +7,7 @@ import { promoGridItems } from '../../data/homePageData';
 export default function PromoGridSection() {
   return (
     <section className="bg-white py-4">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {promoGridItems.map((item) => (
             <Link
@@ -81,7 +81,7 @@ export default function PromoGridSection() {
 export function PlusBannerSection() {
   return (
     <section className="py-6 md:py-8">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         <div className="bg-gradient-to-r from-[#003087] via-[#0040a0] to-[#003087] rounded-2xl py-6 md:py-8 relative overflow-hidden">
           {/* Decorative background pattern */}
           <div className="absolute inset-0 opacity-10">
