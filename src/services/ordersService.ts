@@ -14,7 +14,7 @@ export interface ShippingAddress {
   street: string;
   city: string;
   state: string;
-  zip: string;
+  zipCode: string;
   country: string;
   phone?: string;
 }

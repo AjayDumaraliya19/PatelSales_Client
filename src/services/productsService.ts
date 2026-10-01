@@ -8,8 +8,6 @@ export interface Product {
   description: string;
   price: number;
   compareAtPrice?: number;
-  displayPrice?: number;
-  areaPrice?: number;
   sku: string;
   images: string[];
   category: {
@@ -59,7 +57,6 @@ export interface ProductQueryParams {
   active?: boolean;
   featured?: boolean;
   sort?: 'price-asc' | 'price-desc' | 'newest' | 'name-asc' | 'popular' | 'best-reviewed' | 'top';
-  pincode?: string;
   exclude?: string;
 }
 

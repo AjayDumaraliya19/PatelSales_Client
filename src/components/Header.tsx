@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icon from './ui/AppIcon';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
+import { useWishlistStore } from '../store/wishlistStore';
 import categoriesService from '../services/categoriesService';
 import { getCategoryImagePath } from '../data/categoryImages';
 import type { Category } from '../types';
@@ -71,12 +72,13 @@ export default function Header() {
   const [mobileWholesaleOpen, setMobileWholesaleOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [apiCategories, setApiCategories] = useState<Category[]>([]);
-  const [pincodeInputOpen, setPincodeInputOpen] = useState(false);
-  const [pincodeInput, setPincodeInput] = useState('');
 
   const itemCount = useCartStore((s) => s?.getItemCount());
-  const deliveryPincode = useAuthStore((state) => state.deliveryPincode);
-  const setDeliveryPincode = useAuthStore((state) => state.setDeliveryPincode);
+  const wishlistCount = useWishlistStore((s) => s.items.length);
+  const openWishlist = useWishlistStore((s) => s.openWishlist);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const searchRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const [headerHeight, setHeaderHeight] = useState(56);
@@ -191,14 +193,6 @@ export default function Header() {
     }
   };
 
-  const handlePincodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pincodeInput.trim()) {
-      setDeliveryPincode(pincodeInput.trim());
-      setPincodeInputOpen(false);
-      setPincodeInput('');
-    }
-  };
 
   return (
     <header
@@ -316,66 +310,6 @@ export default function Header() {
 
             {/* Action icons */}
             <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
-              {/* Pincode Input */}
-              <div className="relative hidden md:block">
-                <button
-                  type="button"
-                  onClick={() => setPincodeInputOpen((prev) => !prev)}
-                  className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] md:min-w-[52px] px-1 text-white hover:bg-white/10 rounded-lg transition-colors"
-                  aria-label="Set delivery pincode"
-                >
-                  <Icon name="MapPinIcon" size={22} />
-                  <span className="text-[10px] font-medium hidden lg:block mt-0.5">
-                    {deliveryPincode ? deliveryPincode : 'Area'}
-                  </span>
-                </button>
-
-                {pincodeInputOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden animate-fade-in p-4">
-                    <form onSubmit={handlePincodeSubmit}>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Enter Delivery Pincode
-                      </label>
-                      <input
-                        type="text"
-                        value={pincodeInput}
-                        onChange={(e) => setPincodeInput(e.target.value)}
-                        placeholder="e.g., 08902"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003087] focus:border-transparent"
-                        maxLength={6}
-                      />
-                      <div className="flex gap-2 mt-3">
-                        <button
-                          type="submit"
-                          className="flex-1 bg-[#003087] hover:bg-[#0040a0] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                        >
-                          Set Pincode
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setPincodeInputOpen(false)}
-                          className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      {deliveryPincode && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDeliveryPincode('');
-                            setPincodeInputOpen(false);
-                          }}
-                          className="w-full mt-2 text-xs text-red-600 hover:text-red-700 text-center"
-                        >
-                          Clear pincode
-                        </button>
-                      )}
-                    </form>
-                  </div>
-                )}
-              </div>
-
               <div className="relative hidden md:block account-dropdown">
                 <button
                   type="button"
@@ -385,48 +319,114 @@ export default function Header() {
                   aria-haspopup="true"
                   aria-expanded={accountDropdownOpen}
                 >
-                  <Icon name="UserCircleIcon" size={22} />
-                  <span className="text-[10px] font-medium hidden lg:block mt-0.5">Account</span>
+                  {isAuthenticated && user ? (
+                    <div className="w-[22px] h-[22px] rounded-full bg-[#e8471e] flex items-center justify-center text-white text-[10px] font-bold uppercase leading-none ring-2 ring-white/40">
+                      {user.name?.[0] ?? user.email?.[0] ?? 'U'}
+                    </div>
+                  ) : (
+                    <Icon name="UserCircleIcon" size={22} />
+                  )}
+                  <span className="text-[10px] font-medium hidden lg:block mt-0.5">
+                    {isAuthenticated && user ? (user.name.split(' ')[0] ?? 'Account') : 'Account'}
+                  </span>
                 </button>
 
                 {accountDropdownOpen && (
                   <div
-                    className="absolute top-full right-0 mt-2 w-52 bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden animate-fade-in"
+                    className="absolute top-full right-0 mt-2 w-60 bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.12)] z-50 overflow-hidden animate-fade-in"
                     role="menu"
                     aria-label="Account menu"
                   >
-                    <div className="p-2">
-                      <Link
-                        to="/login"
-                        onClick={() => setAccountDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
-                        role="menuitem"
-                      >
-                        <Icon name="ArrowRightOnRectangleIcon" size={18} className="text-[#003087]" />
-                        Login
-                      </Link>
-                      <Link
-                        to="/register"
-                        onClick={() => setAccountDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
-                        role="menuitem"
-                      >
-                        <Icon name="UserPlusIcon" size={18} className="text-[#003087]" />
-                        Register
-                      </Link>
-                    </div>
+                    {isAuthenticated && user ? (
+                      <>
+                        {/* Logged-in user info */}
+                        <div className="px-4 py-3 border-b border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-[#003087] flex items-center justify-center text-white text-sm font-bold uppercase shrink-0">
+                              {user.name?.[0] ?? user.email?.[0] ?? 'U'}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-gray-900 truncate">
+                                {user.name}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <Link
+                            to="/account"
+                            onClick={() => setAccountDropdownOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
+                            role="menuitem"
+                          >
+                            <Icon name="UserCircleIcon" size={18} className="text-[#003087]" />
+                            My Account
+                          </Link>
+                          <Link
+                            to="/track-order"
+                            onClick={() => setAccountDropdownOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
+                            role="menuitem"
+                          >
+                            <Icon name="ArchiveBoxIcon" size={18} className="text-[#003087]" />
+                            My Orders
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              setAccountDropdownOpen(false);
+                              await logout();
+                              navigate('/');
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                            role="menuitem"
+                          >
+                            <Icon name="ArrowRightOnRectangleIcon" size={18} />
+                            Logout
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="p-2">
+                        <Link
+                          to="/login"
+                          onClick={() => setAccountDropdownOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
+                          role="menuitem"
+                        >
+                          <Icon name="ArrowRightOnRectangleIcon" size={18} className="text-[#003087]" />
+                          Login
+                        </Link>
+                        <Link
+                          to="/register"
+                          onClick={() => setAccountDropdownOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 hover:text-[#003087] hover:bg-gray-50 rounded-lg transition-colors"
+                          role="menuitem"
+                        >
+                          <Icon name="UserPlusIcon" size={18} className="text-[#003087]" />
+                          Register
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
-              <Link
-                to="/account"
-                className="hidden md:flex flex-col items-center justify-center min-w-[44px] min-h-[44px] md:min-w-[52px] px-1 text-white hover:bg-white/10 rounded-lg transition-colors"
-                aria-label="Notifications"
+              <button
+                type="button"
+                onClick={openWishlist}
+                className="relative hidden md:flex flex-col items-center justify-center min-w-[44px] min-h-[44px] md:min-w-[52px] px-1 text-white hover:bg-white/10 rounded-lg transition-colors"
+                aria-label={`Wishlist — ${wishlistCount} items`}
               >
-                <Icon name="BellIcon" size={22} />
-                <span className="text-[10px] font-medium hidden lg:block mt-0.5">Alerts</span>
-              </Link>
+                <div className="relative">
+                  <Icon name="HeartIcon" size={22} />
+                  {wishlistCount > 0 && (
+                    <span className="site-header-cart-badge">{wishlistCount > 99 ? '99+' : wishlistCount}</span>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium hidden lg:block mt-0.5">Wishlist</span>
+              </button>
 
               <Link
                 to="/cart"
@@ -608,12 +608,40 @@ export default function Header() {
             <div className="mobile-drawer__scroll scrollbar-hide">
               {/* 2×2 utility buttons */}
               <div className="mobile-drawer__utility-grid">
-                <Link to="/login" onClick={closeMobileMenu} className="mobile-drawer__utility-btn">
-                  Sign In
-                </Link>
-                <Link to="/register" onClick={closeMobileMenu} className="mobile-drawer__utility-btn">
-                  Create Account
-                </Link>
+                {isAuthenticated && user ? (
+                  <>
+                    <Link to="/account" onClick={closeMobileMenu} className="mobile-drawer__utility-btn mobile-drawer__utility-btn--user col-span-2 justify-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#003087] flex items-center justify-center text-white text-sm font-bold uppercase shrink-0">
+                        {user.name?.[0] ?? user.email?.[0] ?? 'U'}
+                      </div>
+                      <div className="text-left min-w-0">
+                        <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
+                    </Link>
+                    <Link to="/track-order" onClick={closeMobileMenu} className="mobile-drawer__utility-btn">
+                      <Icon name="ArchiveBoxIcon" size={18} className="text-gray-500 shrink-0" />
+                      My Orders
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={async () => { closeMobileMenu(); await logout(); navigate('/'); }}
+                      className="mobile-drawer__utility-btn text-red-600"
+                    >
+                      <Icon name="ArrowRightOnRectangleIcon" size={18} className="text-red-500 shrink-0" />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={closeMobileMenu} className="mobile-drawer__utility-btn">
+                      Sign In
+                    </Link>
+                    <Link to="/register" onClick={closeMobileMenu} className="mobile-drawer__utility-btn">
+                      Create Account
+                    </Link>
+                  </>
+                )}
                 <Link to="/track-order" onClick={closeMobileMenu} className="mobile-drawer__utility-btn">
                   <Icon name="ArchiveBoxIcon" size={18} className="text-gray-500 shrink-0" />
                   Returns &amp; Orders

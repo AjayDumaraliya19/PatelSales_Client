@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
 import { useAuthStore } from '../../store/authStore';
+import { useCartStore } from '../../store/cartStore';
 
 interface RegisterFormProps {
   initialEmail?: string;
@@ -10,6 +11,7 @@ interface RegisterFormProps {
 export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
   const navigate = useNavigate();
   const { register } = useAuthStore();
+  const syncCart = useCartStore((s) => s.syncCart);
 
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,6 +35,8 @@ export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
 
     try {
       await register({ name, email, password, phone: phone || undefined });
+      // Merge guest cart into backend cart after registration
+      await syncCart();
       setIsSubmitted(true);
       setTimeout(() => {
         navigate('/products');

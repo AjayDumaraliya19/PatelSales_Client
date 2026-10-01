@@ -5,7 +5,6 @@ import productsService from '../services/productsService';
 import categoriesService from '../services/categoriesService';
 import { catalogCategories } from '../data/productCategories';
 import type { Product, Category } from '../types';
-import { useAuthStore } from '../store/authStore';
 
 const PRODUCTS_PER_PAGE = 52;
 
@@ -16,8 +15,6 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const deliveryPincode = useAuthStore((state) => state.deliveryPincode);
-
   const categoryFilter = searchParams.get('category') || undefined;
   const searchQuery = searchParams.get('search') || undefined;
   const sortBy = searchParams.get('sort') || 'name-asc';
@@ -55,7 +52,6 @@ export default function ProductsPage() {
           minPrice,
           maxPrice,
           active: true,
-          pincode: deliveryPincode || undefined,
         });
 
         setProducts(response.products);
@@ -70,7 +66,7 @@ export default function ProductsPage() {
     };
 
     fetchProducts();
-  }, [categoryFilter, searchQuery, sortBy, minPrice, maxPrice, page, deliveryPincode]);
+  }, [categoryFilter, searchQuery, sortBy, minPrice, maxPrice, page]);
 
   const pageTitle = useMemo(() => {
     if (searchQuery) return `Search: ${searchQuery}`;

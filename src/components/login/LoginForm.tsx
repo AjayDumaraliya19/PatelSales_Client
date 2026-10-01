@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
 import { useAuthStore } from '../../store/authStore';
+import { useCartStore } from '../../store/cartStore';
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuthStore();
+  const syncCart = useCartStore((s) => s.syncCart);
 
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -26,6 +28,8 @@ export default function LoginForm() {
 
     try {
       await login({ email, password });
+      // Merge guest cart into backend cart after login
+      await syncCart();
       setIsLoggedIn(true);
       setTimeout(() => {
         const from = (location.state as any)?.from?.pathname || '/products';

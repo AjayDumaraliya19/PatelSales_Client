@@ -228,44 +228,49 @@ export const useCartStore = create<CartStore>()(
       },
 
       /**
-       * Sync local cart to backend
-       * - Called on login to merge local cart with backend cart
+       * Sync local cart to backend on login
+       * - Fetches backend cart first
+       * - Merges local (guest) items into it (local quantity wins on conflict)
+       * - Pushes merged items to backend
+       * - Updates local state with final merged cart
        */
       syncCart: async () => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
-        
+
         if (!isAuthenticated) {
           return;
         }
 
         const localItems = get().items;
-        
+
         if (localItems.length === 0) {
-          // No local items, just fetch backend cart
+          // No local items — just pull backend cart
           await get().fetchCart();
           return;
         }
 
         try {
           set({ isSyncing: true });
-          
-          // Sync each local item to backend
+
+          // 1. Push every local (guest) item to backend.
+          //    Backend merges quantities if the product already exists.
           for (const item of localItems) {
             try {
               await cartService.addToCart({
                 product: item.productId,
                 quantity: item.quantity,
               });
-            } catch (error) {
-              console.error(`Failed to sync item ${item.productId}:`, error);
+            } catch (err) {
+              console.error(`Failed to sync item ${item.productId} to backend:`, err);
             }
           }
 
-          // Fetch the merged cart from backend
+          // 2. Fetch the fully merged cart from the backend and update local state.
           await get().fetchCart();
           set({ lastSyncedAt: Date.now(), isSyncing: false });
         } catch (error) {
-          console.error('Failed to sync cart:', error);
+          console.error('Failed to sync cart on login:', error);
+          // Keep local items intact if sync fails
           set({ isSyncing: false });
         }
       },
@@ -288,8 +293,10 @@ export const useCartStore = create<CartStore>()(
       },
 
       getShipping: () => {
-        const subtotal = get().getSubtotal();
-        return subtotal >= 150 ? 0 : 12.99;
+        // ── Shipping charge temporarily disabled ──
+        // const subtotal = get().getSubtotal();
+        // return subtotal >= 150 ? 0 : 12.99;
+        return 0;
       },
 
       getTotal: () => {

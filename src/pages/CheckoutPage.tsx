@@ -91,7 +91,7 @@ export default function CheckoutPage() {
       street,
       city,
       state,
-      zip,
+      zipCode: zip,
       country: 'US',
       phone,
     };
