@@ -4,7 +4,7 @@ import AppImage from '../ui/AppImage';
 import Icon from '../ui/AppIcon';
 import { useCartStore } from '../../store/cartStore';
 
-export default function CartItemRow({ item }: CartItemRowProps) {
+export default function CartItemRow({ item }) {
   const [removing, setRemoving] = useState(false);
   const [updating, setUpdating] = useState(false);
   const updateQuantity = useCartStore((s) => s.updateQuantity);

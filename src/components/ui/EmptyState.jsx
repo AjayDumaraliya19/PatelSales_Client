@@ -6,7 +6,7 @@ export default function EmptyState({
   title,
   description,
   action,
-}: EmptyStateProps) {
+}) {
   return (
     <div className="app-card p-8 sm:p-12 text-center animate-fade-in">
       <div className="w-14 h-14 bg-[var(--secondary)]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">

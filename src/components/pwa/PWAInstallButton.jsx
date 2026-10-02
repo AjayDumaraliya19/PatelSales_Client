@@ -7,7 +7,7 @@ export default function PWAInstallButton({
   className = '',
   label = 'Install App',
   variant = 'primary',
-}: PWAInstallButtonProps) {
+}) {
   const { canInstall, isInstalled, installApp } = usePWA();
   const [isInstalling, setIsInstalling] = React.useState(false);
 

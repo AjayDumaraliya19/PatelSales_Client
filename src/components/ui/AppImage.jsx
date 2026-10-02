@@ -13,16 +13,27 @@ const AppImage = memo(function AppImage({
     fill = false,
     sizes,
     onClick,
-    fallbackSrc = '/icons/icon-192x192.png',
+    fallbackSrc = '/logo.png',
     loading = 'lazy',
     unoptimized = false,
     ...props
-}: AppImageProps) {
-    const [imageSrc, setImageSrc] = useState(src);
+}) {
+    const [imageSrc, setImageSrc] = useState(src || fallbackSrc);
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
     const isExternalUrl = useMemo(() => typeof imageSrc === 'string' && imageSrc.startsWith('http'), [imageSrc]);
+
+    useEffect(() => {
+        if (!src) {
+            setImageSrc(fallbackSrc);
+            setHasError(true);
+        } else {
+            setImageSrc(src);
+            setHasError(false);
+        }
+        setIsLoading(true);
+    }, [src, fallbackSrc]);
 
     const handleError = useCallback(() => {
         if (!hasError && imageSrc !== fallbackSrc) {
@@ -40,9 +51,10 @@ const AppImage = memo(function AppImage({
     const imageClassName = useMemo(() => {
         const classes = [className];
         if (isLoading) classes.push('bg-gray-200');
+        if (hasError && imageSrc === fallbackSrc) classes.push('object-contain p-4'); // padding for fallback logo
         if (onClick) classes.push('cursor-pointer hover:opacity-90 transition-opacity duration-200');
         return classes.filter(Boolean).join(' ');
-    }, [className, isLoading, onClick]);
+    }, [className, isLoading, onClick, hasError, imageSrc, fallbackSrc]);
 
     const imageProps = useMemo(() => {
         const baseProps = {

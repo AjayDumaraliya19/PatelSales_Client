@@ -3,9 +3,27 @@ import { Link } from 'react-router-dom';
 import Icon from '../components/ui/AppIcon';
 import { getCategoryProductHref } from '../data/productCategories';
 
+import cmsService from '../services/cmsService';
+
 export default function AboutPage() {
   const [isVisible, setIsVisible] = useState(false);
+  const [cmsData, setCmsData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCmsData = async () => {
+      try {
+        const data = await cmsService.getAboutPage();
+        setCmsData(data.content);
+      } catch (error) {
+        console.error('Error fetching about page content:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCmsData();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -28,7 +46,7 @@ export default function AboutPage() {
     };
   }, []);
 
-  const CountUpAnimation = ({ value, duration = 2000 }: { value; duration? }) => {
+  const CountUpAnimation = ({ value, duration = 2000 }) => {
     const [count, setCount] = useState(0);
     const numericValue = parseInt(value.replace(/\D/g, '')) || 0;
     const suffix = value.replace(/[\d]/g, '');
@@ -56,185 +74,205 @@ export default function AboutPage() {
 
     return <span>{count}{suffix}</span>;
   };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  const { heroSection, ourStory, mission, values, stats } = cmsData || {};
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Banner */}
-      <section className="relative py-16 sm:py-20 lg:py-32">
-        <div className="absolute inset-0">
-          <img
-            src="/images/about/background.png"
-            alt="About Patel Sales LLC"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#003087]/50 to-[#0040a0]/40" />
-        </div>
-        <div className="relative max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
-            About Patel Sales LLC
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto">
-            Your Trusted Partner for Premium Food Packaging & Disposable Supplies
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/products"
-              className="bg-white text-[#003087] font-bold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Shop Products
-            </Link>
-            <Link
-              to="/contact"
-              className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors"
-            >
-              Contact Us
-            </Link>
+      {heroSection?.enabled !== false && (
+        <section className="relative py-16 sm:py-20 lg:py-32">
+          <div className="absolute inset-0">
+            <img
+              src={heroSection?.image || "/images/about/background.png"}
+              alt={heroSection?.title || "About Patel Sales LLC"}
+              className="w-full h-full object-cover"
+              onError={(e) => { e.target.onerror = null; e.target.src = "/images/about/background.png"; }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#003087]/50 to-[#0040a0]/40" />
           </div>
-        </div>
-      </section>
+          <div className="relative max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+              {heroSection?.title || "About Patel Sales LLC"}
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto">
+              {heroSection?.subtitle || "Your Trusted Partner for Premium Food Packaging & Disposable Supplies"}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/products"
+                className="bg-white text-[#003087] font-bold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                Shop Products
+              </Link>
+              <Link
+                to="/contact"
+                className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Company Introduction */}
-      <section className="py-8 sm:py-10 lg:py-16 bg-white">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="rounded-2xl overflow-hidden shadow-xl">
-              <img
-                src="/images/about/ware-house.png"
-                alt="Patel Sales Warehouse"
-                className="w-full h-[250px] sm:h-[300px] md:h-[400px] object-cover"
-              />
-            </div>
-            <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4 sm:mb-6">
-                Who We Are
-              </h2>
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
-                Patel Sales LLC is a trusted supplier of food packaging products and disposable supplies.
-              </p>
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8">
-                We help restaurants, cafés, hotels, grocery stores, food trucks, bakeries, catering businesses, wholesalers and retailers by providing high-quality packaging solutions.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
-                  <span className="text-gray-700 font-medium">Quality</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
-                  <span className="text-gray-700 font-medium">Affordable Pricing</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
-                  <span className="text-gray-700 font-medium">Fast Delivery</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
-                  <span className="text-gray-700 font-medium">Reliable Service</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
-                  <span className="text-gray-700 font-medium">Large Inventory</span>
+      {ourStory?.enabled !== false && (
+        <section className="py-8 sm:py-10 lg:py-16 bg-white">
+          <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div className="rounded-2xl overflow-hidden shadow-xl">
+                <img
+                  src={ourStory?.image || "/images/about/ware-house.png"}
+                  alt={ourStory?.title || "Patel Sales Warehouse"}
+                  className="w-full h-[250px] sm:h-[300px] md:h-[400px] object-cover"
+                  onError={(e) => { e.target.onerror = null; e.target.src = "/images/about/ware-house.png"; }}
+                />
+              </div>
+              <div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-4 sm:mb-6">
+                  {ourStory?.title || "Who We Are"}
+                </h2>
+                <div 
+                  className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6"
+                  dangerouslySetInnerHTML={{ __html: ourStory?.content || `<p class="mb-4">Patel Sales LLC is a trusted supplier of food packaging products and disposable supplies.</p><p>We help restaurants, cafés, hotels, grocery stores, food trucks, bakeries, catering businesses, wholesalers and retailers by providing high-quality packaging solutions.</p>` }}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
+                    <span className="text-gray-700 font-medium">Quality</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
+                    <span className="text-gray-700 font-medium">Affordable Pricing</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
+                    <span className="text-gray-700 font-medium">Fast Delivery</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
+                    <span className="text-gray-700 font-medium">Reliable Service</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Icon name="CheckCircleIcon" size={20} className="text-[#2F7D32]" />
+                    <span className="text-gray-700 font-medium">Large Inventory</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* What Makes Us Great */}
-      <section className="py-8 sm:py-10 lg:py-16 bg-gray-50">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              What Makes Us Great?
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Discover the advantages of choosing Patel Sales LLC
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {[
-              {
-                icon: 'TruckIcon',
-                title: 'Fast Shipping',
-                desc: 'For more details about shipping from each of our warehouse locations check out the Ground and Common Carrier estimated shipping times to your area.',
-              },
-              {
-                icon: 'CurrencyDollarIcon',
-                title: 'Low Prices',
-                desc: 'We have hundreds of thousands of products on our website and add more every day. Our large volume of inventory means we get to offer you exceptionally low prices.',
-              },
-              {
-                icon: 'DocumentTextIcon',
-                title: 'High Quality Content',
-                desc: 'We provide you with the relevant info you need to make the right purchasing decisions. Every one of our product descriptions is written by a dedicated content writer.',
-              },
-              {
-                icon: 'HeadsetIcon',
-                title: 'Customer Support',
-                desc: 'Our friendly, knowledgeable Customer Solutions Specialists are here to assist with your questions and concerns. Contact us for a quick, simple solution.',
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group text-center"
-              >
-                {/* Icon/Image Section - 20% */}
-                <div className="h-32 bg-gradient-to-br from-[#003087] to-[#0040a0] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <Icon name={item.icon} size={48} className="text-white" />
+      {(!values || values.length > 0) && (
+        <section className="py-8 sm:py-10 lg:py-16 bg-gray-50">
+          <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                What Makes Us Great?
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Discover the advantages of choosing Patel Sales LLC
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {(values?.length > 0 ? values.filter(v => v.enabled) : [
+                {
+                  icon: 'TruckIcon',
+                  title: 'Fast Shipping',
+                  description: 'For more details about shipping from each of our warehouse locations check out the Ground and Common Carrier estimated shipping times to your area.',
+                },
+                {
+                  icon: 'CurrencyDollarIcon',
+                  title: 'Low Prices',
+                  description: 'We have hundreds of thousands of products on our website and add more every day. Our large volume of inventory means we get to offer you exceptionally low prices.',
+                },
+                {
+                  icon: 'DocumentTextIcon',
+                  title: 'High Quality Content',
+                  description: 'We provide you with the relevant info you need to make the right purchasing decisions. Every one of our product descriptions is written by a dedicated content writer.',
+                },
+                {
+                  icon: 'HeadsetIcon',
+                  title: 'Customer Support',
+                  description: 'Our friendly, knowledgeable Customer Solutions Specialists are here to assist with your questions and concerns. Contact us for a quick, simple solution.',
+                },
+              ]).map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group text-center"
+                >
+                  {/* Icon/Image Section - 20% */}
+                  <div className="h-32 bg-gradient-to-br from-[#003087] to-[#0040a0] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                    <Icon name={item.icon} size={48} className="text-white" />
+                  </div>
+                  {/* Content Section - 80% */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                  </div>
                 </div>
-                {/* Content Section - 80% */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Our Mission */}
-      <section className="py-8 sm:py-10 lg:py-16 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="/images/about/our-mission.png"
-            alt="Our Mission"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#003087]/80 to-[#0040a0]/50" />
-        </div>
+      {mission?.enabled !== false && (
+        <section className="py-8 sm:py-10 lg:py-16 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <img
+              src="/images/about/our-mission.png"
+              alt="Our Mission"
+              className="w-full h-full object-cover"
+              onError={(e) => { e.target.onerror = null; e.target.src = "/logo.png"; }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#003087]/80 to-[#0040a0]/50" />
+          </div>
 
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 relative z-10">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Our Mission
-            </h2>
-            <p className="text-white/90 text-lg max-w-3xl mx-auto">
-              We are dedicated to providing premium quality packaging products while supporting food businesses with affordable prices and excellent customer service.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-            {[
-              { icon: 'StarIcon', title: 'Premium Quality', desc: 'Top-tier products' },
-              { icon: 'BuildingStorefrontIcon', title: 'Support Businesses', desc: 'Your growth partner' },
-              { icon: 'CurrencyDollarIcon', title: 'Affordable Prices', desc: 'Best value guaranteed' },
-              { icon: 'HeartIcon', title: 'Customer Service', desc: '24/7 dedicated support' },
-              { icon: 'LeafIcon', title: 'Eco-Friendly', desc: 'Sustainable solutions' },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 text-center group"
-              >
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-colors">
-                  <Icon name={item.icon} size={32} className="text-white" />
+          <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6 relative z-10">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+                {mission?.title || "Our Mission"}
+              </h2>
+              <div 
+                className="text-white/90 text-lg max-w-3xl mx-auto"
+                dangerouslySetInnerHTML={{ __html: mission?.content || `<p>We are dedicated to providing premium quality packaging products while supporting food businesses with affordable prices and excellent customer service.</p>` }}
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+              {[
+                { icon: 'StarIcon', title: 'Premium Quality', desc: 'Top-tier products' },
+                { icon: 'BuildingStorefrontIcon', title: 'Support Businesses', desc: 'Your growth partner' },
+                { icon: 'CurrencyDollarIcon', title: 'Affordable Prices', desc: 'Best value guaranteed' },
+                { icon: 'HeartIcon', title: 'Customer Service', desc: '24/7 dedicated support' },
+                { icon: 'LeafIcon', title: 'Eco-Friendly', desc: 'Sustainable solutions' },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 hover:bg-white/20 hover:scale-105 transition-all duration-300 text-center group"
+                >
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-colors">
+                    <Icon name={item.icon} size={32} className="text-white" />
+                  </div>
+                  <h3 className="font-bold text-white text-base mb-1">{item.title}</h3>
+                  <p className="text-white/80 text-xs">{item.desc}</p>
                 </div>
-                <h3 className="font-bold text-white text-base mb-1">{item.title}</h3>
-                <p className="text-white/80 text-xs">{item.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Why Choose Us */}
       <section className="py-8 sm:py-10 lg:py-16 bg-gray-50">
@@ -303,6 +341,7 @@ export default function AboutPage() {
                     src={`/images/categories/${category.image}`}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => { e.target.onerror = null; e.target.src = "/logo.png"; }}
                   />
                 </div>
                 <h3 className="font-bold text-lg text-gray-800 mb-2 text-center">{category.name}</h3>
@@ -329,6 +368,7 @@ export default function AboutPage() {
             src="/images/about/commitement.png"
             alt="Sustainability"
             className="w-full h-full object-cover"
+            onError={(e) => { e.target.onerror = null; e.target.src = "/logo.png"; }}
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#2F7D32]/60 to-[#1a5c1e]/50" />
         </div>
@@ -365,37 +405,39 @@ export default function AboutPage() {
       </section>
 
       {/* Company Statistics */}
-      <section ref={sectionRef} className="py-8 sm:py-10 lg:py-16 bg-white">
-        <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-              Our Numbers Speak
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Trusted by thousands of businesses across the nation
-            </p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
-            {[
-              { value: '5000+', label: 'Products', icon: 'CubeIcon' },
-              { value: '1000+', label: 'Happy Customers', icon: 'UserGroupIcon' },
-              { value: '50+', label: 'Trusted Brands', icon: 'BuildingStorefrontIcon' },
-              { value: '10+', label: 'Years Experience', icon: 'CalendarIcon' },
-              { value: '100%', label: 'Quality Assurance', icon: 'ShieldCheckIcon' },
-            ].map((stat, index) => (
-              <div key={index} className="bg-gray-50 p-8 rounded-2xl border border-gray-100 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 group">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Icon name={stat.icon} size={28} className="text-white" />
+      {(!stats || stats.length > 0) && (
+        <section ref={sectionRef} className="py-8 sm:py-10 lg:py-16 bg-white">
+          <div className="max-w-[1600px] mx-auto px-3 sm:px-4 md:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+                Our Numbers Speak
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Trusted by thousands of businesses across the nation
+              </p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
+              {(stats?.length > 0 ? stats.filter(s => s.enabled) : [
+                { value: '5000+', label: 'Products', icon: 'CubeIcon' },
+                { value: '1000+', label: 'Happy Customers', icon: 'UserGroupIcon' },
+                { value: '50+', label: 'Trusted Brands', icon: 'BuildingStorefrontIcon' },
+                { value: '10+', label: 'Years Experience', icon: 'CalendarIcon' },
+                { value: '100%', label: 'Quality Assurance', icon: 'ShieldCheckIcon' },
+              ]).map((stat, index) => (
+                <div key={index} className="bg-gray-50 p-8 rounded-2xl border border-gray-100 text-center hover:shadow-xl hover:scale-105 transition-all duration-300 group">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#003087] to-[#0040a0] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <Icon name={stat.icon} size={28} className="text-white" />
+                  </div>
+                  <div className="text-4xl md:text-5xl font-bold text-[#003087] mb-2">
+                    <CountUpAnimation value={stat.value} />
+                  </div>
+                  <div className="text-gray-600 font-medium">{stat.label}</div>
                 </div>
-                <div className="text-4xl md:text-5xl font-bold text-[#003087] mb-2">
-                  <CountUpAnimation value={stat.value} />
-                </div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Call To Action */}
       <section className="py-8 sm:py-10 lg:py-16 bg-white">

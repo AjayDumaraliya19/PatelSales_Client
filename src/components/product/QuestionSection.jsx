@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Icon from '../ui/AppIcon';
-import questionService, { Question } from '../../services/questionService';
+import questionService from '../../services/questionService';
 import { useAuthStore } from '../../store/authStore';
 
-export default function QuestionSection({ productId }: QuestionSectionProps) {
+export default function QuestionSection({ productId }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);

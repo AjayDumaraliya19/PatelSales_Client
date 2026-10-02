@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Icon from '../ui/AppIcon';
 
-export default function ReviewForm({ productName, onSubmit, onCancel }: ReviewFormProps) {
+export default function ReviewForm({ productName, onSubmit, onCancel }) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState('');

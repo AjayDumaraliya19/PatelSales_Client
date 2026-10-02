@@ -23,7 +23,7 @@ class AuthService {
   /**
    * Logout user
    */
-  async logout() { success; message }> {
+  async logout() {
     const response = await apiClient.post('/auth/logout');
     return response.data;
   }
@@ -31,7 +31,7 @@ class AuthService {
   /**
    * Get current user profile
    */
-  async getMe() { success; user}> {
+  async getMe() {
     const response = await apiClient.get('/auth/me');
     return response.data;
   }
@@ -39,7 +39,7 @@ class AuthService {
   /**
    * Update user profile
    */
-  async updateProfile(data) { success; message; user}> {
+  async updateProfile(data) {
     const response = await apiClient.put('/auth/profile', data);
     return response.data;
   }
@@ -47,7 +47,7 @@ class AuthService {
   /**
    * Change password
    */
-  async changePassword(data) { success; message }> {
+  async changePassword(data) {
     const response = await apiClient.put('/auth/password', data);
     return response.data;
   }

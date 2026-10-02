@@ -1,6 +1,6 @@
 import React from 'react';
-import * '@heroicons/react/24/outline';
-import * '@heroicons/react/24/solid';
+import * as HeroIconsOutline from '@heroicons/react/24/outline';
+import * as HeroIconsSolid from '@heroicons/react/24/solid';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 
 function Icon({
@@ -11,9 +11,9 @@ function Icon({
     onClick,
     disabled = false,
     ...props
-}: IconProps) {
-    const iconSet = variant === 'solid' ? HeroIconsSolid;
-    const IconComponent = iconSet[name;
+}) {
+    const iconSet = variant === 'solid' ? HeroIconsSolid : HeroIconsOutline;
+    const IconComponent = iconSet[name];
 
     if (!IconComponent) {
         return (

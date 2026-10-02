@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '../ui/AppImage';
 
-export default function WssProductCard({ product, showPlusBadge = true }: WssProductCardProps) {
+export default function WssProductCard({ product, showPlusBadge = true }) {
   return (
     <Link to={`/products/${product._id}`} className="block flex-shrink-0 w-[180px] sm:w-[200px]">
       <div className="bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all h-full">

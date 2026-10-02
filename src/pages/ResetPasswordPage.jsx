@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/authStore';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
-  const { token } = useParams<{ token }>();
+  const { token } = useParams();
   const { resetPassword } = useAuthStore();
   
   const [password, setPassword] = useState('');

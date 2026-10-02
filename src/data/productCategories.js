@@ -26,7 +26,7 @@ export function getCategoryProductHref(slug) {
 
 export const disposablesCategoryNav = {
   label: disposablesCatalogLabel,
-  href
+  href: PRODUCTS_PAGE_PATH,
   subMenu: {
     main: productCategoryDefinitions
       .filter((category) => category.group === 'main')
@@ -50,7 +50,7 @@ export const disposablesCategoryNav = {
 const catalogTimestamp = '2024-01-01T00:00:00Z';
 
 export function toCatalogCategory(
-  category
+  category,
   displayOrder,
 ) {
   return {

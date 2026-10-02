@@ -6,10 +6,10 @@ import Icon from '../components/ui/AppIcon';
 import { businessAccountsSections } from '../data/sitePagesData';
 
 const benefits = [
-  { icon: 'CurrencyDollarIcon': 'Wholesale Pricing', desc: 'Case quantities at up to 50% off retail' },
-  { icon: 'ClockIcon': 'Net-30 Terms', desc: 'Credit-approved business accounts' },
-  { icon: 'TruckIcon': 'Priority Shipping', desc: 'Faster processing for recurring orders' },
-  { icon: 'PhoneIcon': 'Dedicated Support', desc: 'Direct line to your account manager' },
+  { icon: 'CurrencyDollarIcon', title: 'Wholesale Pricing', desc: 'Case quantities at up to 50% off retail' },
+  { icon: 'ClockIcon', title: 'Net-30 Terms', desc: 'Credit-approved business accounts' },
+  { icon: 'TruckIcon', title: 'Priority Shipping', desc: 'Faster processing for recurring orders' },
+  { icon: 'PhoneIcon', title: 'Dedicated Support', desc: 'Direct line to your account manager' },
 ];
 
 export default function BusinessAccountsPage() {

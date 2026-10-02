@@ -35,10 +35,10 @@ export default function Footer() {
         <div className="w-full px-3 sm:px-4 md:px-6 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: 'TruckIcon': 'Free Shipping $150+', sub: 'NJ, NY, CT & PA' },
-              { icon: 'CubeIcon': 'Wholesale Pricing', sub: 'Up to 50% off retail' },
-              { icon: 'ShieldCheckIcon': 'FDA Compliant', sub: 'All products certified' },
-              { icon: 'PhoneIcon': '(732) 762-7840', sub: 'Mon–Sat 8am–6pm' },
+              { icon: 'TruckIcon', title: 'Free Shipping $150+', sub: 'NJ, NY, CT & PA' },
+              { icon: 'CubeIcon', title: 'Wholesale Pricing', sub: 'Up to 50% off retail' },
+              { icon: 'ShieldCheckIcon', title: 'FDA Compliant', sub: 'All products certified' },
+              { icon: 'PhoneIcon', title: '(732) 762-7840', sub: 'Mon–Sat 8am–6pm' },
             ].map((item) => (
               <div key={item.title} className="flex flex-col items-center text-center gap-3 group">
                 <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">

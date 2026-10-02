@@ -10,12 +10,38 @@ const SWIPE_THRESHOLD = 50;
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [slides, setSlides] = useState(heroSlides); // Default to static data
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  const goToSlide = useCallback((index) => {
-    setCurrentSlide(((index % heroSlides.length) + heroSlides.length) % heroSlides.length);
+  useEffect(() => {
+    // Fetch dynamic banners from CMS
+    import('../services/cmsService').then(module => {
+      const cmsService = module.default;
+      cmsService.getBannersByPlacement('hero').then(banners => {
+        if (banners && banners.length > 0) {
+          // Map backend banner format to hero slide format
+          const mappedSlides = banners.map(b => ({
+            brandLabel: b.title || 'Featured', // Or custom logic
+            title: b.title,
+            subtitle: b.subtitle || '',
+            description: b.description || '',
+            cta: b.buttonText || 'SHOP NOW',
+            ctaHref: b.buttonLink || '/products',
+            discountBadge: b.badgeText || '',
+            image: b.image,
+            imageAlt: b.title || 'Hero Banner',
+            panelClass: 'from-[#003087] to-[#0040a0]',
+          }));
+          setSlides(mappedSlides);
+        }
+      }).catch(err => console.error('Failed to load hero banners', err));
+    });
   }, []);
+
+  const goToSlide = useCallback((index) => {
+    setCurrentSlide(((index % slides.length) + slides.length) % slides.length);
+  }, [slides.length]);
 
   const nextSlide = useCallback(() => {
     goToSlide(currentSlide + 1);
@@ -26,10 +52,11 @@ export default function HeroSection() {
   }, [currentSlide, goToSlide]);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || slides.length === 0) return;
     const interval = setInterval(nextSlide, SLIDE_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide]);
+  }, [isPaused, nextSlide, slides.length]);
+
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -62,7 +89,7 @@ export default function HeroSection() {
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
-            {heroSlides.map((slide, index) => (
+            {slides.map((slide, index) => (
               <div key={index} className="w-full flex-shrink-0">
                 <div className="relative min-h-[380px] md:min-h-[380px] lg:min-h-[420px]">
                   {/* Full-slide background image */}
@@ -113,24 +140,27 @@ export default function HeroSection() {
                   </div>
 
                   {/* Discount badge */}
+                  {slide.discountBadge && (
                   <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-10 z-20">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px] bg-[#003087] rounded-full flex flex-col items-center justify-center shadow-lg border-[3px] sm:border-4 border-white">
                       <span className="text-white font-bold text-sm md:text-base leading-none">
                         {slide.discountBadge.split(' ')[0]}
                       </span>
                       <span className="text-white/90 text-[10px] md:text-xs font-semibold">
-                        {slide.discountBadge.split(' ')[1]}
+                        {slide.discountBadge.split(' ')[1] || ''}
                       </span>
                     </div>
                   </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           {/* Pagination dots */}
+          {slides.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1.5">
-            {heroSlides.map((_, index) => (
+            {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
@@ -144,6 +174,7 @@ export default function HeroSection() {
               />
             ))}
           </div>
+          )}
         </div>
       </div>
     </section>

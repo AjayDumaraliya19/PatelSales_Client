@@ -1,7 +1,7 @@
 import React from 'react';
 import AppImage from '../ui/AppImage';
 
-function InfoRow({ label, value }: { label; value }) {
+function InfoRow({ label, value }) {
   return (
     <div className="flex flex-col sm:flex-row sm:justify-between gap-0.5 py-2 border-b border-gray-100 last:border-0">
       <span className="text-xs text-gray-500 font-medium">{label}</span>
@@ -10,7 +10,7 @@ function InfoRow({ label, value }: { label; value }) {
   );
 }
 
-export default function OrderTrackingDetails({ order }: OrderTrackingDetailsProps) {
+export default function OrderTrackingDetails({ order }) {
   const deliveryDate = new Date(order.estimatedDeliveryDate).toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',

@@ -7,7 +7,7 @@ export default function InfoPageLayout({
   breadcrumbs,
   children,
   lastUpdated,
-}: InfoPageLayoutProps) {
+}) {
   return (
     <div className="min-h-full bg-[var(--background)]">
       <section className="bg-gradient-to-r from-[var(--secondary)] to-[#0040a0] py-8 sm:py-12">

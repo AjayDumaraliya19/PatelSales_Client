@@ -4,7 +4,7 @@ import AppImage from '../ui/AppImage';
 import categoriesService from '../../services/categoriesService';
 import { getCategoryImagePath } from '../../data/categoryImages';
 
-export default function FeaturedCategoriesSection() {
+export default function FeaturedCategoriesSection({ title }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +29,7 @@ export default function FeaturedCategoriesSection() {
     <section className="bg-white py-10">
       <div className="w-full px-3 sm:px-4 md:px-6">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">
-          Featured Categories
+          {title || "Featured Categories"}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-x-3 sm:gap-x-5 gap-y-8">
           {categories.map((category) => (

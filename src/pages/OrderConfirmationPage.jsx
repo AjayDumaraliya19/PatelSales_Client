@@ -17,7 +17,7 @@ export default function OrderConfirmationPage() {
         const parsed = JSON.parse(raw);
         return {
           _id: '',
-          user: { _id: '', name: '', email: parsed.email }
+          user: { _id: '', name: '', email: parsed.email },
           orderNumber: parsed.orderNumber,
           items: [],
           shippingAddress: {

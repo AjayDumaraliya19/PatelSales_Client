@@ -4,7 +4,7 @@ import AppImage from './ui/AppImage';
 import Icon from './ui/AppIcon';
 import { useCartStore } from '../store/cartStore';
 
-export default function ProductCard({ product, variant = 'grid' }: ProductCardProps) {
+export default function ProductCard({ product, variant = 'grid' }) {
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [qty, setQty] = useState(1);

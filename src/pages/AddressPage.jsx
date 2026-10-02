@@ -4,7 +4,7 @@ import PageHeader from '../components/ui/PageHeader';
 import Icon from '../components/ui/AppIcon';
 import userService from '../services/userService';
 
-const emptyAddress'_id'> = {
+const emptyAddress = {
   street: '',
   city: '',
   state: '',
@@ -18,7 +18,7 @@ export default function AddressPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState<Omit<Address, '_id'>>(emptyAddress);
+  const [form, setForm] = useState(emptyAddress);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);

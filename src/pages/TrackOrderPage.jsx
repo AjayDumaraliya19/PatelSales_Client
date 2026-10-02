@@ -17,7 +17,7 @@ export default function TrackOrderPage() {
   const [order, setOrder] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleTrack = async (event?) => {
+  const handleTrack = async (event) => {
     event?.preventDefault();
 
     if (!isOnline) {

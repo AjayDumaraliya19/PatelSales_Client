@@ -2,10 +2,10 @@ import React, { useRef } from 'react';
 import Icon from '../ui/AppIcon';
 import WssProductCard from './WssProductCard';
 
-export default function BestSellingSection({ products }: BestSellingSectionProps) {
+export default function BestSellingSection({ products }) {
   const scrollRef = useRef(null);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (direction) => {
     if (!scrollRef.current) return;
     scrollRef.current.scrollBy({ left: direction === 'left' ? -220 : 220, behavior: 'smooth' });
   };

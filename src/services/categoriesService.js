@@ -15,7 +15,7 @@ class CategoriesService {
   /**
    * Get single category by ID
    */
-  async getCategoryById(id) { success; category}> {
+  async getCategoryById(id) {
     const response = await apiClient.get(`/categories/${id}`);
     return response.data;
   }
@@ -23,7 +23,7 @@ class CategoriesService {
   /**
    * Get single category by slug
    */
-  async getCategoryBySlug(slug) { success; category}> {
+  async getCategoryBySlug(slug) {
     const response = await apiClient.get(`/categories/slug/${slug}`);
     return response.data;
   }

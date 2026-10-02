@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Icon from '../ui/AppIcon';
-import reviewService, { Review, ReviewStats } from '../../services/reviewService';
+import reviewService from '../../services/reviewService';
 import ReviewForm from './ReviewForm';
 import { useAuthStore } from '../../store/authStore';
 
-export default function ReviewSection({ productId, productName }: ReviewSectionProps) {
+export default function ReviewSection({ productId, productName }) {
   const [stats, setStats] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
   useEffect(() => { fetchStats(); }, [fetchStats]);
   useEffect(() => { fetchReviews(); }, [fetchReviews]);
 
-  const handleSubmitReview = async (data: { rating; title; comment }) => {
+  const handleSubmitReview = async (data) => {
     await reviewService.createReview(productId, data);
     setShowForm(false);
     setPage(1);
@@ -105,7 +105,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
           {/* Rating Breakdown */}
           <div className="space-y-2">
             {[5, 4, 3, 2, 1].map((star) => {
-              const count = breakdown[star;
+              const count = breakdown[star] || 0;
               const pct = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
               return (
                 <button

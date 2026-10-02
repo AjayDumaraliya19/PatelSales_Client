@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
 import { usePWA } from '../../hooks/usePWA';
 
-export default function PWAInstallBanner({ variant = 'bar' }: PWAInstallBannerProps) {
+export default function PWAInstallBanner({ variant = 'bar' }) {
   const { canInstall, installApp, dismissInstallBanner, isInstalled, shouldShowInstallPromo } = usePWA();
   const [isInstalling, setIsInstalling] = useState(false);
 

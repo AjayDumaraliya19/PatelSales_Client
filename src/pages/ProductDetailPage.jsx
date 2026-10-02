@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AppImage from '../components/ui/AppImage';
 import Icon from '../components/ui/AppIcon';
-import productsService, { Product } from '../services/productsService';
+import productsService from '../services/productsService';
 import { useCartStore } from '../store/cartStore';
 import BulkPricingTable from '../components/product/BulkPricingTable';
 import ReviewSection from '../components/product/ReviewSection';
@@ -12,7 +12,7 @@ import ProductSlider from '../components/product/ProductSlider';
 const isVideoUrl = (url) => /\.(mp4|webm|ogg|mov|avi)(\?|$)/i.test(url);
 
 export default function ProductDetailPage() {
-  const { productId } = useParams<{ productId }>();
+  const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [popularProducts, setPopularProducts] = useState([]);
@@ -496,7 +496,7 @@ export default function ProductDetailPage() {
                   { label: 'Price', value: `$${product.price.toFixed(2)} per case` },
                   product.caseSize && { label: 'Case Size', value: product.caseSize },
                   { label: 'Availability', value: inStock ? `${product.stock} cases in stock` : 'Out of Stock', highlight: inStock },
-                  ...(product.attributes ? Object.entries(product.attributes).map(([key, value]) => ({ label: key, value(value) })) : []),
+                  ...(product.attributes ? Object.entries(product.attributes).map(([key, value]) => ({ label: key, value: String(value) })) : []),
                 ].filter(Boolean).map((item, idx) => (
                   <div key={idx} className={`grid grid-cols-2 border-b border-gray-100 py-3 ${idx % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
                     <span className="text-sm font-semibold text-gray-700">{(item).label}</span>

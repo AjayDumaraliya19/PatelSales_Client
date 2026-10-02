@@ -3,7 +3,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Icon from '../ui/AppIcon';
 import paymentService from '../../services/paymentService';
 
-export default function PaymentForm({ orderId, amount, onSuccess, onError, onBack }: PaymentFormProps) {
+export default function PaymentForm({ orderId, amount, onSuccess, onError, onBack }) {
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
@@ -29,7 +29,7 @@ export default function PaymentForm({ orderId, amount, onSuccess, onError, onBac
     try {
       const intentResponse = await paymentService.createPaymentIntent({
         orderId,
-        amount(amount * 100),
+        amount: Math.round(amount * 100),
         currency: 'usd',
       });
 

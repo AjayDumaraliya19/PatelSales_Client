@@ -106,7 +106,7 @@ export const promoGridItems = [
 export const actionTiles = [
   {
     title: 'Scratch & Dent',
-    bannerEyebrow,
+    bannerEyebrow: 'Outlet',
     bannerTitle: 'Scratch & Dent',
     bannerVariant: 'scratch',
     description: 'Shop like-new items for less',
@@ -133,7 +133,7 @@ export const actionTiles = [
   },
   {
     title: 'Patel Sales Rewards',
-    bannerEyebrow,
+    bannerEyebrow: 'Rewards',
     bannerTitle: 'Rewards',
     bannerVariant: 'rewards',
     description: 'Earn rewards on every wholesale order at Patel Sales',

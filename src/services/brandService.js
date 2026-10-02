@@ -2,7 +2,7 @@ import apiClient from '../lib/apiClient';
 
 class BrandService {
   async getActiveBrands() {
-    const response = await apiClient.get<{ success; brands}>('/brands');
+    const response = await apiClient.get('/brands');
     return response.data.brands || [];
   }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function PageHeader({ title, breadcrumbs, action }: PageHeaderProps) {
+export default function PageHeader({ title, breadcrumbs, action }) {
   return (
     <div className="mb-5 sm:mb-6">
       {breadcrumbs && breadcrumbs.length > 0 && (

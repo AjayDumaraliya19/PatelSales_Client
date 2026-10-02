@@ -7,27 +7,27 @@ import { contactFaqs, contactInfo } from '../data/contactPageData';
 
 const contactCards = [
   {
-    icon: 'PhoneIcon'
+    icon: 'PhoneIcon',
     title: 'Call Us',
     value: contactInfo.phone,
     href: contactInfo.phoneHref,
     sub: 'Mon–Sat during business hours',
   },
   {
-    icon: 'EnvelopeIcon'
+    icon: 'EnvelopeIcon',
     title: 'Email Us',
     value: contactInfo.email,
     href: contactInfo.emailHref,
     sub: 'We reply within 1 business day',
   },
   {
-    icon: 'MapPinIcon'
+    icon: 'MapPinIcon',
     title: 'Visit Us',
     value: contactInfo.address.line1,
     sub: contactInfo.address.line2,
   },
   {
-    icon: 'ClockIcon'
+    icon: 'ClockIcon',
     title: 'Business Hours',
     value: contactInfo.hours[0].time,
     sub: `${contactInfo.hours[0].days} · Sat 8am–4pm`,

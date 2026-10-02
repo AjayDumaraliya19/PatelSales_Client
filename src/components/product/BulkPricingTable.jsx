@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '../ui/AppIcon';
 
-export default function BulkPricingTable({ tiers, basePrice, quantity }: BulkPricingTableProps) {
+export default function BulkPricingTable({ tiers, basePrice, quantity }) {
   if (!tiers || tiers.length === 0) return null;
 
   const sorted = [...tiers].sort((a, b) => a.minQuantity - b.minQuantity);

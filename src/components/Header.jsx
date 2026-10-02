@@ -44,9 +44,6 @@ const mainMenu = [
 function HeaderBrand({
   variant = 'desktop',
   onNavigate,
-}: {
-  variant?: 'mobile' | 'desktop';
-  onNavigate?: () => void;
 }) {
   const variantClass = variant === 'mobile' ? 'site-header-brand--mobile' : 'site-header-brand--desktop';
 
@@ -213,11 +210,11 @@ export default function Header() {
               <span>Menu</span>
             </button>
 
-            <HeaderBrand variant="mobile" onNavigate={mobileMenuOpen ? closeMobileMenu} />
+            <HeaderBrand variant="mobile" onNavigate={mobileMenuOpen ? closeMobileMenu : undefined} />
 
             <Link
               to="/cart"
-              onClick={mobileMenuOpen ? closeMobileMenu}
+              onClick={mobileMenuOpen ? closeMobileMenu : undefined}
               className="site-header-cart-btn"
               aria-label={`Cart — ${itemCount} items`}
             >

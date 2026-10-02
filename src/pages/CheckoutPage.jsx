@@ -86,7 +86,7 @@ export default function CheckoutPage() {
       quantity: item.quantity,
     }));
 
-    const shippingAddress'shippingAddress'] = {
+    const shippingAddress = {
       street,
       city,
       state,

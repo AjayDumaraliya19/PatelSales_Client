@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../ui/AppIcon';
 
-export default function ProductSlider({ title, subtitle, products, viewAllLink, viewAllLabel = 'View All' }: ProductSliderProps) {
+export default function ProductSlider({ title, subtitle, products, viewAllLink, viewAllLabel = 'View All' }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -26,7 +26,7 @@ export default function ProductSlider({ title, subtitle, products, viewAllLink, 
     };
   }, [checkScroll, products]);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (direction) => {
     if (!scrollRef.current) return;
     const cardWidth = scrollRef.current.querySelector(':scope > a')?.clientWidth || 200;
     scrollRef.current.scrollBy({ left: direction === 'left' ? -(cardWidth + 16) : cardWidth + 16, behavior: 'smooth' });

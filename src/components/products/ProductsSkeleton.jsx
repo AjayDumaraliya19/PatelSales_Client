@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ProductsSkeleton({ viewMode }: ProductsSkeletonProps) {
+export default function ProductsSkeleton({ viewMode }) {
   if (viewMode === 'list') {
     return (
       <div className="space-y-3">

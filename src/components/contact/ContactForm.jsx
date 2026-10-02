@@ -5,7 +5,7 @@ import { inquiryTypes } from '../../data/contactPageData';
 const inputClass = 'input-field w-full min-h-[44px]';
 const selectClass = 'input-field w-full min-h-[44px] appearance-none';
 
-export default function ContactForm({ defaultInquiryType = '' }: ContactFormProps) {
+export default function ContactForm({ defaultInquiryType = '' }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 

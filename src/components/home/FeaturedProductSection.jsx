@@ -4,7 +4,7 @@ import AppImage from '../ui/AppImage';
 import Icon from '../ui/AppIcon';
 import { useCartStore } from '../../store/cartStore';
 
-function FeaturedProductCard({ product }: FeaturedProductCardProps) {
+function FeaturedProductCard({ product }) {
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
@@ -141,10 +141,10 @@ export default function FeaturedProductSection({
   products,
   title = "Best Reviewed Products",
   subtitle = "Top picks for your business"
-}: FeaturedProductSectionProps) {
+}) {
   const scrollRef = useRef(null);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (direction) => {
     if (!scrollRef.current) return;
     scrollRef.current.scrollBy({ left: direction === 'left' ? -280 : 280, behavior: 'smooth' });
   };

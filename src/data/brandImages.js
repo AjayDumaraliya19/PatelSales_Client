@@ -6,8 +6,7 @@
  */
 export const BRAND_IMAGE_DIR = '/images/brands';
 
-export const PLACEHOLDER_BRAND_LOGO =
-  'https://placehold.co/240x120/f4f4f4/999999?text=Brand';
+export const PLACEHOLDER_BRAND_LOGO = 'https://placehold.co/240x120/f4f4f4/999999?text=Brand';
 
 export const popularBrandDefinitions = [
   { name: 'Moniz', slug: 'brand-1', fileName: 'brand-1.png' },
@@ -19,6 +18,10 @@ export const popularBrandDefinitions = [
   { name: 'Vollrath', slug: 'brand-7', fileName: 'brand-7.png' },
   { name: 'Cambro', slug: 'brand-8', fileName: 'brand-8.png' },
 ];
+export const getBrandImagePath = (slug) => {
+  const brand = popularBrandDefinitions.find(b => b.slug === slug);
+  return brand ? `${BRAND_IMAGE_DIR}/${brand.fileName}` : PLACEHOLDER_BRAND_LOGO;
+};
 
 export const popularBrands = popularBrandDefinitions.map((brand) => ({
   name: brand.name,

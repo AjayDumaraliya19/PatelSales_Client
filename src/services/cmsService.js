@@ -7,15 +7,23 @@ class CmsService {
   /**
    * Get home page content
    */
-  async getHomePage() { success; content}> {
+  async getHomePage() {
     const response = await apiClient.get('/cms/home-page');
+    return response.data;
+  }
+
+  /**
+   * Get about page content
+   */
+  async getAboutPage() {
+    const response = await apiClient.get('/cms/about');
     return response.data;
   }
 
   /**
    * Get navigation menu
    */
-  async getNavigation() { success; menu}> {
+  async getNavigation() {
     const response = await apiClient.get('/cms/navigation');
     return response.data;
   }
@@ -23,7 +31,7 @@ class CmsService {
   /**
    * Get footer content
    */
-  async getFooter() { success; footer}> {
+  async getFooter() {
     const response = await apiClient.get('/cms/footer');
     return response.data;
   }
@@ -31,7 +39,7 @@ class CmsService {
   /**
    * Get SEO settings for a page
    */
-  async getSeoSettings(page) { success; seo}> {
+  async getSeoSettings(page) {
     const response = await apiClient.get(`/cms/seo/${page}`);
     return response.data;
   }
@@ -39,19 +47,7 @@ class CmsService {
   /**
    * Get marketing banners
    */
-  async getMarketingBanners(params?: {
-    bannerType?;
-    enabled?;
-    page?;
-    limit?;
-  }) {
-    success;
-    count;
-    total;
-    page;
-    pages;
-    banners;
-  }> {
+  async getMarketingBanners(params = {}) {
     const response = await apiClient.get('/cms/marketing-banners', { params });
     return response.data;
   }
@@ -82,19 +78,7 @@ class CmsService {
   /**
    * Get popups
    */
-  async getPopups(params?: {
-    enabled?;
-    type?;
-    page?;
-    limit?;
-  }) {
-    success;
-    count;
-    total;
-    page;
-    pages;
-    popups;
-  }> {
+  async getPopups(params = {}) {
     const response = await apiClient.get('/cms/popups', { params });
     return response.data;
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '../ui/AppIcon';
 
-export default function TrackingTimeline({ steps }: TrackingTimelineProps) {
+export default function TrackingTimeline({ steps }) {
   const completedCount = steps.filter((s) => s.state === 'completed').length;
   const progressPercent = Math.round((completedCount / steps.length) * 100);
 

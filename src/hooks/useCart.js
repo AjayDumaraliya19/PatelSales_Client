@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useCartStore } from '../store/cartStore';
-import cartService, { AddToCartData, UpdateCartItemData } from '../services/cartService';
+import cartService from '../services/cartService';
 import { useAuthStore } from '../store/authStore';
 
 export const useCart = () => {

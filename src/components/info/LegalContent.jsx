@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function LegalContent({ sections }: LegalContentProps) {
+export default function LegalContent({ sections }) {
   return (
     <div className="space-y-6">
       {sections.map((section) => (

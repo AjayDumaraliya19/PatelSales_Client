@@ -7,7 +7,7 @@ export default function ProductsFilterDrawer({
   categories,
   filter,
   onFilterChange,
-}: ProductsFilterDrawerProps) {
+}) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -83,7 +83,7 @@ export default function ProductsFilterDrawer({
                 <input
                   type="number"
                   value={filter.minPrice}
-                  onChange={(e) => onFilterChange({ minPrice(e.target.value) })}
+                  onChange={(e) => onFilterChange({ minPrice: e.target.value })}
                   className="input-field w-full"
                   min="0"
                   max="500"
@@ -95,7 +95,7 @@ export default function ProductsFilterDrawer({
                 <input
                   type="number"
                   value={filter.maxPrice}
-                  onChange={(e) => onFilterChange({ maxPrice(e.target.value) })}
+                  onChange={(e) => onFilterChange({ maxPrice: e.target.value })}
                   className="input-field w-full"
                   min="0"
                   max="500"

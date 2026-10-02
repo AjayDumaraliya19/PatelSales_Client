@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '../ui/AppImage';
 import Icon from '../ui/AppIcon';
 import { promoGridItems } from '../../data/homePageData';
 
 export default function PromoGridSection() {
+  const [gridItems, setGridItems] = useState(promoGridItems);
+
+  useEffect(() => {
+    import('../../services/cmsService').then(module => {
+      const cmsService = module.default;
+      cmsService.getBannersByPlacement('grid').then(banners => {
+        if (banners && banners.length > 0) {
+          const mappedItems = banners.map(b => ({
+            title: b.title,
+            description: b.description || '',
+            promoCode: b.subtitle || '', // Assuming subtitle holds promo code
+            image: b.image,
+            imageAlt: b.title,
+            href: b.buttonLink || '/products',
+            badge: b.badgeText || '',
+            badgeColor: 'bg-[#003087]',
+          }));
+          setGridItems(mappedItems.slice(0, 4)); // PromoGrid expects up to 4
+        }
+      }).catch(err => console.error('Failed to load grid banners', err));
+    });
+  }, []);
+
   return (
     <section className="bg-white py-4">
       <div className="w-full px-3 sm:px-4 md:px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {promoGridItems.map((item) => (
+          {gridItems.map((item, index) => (
             <Link
-              key={item.title}
+              key={item.title + index}
               to={item.href}
               className="group border border-gray-200 hover:border-[#003087]/30 hover:shadow-md transition-all bg-white overflow-hidden"
             >

@@ -4,30 +4,30 @@ import Icon from './ui/AppIcon';
 import { useCartStore } from '../store/cartStore';
 
 const navItems = [
-  { href: '/', icon: 'HomeIcon': 'Home', match: (path) => path === '/' },
+  { href: '/', icon: 'HomeIcon', label: 'Home', match: (path) => path === '/' },
   {
     href: '/products',
-    icon: 'Squares2X2Icon'
+    icon: 'Squares2X2Icon',
     label: 'Shop',
     match: (path) =>
       path.startsWith('/products') || path === '/disposables',
   },
   {
     href: '/cart',
-    icon: 'ShoppingCartIcon'
+    icon: 'ShoppingCartIcon',
     label: 'Cart',
     match: (path) => path === '/cart',
     badge: true,
   },
   {
     href: '/track-order',
-    icon: 'TruckIcon'
+    icon: 'TruckIcon',
     label: 'Track',
     match: (path) => path === '/track-order',
   },
   {
     href: '/account',
-    icon: 'UserCircleIcon'
+    icon: 'UserCircleIcon',
     label: 'Account',
     match: (path) => path === '/account' || path === '/login' || path === '/register' || path.startsWith('/account/'),
   },

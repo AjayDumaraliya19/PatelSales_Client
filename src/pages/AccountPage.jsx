@@ -4,13 +4,13 @@ import PageHeader from '../components/ui/PageHeader';
 import Icon from '../components/ui/AppIcon';
 
 const accountLinks = [
-  { icon: 'ClipboardDocumentListIcon': 'Order History', href: '/account/orders', desc: 'View past orders' },
-  { icon: 'TruckIcon': 'Track Order', href: '/track-order', desc: 'Check delivery status' },
-  { icon: 'ShoppingCartIcon': 'Shopping Cart', href: '/cart', desc: 'View current cart' },
-  { icon: 'BuildingStorefrontIcon': 'Business Account', href: '/business-accounts', desc: 'Wholesale benefits' },
-  { icon: 'MapPinIcon': 'My Addresses', href: '/account/addresses', desc: 'Manage shipping addresses' },
-  { icon: 'UserCircleIcon': 'Profile Settings', href: '/register', desc: 'Update account info' },
-  { icon: 'QuestionMarkCircleIcon': 'Help & FAQ', href: '/faq', desc: 'Common questions' },
+  { icon: 'ClipboardDocumentListIcon', title: 'Order History', href: '/account/orders', desc: 'View past orders' },
+  { icon: 'TruckIcon', title: 'Track Order', href: '/track-order', desc: 'Check delivery status' },
+  { icon: 'ShoppingCartIcon', title: 'Shopping Cart', href: '/cart', desc: 'View current cart' },
+  { icon: 'BuildingStorefrontIcon', title: 'Business Account', href: '/business-accounts', desc: 'Wholesale benefits' },
+  { icon: 'MapPinIcon', title: 'My Addresses', href: '/account/addresses', desc: 'Manage shipping addresses' },
+  { icon: 'UserCircleIcon', title: 'Profile Settings', href: '/register', desc: 'Update account info' },
+  { icon: 'QuestionMarkCircleIcon', title: 'Help & FAQ', href: '/faq', desc: 'Common questions' },
 ];
 
 export default function AccountPage() {

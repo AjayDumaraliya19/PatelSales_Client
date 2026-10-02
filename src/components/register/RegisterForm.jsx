@@ -4,7 +4,7 @@ import Icon from '../ui/AppIcon';
 import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
 
-export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
+export default function RegisterForm({ initialEmail = '' }) {
   const navigate = useNavigate();
   const { register } = useAuthStore();
   const syncCart = useCartStore((s) => s.syncCart);
@@ -246,7 +246,7 @@ export default function RegisterForm({ initialEmail = '' }: RegisterFormProps) {
   );
 }
 
-function getPasswordStrength(password): { score; label } {
+function getPasswordStrength(password) {
   if (!password) return { score: 0, label: '' };
 
   let score = 0;

@@ -44,10 +44,10 @@ export default function ProductsPage() {
       try {
         const response = await productsService.getProducts({
           page,
-          limit
+          limit,
           category: categoryFilter,
           search: searchQuery,
-          sort: sortBy as 'price-asc' | 'price-desc' | 'newest' | 'name-asc',
+          sort: sortBy,
           minPrice,
           maxPrice,
           active: true,

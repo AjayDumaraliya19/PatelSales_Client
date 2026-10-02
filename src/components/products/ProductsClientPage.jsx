@@ -13,16 +13,16 @@ export default function ProductsClientPage({
   page = 1,
   totalPages = 1,
   onPageChange,
-}: ProductsClientPageProps) {
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState('grid');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   const [filter, setFilter] = useState({
     category: searchParams.get('category') || '',
-    minPrice(searchParams.get('minPrice')) || 0,
-    maxPrice(searchParams.get('maxPrice')) || 500,
-    sortBy: (searchParams.get('sort') as 'name' | 'price_asc' | 'price_desc' | 'newest') || 'name',
+    minPrice: Number(searchParams.get('minPrice')) || 0,
+    maxPrice: Number(searchParams.get('maxPrice')) || 500,
+    sortBy: searchParams.get('sort') || 'name',
     search: searchParams.get('search') || '',
     page: 1,
   });
@@ -31,9 +31,9 @@ export default function ProductsClientPage({
   React.useEffect(() => {
     setFilter({
       category: searchParams.get('category') || '',
-      minPrice(searchParams.get('minPrice')) || 0,
-      maxPrice(searchParams.get('maxPrice')) || 500,
-      sortBy: (searchParams.get('sort') as 'name' | 'price_asc' | 'price_desc' | 'newest') || 'name',
+      minPrice: Number(searchParams.get('minPrice')) || 0,
+      maxPrice: Number(searchParams.get('maxPrice')) || 500,
+      sortBy: searchParams.get('sort') || 'name',
       search: searchParams.get('search') || '',
       page: 1,
     });
@@ -287,7 +287,7 @@ export default function ProductsClientPage({
 
                   <div className="flex gap-1 items-center">
                     {(() => {
-                      const pages: (number | string)[] = [];
+                      const pages = [];
                       const maxVisiblePages = 7;
 
                       if (totalPages <= maxVisiblePages) {

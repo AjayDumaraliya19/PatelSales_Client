@@ -3,11 +3,11 @@ import Icon from '../ui/AppIcon';
 
 export default function PWAUpdatePrompt() {
   const [showUpdate, setShowUpdate] = useState(false);
-  const [updateFn, setUpdateFn] = useState<((reloadPage?) => Promise<void>) | null>(null);
+  const [updateFn, setUpdateFn] = useState(null);
 
   useEffect(() => {
     const handleNeedRefresh = (event) => {
-      const customEvent = event as CustomEvent<(reloadPage?) => Promise<void>>;
+      const customEvent = event;
       setUpdateFn(() => customEvent.detail);
       setShowUpdate(true);
     };

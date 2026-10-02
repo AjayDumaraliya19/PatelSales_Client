@@ -7,7 +7,7 @@ class ProductsService {
   /**
    * Get all products with filters
    */
-  async getProducts(params?) {
+  async getProducts(params) {
     const response = await apiClient.get('/products', { params });
     return response.data;
   }
@@ -15,7 +15,7 @@ class ProductsService {
   /**
    * Get single product by ID or slug
    */
-  async getProductById(idOrSlug) { success; product}> {
+  async getProductById(idOrSlug) {
     const response = await apiClient.get(`/products/${idOrSlug}`);
     return response.data;
   }
@@ -33,7 +33,7 @@ class ProductsService {
   /**
    * Search products
    */
-  async searchProducts(query, params?'search'>) {
+  async searchProducts(query, params) {
     const response = await apiClient.get('/products', {
       params: { search: query, ...params },
     });
@@ -53,7 +53,7 @@ class ProductsService {
   /**
    * Get popular products (sorted by sales count)
    */
-  async getPopularProducts(limit = 10, excludeId?) {
+  async getPopularProducts(limit = 10, excludeId) {
     const params = { limit, active: true, sort: 'popular' };
     if (excludeId) params.exclude = excludeId;
     const response = await apiClient.get('/products', { params });
@@ -63,7 +63,7 @@ class ProductsService {
   /**
    * Get top products (featured + high sales)
    */
-  async getTopProducts(limit = 10, excludeId?) {
+  async getTopProducts(limit = 10, excludeId) {
     const params = { limit, active: true, sort: 'top' };
     if (excludeId) params.exclude = excludeId;
     const response = await apiClient.get('/products', { params });
@@ -73,7 +73,7 @@ class ProductsService {
   /**
    * Get best reviewed products (sorted by rating)
    */
-  async getBestReviewedProducts(limit = 10, excludeId?) {
+  async getBestReviewedProducts(limit = 10, excludeId) {
     const params = { limit, active: true, sort: 'best-reviewed' };
     if (excludeId) params.exclude = excludeId;
     const response = await apiClient.get('/products', { params });

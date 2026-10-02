@@ -1,20 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import authService, { User, LoginCredentials, RegisterData, ProfileUpdateData, PasswordChangeData, ForgotPasswordData, ResetPasswordData } from '../services/authService';
+import authService from '../services/authService';
 
 export const useAuthStore = create()(
   persist(
     (set, get) => ({
-      user,
-      token,
+      user: null,
+      token: null,
       isAuthenticated: false,
       isLoading: false,
-      error,
+      error: null,
       /**
        * Register new user
        */
       register: async (data) => {
-        set({ isLoading: true, error });
+        set({ isLoading: true, error: null });
         try {
           const response = await authService.register(data);
           
@@ -26,12 +26,12 @@ export const useAuthStore = create()(
             token: response.token,
             isAuthenticated: true,
             isLoading: false,
-            error,
+            error: null,
           });
         } catch (error) {
           set({
-            user,
-            token,
+            user: null,
+            token: null,
             isAuthenticated: false,
             isLoading: false,
             error: error.message || 'Registration failed',
@@ -44,7 +44,7 @@ export const useAuthStore = create()(
        * Login user
        */
       login: async (credentials) => {
-        set({ isLoading: true, error });
+        set({ isLoading: true, error: null });
         try {
           const response = await authService.login(credentials);
           
@@ -56,12 +56,12 @@ export const useAuthStore = create()(
             token: response.token,
             isAuthenticated: true,
             isLoading: false,
-            error,
+            error: null,
           });
         } catch (error) {
           set({
-            user,
-            token,
+            user: null,
+            token: null,
             isAuthenticated: false,
             isLoading: false,
             error: error.message || 'Login failed',
@@ -87,11 +87,11 @@ export const useAuthStore = create()(
           localStorage.removeItem('auth_user');
           
           set({
-            user,
-            token,
+            user: null,
+            token: null,
             isAuthenticated: false,
             isLoading: false,
-            error,
+            error: null,
           });
         }
       },
@@ -102,7 +102,7 @@ export const useAuthStore = create()(
       fetchUser: async () => {
         const token = localStorage.getItem('auth_token');
         if (!token) {
-          set({ isAuthenticated: false, user });
+          set({ isAuthenticated: false, user: null });
           return;
         }
 
@@ -114,7 +114,7 @@ export const useAuthStore = create()(
             token,
             isAuthenticated: true,
             isLoading: false,
-            error,
+            error: null,
           });
         } catch (error) {
           // Token is invalid or expired
@@ -122,8 +122,8 @@ export const useAuthStore = create()(
           localStorage.removeItem('auth_user');
           
           set({
-            user,
-            token,
+            user: null,
+            token: null,
             isAuthenticated: false,
             isLoading: false,
             error: error.message || 'Session expired',
@@ -135,13 +135,13 @@ export const useAuthStore = create()(
        * Update user profile
        */
       updateProfile: async (data) => {
-        set({ isLoading: true, error });
+        set({ isLoading: true, error: null });
         try {
           const response = await authService.updateProfile(data);
           set({
             user: response.user,
             isLoading: false,
-            error,
+            error: null,
           });
         } catch (error) {
           set({
@@ -156,12 +156,12 @@ export const useAuthStore = create()(
        * Change password
        */
       changePassword: async (data) => {
-        set({ isLoading: true, error });
+        set({ isLoading: true, error: null });
         try {
           await authService.changePassword(data);
           set({
             isLoading: false,
-            error,
+            error: null,
           });
         } catch (error) {
           set({
@@ -176,7 +176,7 @@ export const useAuthStore = create()(
        * Forgot password - sends reset email
        */
       forgotPassword: async (data) => {
-        set({ isLoading: true, error });
+        set({ isLoading: true, error: null });
         try {
           const response = await authService.forgotPassword(data);
           set({ isLoading: false });
@@ -194,7 +194,7 @@ export const useAuthStore = create()(
        * Reset password with token
        */
       resetPassword: async (token, data) => {
-        set({ isLoading: true, error });
+        set({ isLoading: true, error: null });
         try {
           const response = await authService.resetPassword(token, data);
           set({ isLoading: false });
@@ -212,7 +212,7 @@ export const useAuthStore = create()(
        * Clear error message
        */
       clearError: () => {
-        set({ error });
+        set({ error: null });
       },
 
       /**
@@ -227,7 +227,7 @@ export const useAuthStore = create()(
           }
         } else {
           // No token — clear any stale persisted auth state
-          set({ user, token, isAuthenticated: false });
+          set({ user: null, token: null, isAuthenticated: false });
         }
       },
 

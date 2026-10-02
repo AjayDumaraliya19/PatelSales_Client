@@ -6,7 +6,7 @@ export default function ProductsSidebar({
   filter,
   onFilterChange,
   activeFilterCount,
-}: ProductsSidebarProps) {
+}) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 pt-0 sticky top-[180px] max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-hide">
       <div className="sticky top-0 bg-white z-10 -mt-5 -mx-5 px-5 pt-5 pb-4 border-b border-gray-100 mb-5 flex items-center justify-between">
@@ -92,7 +92,7 @@ export default function ProductsSidebar({
             <input
               type="number"
               value={filter.minPrice}
-              onChange={(e) => onFilterChange({ minPrice(e.target.value) })}
+              onChange={(e) => onFilterChange({ minPrice: e.target.value })}
               className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#003087] focus:border-transparent outline-none transition-all"
               min="0"
               max="500"
@@ -105,7 +105,7 @@ export default function ProductsSidebar({
             <input
               type="number"
               value={filter.maxPrice}
-              onChange={(e) => onFilterChange({ maxPrice(e.target.value) })}
+              onChange={(e) => onFilterChange({ maxPrice: e.target.value })}
               className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#003087] focus:border-transparent outline-none transition-all"
               min="0"
               max="500"

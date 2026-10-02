@@ -8,7 +8,7 @@ const variantClasses = {
   danger: 'bg-red-100 text-red-800 border-red-200',
 };
 
-export default function StatusBadge({ label, variant = 'neutral' }: StatusBadgeProps) {
+export default function StatusBadge({ label, variant = 'neutral' }) {
   return (
     <span
       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${variantClasses[variant]}`}
@@ -20,7 +20,7 @@ export default function StatusBadge({ label, variant = 'neutral' }: StatusBadgeP
 
 export function getOrderStatusVariant(
   status
-): 'success' | 'warning' | 'info' | 'neutral' | 'danger' {
+) {
   switch (status) {
     case 'delivered':
       return 'success';

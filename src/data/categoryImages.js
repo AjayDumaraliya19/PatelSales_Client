@@ -21,3 +21,8 @@ export const categoryImageFiles = {
   'disposable-gloves': 'disposable-gloves.png',
 };
 
+export function getCategoryImagePath(slug) {
+  const fileName = categoryImageFiles[slug];
+  if (!fileName) return null;
+  return `${CATEGORY_IMAGE_DIR}/${fileName}`;
+}

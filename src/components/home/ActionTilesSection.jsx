@@ -14,10 +14,6 @@ function ActionTileBanner({
   bannerVariant,
   bannerEyebrow,
   bannerTitle,
-}: {
-  bannerVariant;
-  bannerEyebrow | null;
-  bannerTitle;
 }) {
   if (bannerVariant === 'scratch') {
     return (

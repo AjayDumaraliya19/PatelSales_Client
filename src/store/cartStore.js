@@ -9,7 +9,7 @@ export const useCartStore = create()(
       items: [],
       isOpen: false,
       isSyncing: false,
-      lastSyncedAt,
+      lastSyncedAt: null,
 
       /**
        * Add item to cart
@@ -26,7 +26,7 @@ export const useCartStore = create()(
             return {
               items: state.items.map((i) =>
                 i.productId === product._id
-                  ? { ...i, quantity(i.quantity + quantity, product.stock) }
+                  ? { ...i, quantity: Math.min(i.quantity + quantity, product.stock) }
                   : i
               ),
             };
@@ -37,7 +37,7 @@ export const useCartStore = create()(
               {
                 productId: product._id,
                 product,
-                quantity(quantity, product.stock),
+                quantity: Math.min(quantity, product.stock),
               },
             ],
           };
@@ -51,7 +51,7 @@ export const useCartStore = create()(
               product: product._id,
               quantity,
             });
-            set({ lastSyncedAt(), isSyncing: false });
+            set({ lastSyncedAt: Date.now(), isSyncing: false });
           } catch (error) {
             console.error('Failed to sync cart with backend:', error);
             set({ isSyncing: false });
@@ -85,7 +85,7 @@ export const useCartStore = create()(
             if (backendItem && backendItem._id) {
               await cartService.removeCartItem(backendItem._id);
             }
-            set({ lastSyncedAt(), isSyncing: false });
+            set({ lastSyncedAt: Date.now(), isSyncing: false });
           } catch (error) {
             console.error('Failed to sync cart removal with backend:', error);
             set({ isSyncing: false });
@@ -124,7 +124,7 @@ export const useCartStore = create()(
             if (backendItem && backendItem._id) {
               await cartService.updateCartItem(backendItem._id, { quantity });
             }
-            set({ lastSyncedAt(), isSyncing: false });
+            set({ lastSyncedAt: Date.now(), isSyncing: false });
           } catch (error) {
             console.error('Failed to sync cart update with backend:', error);
             set({ isSyncing: false });
@@ -146,7 +146,7 @@ export const useCartStore = create()(
           try {
             set({ isSyncing: true });
             await cartService.clearCart();
-            set({ lastSyncedAt(), isSyncing: false });
+            set({ lastSyncedAt: Date.now(), isSyncing: false });
           } catch (error) {
             console.error('Failed to clear cart on backend:', error);
             set({ isSyncing: false });
@@ -188,11 +188,11 @@ export const useCartStore = create()(
                   price: item.product.price,
                   stock: item.product.stock,
                   // Map other fields
-                }
+                },
             quantity: item.quantity,
           }));
 
-          set({ items, lastSyncedAt(), isSyncing: false });
+          set({ items, lastSyncedAt: Date.now(), isSyncing: false });
         } catch (error) {
           console.error('Failed to fetch cart from backend:', error);
           set({ isSyncing: false });
@@ -239,7 +239,7 @@ export const useCartStore = create()(
 
           // 2. Fetch the fully merged cart from the backend and update local state.
           await get().fetchCart();
-          set({ lastSyncedAt(), isSyncing: false });
+          set({ lastSyncedAt: Date.now(), isSyncing: false });
         } catch (error) {
           console.error('Failed to sync cart on login:', error);
           // Keep local items intact if sync fails

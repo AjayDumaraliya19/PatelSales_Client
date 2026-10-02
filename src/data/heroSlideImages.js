@@ -13,6 +13,8 @@ export const heroSliderImageFiles = {
   slide04ConcessionSupplies: 'slide-04-concession-supplies.png',
 };
 
+export const heroSliderImagePath = (filename) => `${HERO_SLIDER_IMAGE_DIR}/${filename}`;
+
 export const heroSliderImages = {
   bubbleTea: heroSliderImagePath(heroSliderImageFiles.slide01BubbleTea),
   foamCups: heroSliderImagePath(heroSliderImageFiles.slide02FoamCups),

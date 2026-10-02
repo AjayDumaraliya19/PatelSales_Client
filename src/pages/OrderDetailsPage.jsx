@@ -7,7 +7,7 @@ import { useOrders } from '../hooks/useOrders';
 import { Loader } from '../components/ui/Loader';
 
 export default function OrderDetailsPage() {
-  const { orderId } = useParams<{ orderId }>();
+  const { orderId } = useParams();
   const { currentOrder, isLoading, fetchOrderById, error } = useOrders();
 
   React.useEffect(() => {

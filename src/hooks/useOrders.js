@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import ordersService, { Order, CreateOrderData, OrdersResponse } from '../services/ordersService';
+import ordersService from '../services/ordersService';
 import { useAuthStore } from '../store/authStore';
 
 export const useOrders = () => {
