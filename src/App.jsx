@@ -4,6 +4,8 @@ import Layout from './components/Layout';
 import ScrollToTop from './components/ScrollToTop';
 import { useAuthStore } from './store/authStore';
 import { useCartStore } from './store/cartStore';
+import { LoadingProvider } from './context/LoadingContext';
+
 
 function App() {
   const { checkAuth, isAuthenticated } = useAuthStore();
@@ -22,10 +24,12 @@ function App() {
   }, [isAuthenticated, fetchCart]);
 
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Layout />
-    </BrowserRouter>
+    <LoadingProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Layout />
+      </BrowserRouter>
+    </LoadingProvider>
   );
 }
 

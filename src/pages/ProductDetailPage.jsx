@@ -23,7 +23,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
-  const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews' | 'qa'>('description');
+  const [activeTab, setActiveTab] = useState('description');
   const [lightBoxIndex, setLightBoxIndex] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const touchStartX = useRef(0);

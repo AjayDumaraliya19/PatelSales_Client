@@ -13,6 +13,7 @@ import TestimonialsSection from '../components/home/TestimonialsSection';
 import TrustBadgesSection from '../components/home/TrustBadgesSection';
 import productsService from '../services/productsService';
 import cmsService from '../services/cmsService';
+import HomeSkeleton from '../components/home/HomeSkeleton';
 
 export default function HomePage() {
   const [bestReviewedProducts, setBestReviewedProducts] = useState([]);
@@ -46,8 +47,12 @@ export default function HomePage() {
     fetchProducts();
   }, []);
 
+  if (loading) {
+    return <HomeSkeleton />;
+  }
+
   return (
-    <div className="min-h-full bg-white">
+    <div className="min-h-full bg-white transition-opacity duration-300">
       {(!cmsHomePage || cmsHomePage?.heroSection?.enabled !== false) && <HeroSection />}
       {(!cmsHomePage || cmsHomePage?.marketingBanners?.enabled !== false) && <PromoGridSection />}
       {(!cmsHomePage || cmsHomePage?.marketingBanners?.enabled !== false) && <PlusBannerSection />}
@@ -71,3 +76,4 @@ export default function HomePage() {
     </div>
   );
 }
+
