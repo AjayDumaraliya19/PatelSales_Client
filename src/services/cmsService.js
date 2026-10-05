@@ -4,20 +4,57 @@ import apiClient from '../lib/apiClient';
 
 // CMS Service
 class CmsService {
+  constructor() {
+    this.cachedAbout = null;
+    this.aboutPromise = null;
+    this.cachedHome = null;
+    this.homePromise = null;
+  }
+
   /**
    * Get home page content
    */
-  async getHomePage() {
-    const response = await apiClient.get('/cms/home-page');
-    return response.data;
+  async getHomePage(forceRefresh = false) {
+    if (!forceRefresh && this.cachedHome) {
+      return this.cachedHome;
+    }
+    if (!forceRefresh && this.homePromise) {
+      return this.homePromise;
+    }
+    this.homePromise = apiClient.get('/cms/home-page')
+      .then((response) => {
+        this.cachedHome = response.data;
+        this.homePromise = null;
+        return response.data;
+      })
+      .catch((error) => {
+        this.homePromise = null;
+        throw error;
+      });
+    return this.homePromise;
   }
 
   /**
    * Get about page content
    */
-  async getAboutPage() {
-    const response = await apiClient.get('/cms/about');
-    return response.data;
+  async getAboutPage(forceRefresh = false) {
+    if (!forceRefresh && this.cachedAbout) {
+      return this.cachedAbout;
+    }
+    if (!forceRefresh && this.aboutPromise) {
+      return this.aboutPromise;
+    }
+    this.aboutPromise = apiClient.get('/cms/about')
+      .then((response) => {
+        this.cachedAbout = response.data;
+        this.aboutPromise = null;
+        return response.data;
+      })
+      .catch((error) => {
+        this.aboutPromise = null;
+        throw error;
+      });
+    return this.aboutPromise;
   }
 
   /**

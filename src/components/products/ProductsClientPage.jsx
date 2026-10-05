@@ -131,7 +131,7 @@ export default function ProductsClientPage({
           {/* Mobile Filter Button */}
           <button
             onClick={() => setFilterDrawerOpen(true)}
-            className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 transition-colors sticky top-0 z-10 bg-[#f5f5f5]"
+            className="lg:hidden flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-sm text-sm font-medium hover:bg-gray-50 transition-colors bg-[#f5f5f5]"
           >
             <Icon name="FunnelIcon" size={16} />
             Filters
@@ -143,7 +143,7 @@ export default function ProductsClientPage({
           </button>
 
           {/* View Toggle */}
-          <div className="flex border border-gray-300 rounded-sm overflow-hidden lg:hidden sticky top-0 z-10 bg-[#f5f5f5]">
+          <div className="flex border border-gray-300 rounded-sm overflow-hidden lg:hidden bg-[#f5f5f5]">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 ${viewMode === 'grid' ? 'bg-[#003087] text-white' : 'text-gray-600 hover:bg-gray-50'} transition-colors`}

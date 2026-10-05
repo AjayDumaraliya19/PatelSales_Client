@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../components/ui/AppIcon';
+import AppImage from '../components/ui/AppImage';
 import { getCategoryProductHref } from '../data/productCategories';
 
 import cmsService from '../services/cmsService';
@@ -325,7 +326,7 @@ export default function AboutPage() {
               { name: 'Portion Cups & Lids', slug: 'portion-cups-and-lids', image: 'portion-cups-and-lids.png' },
               { name: 'Plastic Containers', slug: 'plastic-containers', image: 'plastic-containers.png' },
               { name: 'Paper Napkins', slug: 'paper-napkins-and-towels', image: 'paper-napkins-and-towels.png' },
-              { name: 'Paper Towels', slug: 'paper-napkins-and-towels', image: 'paper-napkins-and-towels.png' },
+              { name: 'Paper Towels', slug: 'paper-napkins-and-towels', image: 'paper-napkins-towels.png' },
               { name: 'Paper Bags', slug: 'paper-bags', image: 'paper-bags.png' },
               { name: 'Foil Products', slug: 'foil-products', image: 'foil-products.png' },
               { name: 'Disposable Plastic Cups', slug: 'disposable-plastic-cups', image: 'disposable-plastic-cups.png' },
@@ -334,18 +335,22 @@ export default function AboutPage() {
               <Link
                 key={index}
                 to={getCategoryProductHref(category.slug)}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden"
+                className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#003087]/20 transition-all duration-300 group flex flex-col justify-between"
               >
-                <div className="relative rounded-lg h-32 mb-4 overflow-hidden bg-gray-100">
-                  <img
+                <div className="relative rounded-xl h-36 sm:h-40 mb-3 overflow-hidden bg-white border border-gray-100 flex items-center justify-center p-3 group-hover:border-[#003087]/20 group-hover:shadow-md transition-all">
+                  <AppImage
                     src={`/images/categories/${category.image}`}
                     alt={category.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => { e.target.onerror = null; e.target.src = "/logo.png"; }}
+                    fill
+                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <h3 className="font-bold text-lg text-gray-800 mb-2 text-center">{category.name}</h3>
-                <p className="text-sm text-gray-500 mb-4 text-center">Quality packaging solutions</p>
+                <div>
+                  <h3 className="font-bold text-base sm:text-lg text-gray-800 group-hover:text-[#003087] transition-colors mb-1 text-center truncate">
+                    {category.name}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-500 text-center leading-normal">Quality packaging solutions</p>
+                </div>
               </Link>
             ))}
           </div>

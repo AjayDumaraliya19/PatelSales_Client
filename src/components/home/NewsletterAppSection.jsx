@@ -89,25 +89,24 @@ export default function NewsletterAppSection() {
               <svg width="84" height="56" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="bg-newsletter" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#27B8F4"/>
-                    <stop offset="100%" stop-color="#1098E3"/>
+                    <stop offset="0%" stopColor="#27B8F4"/>
+                    <stop offset="100%" stopColor="#1098E3"/>
                   </linearGradient>
                 </defs>
                 <path
                   d="M18 18 H108 L96 62 H8 Z"
                   fill="url(#bg-newsletter)"
-                  rx="6"
                 />
                 <text
                   x="60"
                   y="48"
-                  text-anchor="middle"
-                  font-family="Arial, Helvetica, sans-serif"
-                  font-size="28"
-                  font-weight="700"
-                  font-style="italic"
+                  textAnchor="middle"
+                  fontFamily="Arial, Helvetica, sans-serif"
+                  fontSize="28"
+                  fontWeight="700"
+                  fontStyle="italic"
                   fill="#ffffff"
-                  letter-spacing="0.5">
+                  letterSpacing="0.5">
                   plus
                 </text>
               </svg>

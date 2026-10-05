@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icon from './ui/AppIcon';
+import AppImage from './ui/AppImage';
 import { useCartStore } from '../store/cartStore';
 import { useAuthStore } from '../store/authStore';
 import { useWishlistStore } from '../store/wishlistStore';
 import categoriesService from '../services/categoriesService';
 import { getCategoryImagePath } from '../data/categoryImages';
+import { catalogCategories } from '../data/productCategories';
 
 const PRODUCTS_PAGE_PATH = '/products';
 
@@ -17,7 +19,7 @@ const wholesaleOfferItems = [
 const drawerMainMenuItems = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Categories', href: true, dropdownType: 'categories'},
+  { label: 'Categories', href: PRODUCTS_PAGE_PATH, hasDropdown: true, dropdownType: 'categories'},
   { label: 'Wholesale Offer', href: '/wholesale-flyer', hasDropdown: true, dropdownType: 'wholesale'},
 ];
 
@@ -34,7 +36,7 @@ const drawerQuickLinks = [
 const mainMenu = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Categories', href: true, dropdownType: 'categories'},
+  { label: 'Categories', href: PRODUCTS_PAGE_PATH, hasDropdown: true, dropdownType: 'categories'},
   { label: 'Wholesale Offer', href: '/wholesale-flyer', hasDropdown: true, dropdownType: 'wholesale'},
   { label: 'Track Order', href: '/track-order' },
   { label: 'Get the App', href: '/get-the-app' },
@@ -67,7 +69,7 @@ export default function Header() {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [mobileWholesaleOpen, setMobileWholesaleOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
-  const [apiCategories, setApiCategories] = useState([]);
+  const [apiCategories, setApiCategories] = useState(catalogCategories);
 
   const itemCount = useCartStore((s) => s?.getItemCount());
   const wishlistCount = useWishlistStore((s) => s.items.length);
@@ -86,8 +88,11 @@ export default function Header() {
     const fetchCategories = async () => {
       try {
         const response = await categoriesService.getCategories();
-        if (response.categories?.length) {
-          setApiCategories(response.categories.filter((c) => c.isActive));
+        if (response?.categories?.length) {
+          const activeCats = response.categories.filter((c) => c.isActive !== false);
+          if (activeCats.length) {
+            setApiCategories(activeCats);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch categories for header:', error);
@@ -193,10 +198,10 @@ export default function Header() {
     <header
       id="site-header"
       ref={headerRef}
-      className={`relative md:fixed top-0 left-0 right-0 z-50 ${mobileMenuOpen ? 'site-header--menu-open' : ''}`}
+      className={`sticky md:fixed top-0 left-0 right-0 w-full z-50 ${mobileMenuOpen ? 'site-header--menu-open' : ''}`}
     >
       {/* Mobile header — stays visible when menu is open */}
-      <div className="sm:hidden site-header-mobile">
+      <div className="md:hidden site-header-mobile">
         <div className="site-header-mobile__inner">
           <div className="site-header-mobile__top">
             <button
@@ -490,7 +495,7 @@ export default function Header() {
                 {/* Categories Dropdown */}
                 {item.hasDropdown && item.dropdownType === 'categories' && (
                   <div
-                    className={`absolute top-full left-0 w-full min-w-[1200px] max-w-[1400px] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 transition-all duration-300 ease-out ${
+                    className={`absolute top-full left-0 md:-left-8 lg:left-0 w-[880px] lg:w-[1000px] xl:w-[1120px] max-w-[calc(100vw-2rem)] bg-white rounded-xl border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] z-50 transition-all duration-300 ease-out ${
                       categoriesDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none'
                     }`}
                     onMouseEnter={() => setCategoriesDropdownOpen(true)}
@@ -499,25 +504,35 @@ export default function Header() {
                     aria-label="Categories menu"
                   >
                     <div className="flex">
-                      {/* Left Section - 60% — first 6 categories with images */}
-                      <div className="w-[60%] p-6 border-r border-gray-100">
-                        <h3 className="text-lg font-bold text-gray-800 mb-4">Popular Categories</h3>
-                        <div className="grid grid-cols-3 gap-4">
+                      {/* Left Section - 58% — first 6 categories with images */}
+                      <div className="w-[58%] p-6 border-r border-gray-100">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-base lg:text-lg font-bold text-gray-800">Popular Categories</h3>
+                          <Link
+                            to="/products"
+                            onClick={() => setCategoriesDropdownOpen(false)}
+                            className="text-xs font-semibold text-[#003087] hover:text-[#e8471e] hover:underline"
+                          >
+                            All Categories &rarr;
+                          </Link>
+                        </div>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                           {categoriesWithImages.map((category) => (
                             <Link
-                              key={category._id}
+                              key={category._id || category.slug}
                               to={`/products?category=${category.slug}`}
                               onClick={() => setCategoriesDropdownOpen(false)}
-                              className="group flex flex-row items-center p-3 rounded-xl border border-gray-100 hover:bg-gradient-to-r hover:from-[#F8FFF6] hover:to-white hover:border-[#2F7D32] hover:shadow-md transition-all duration-300"
+                              className="group flex flex-row items-center p-2.5 rounded-xl border border-gray-100 hover:bg-gradient-to-r hover:from-[#F8FFF6] hover:to-white hover:border-[#2F7D32] hover:shadow-md transition-all duration-300"
                             >
-                              <div className="w-[50px] h-[50px] bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center mr-3 overflow-hidden group-hover:shadow-lg group-hover:border-[#2F7D32]/40 transition-all duration-300 shrink-0">
-                                <img
+                              <div className="w-[46px] h-[46px] bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-center mr-2.5 overflow-hidden group-hover:shadow-md group-hover:border-[#2F7D32]/40 transition-all duration-300 shrink-0 relative">
+                                <AppImage
                                   src={category.image || getCategoryImagePath(category.slug)}
                                   alt={category.name}
-                                  className="w-full h-full object-contain p-0"
+                                  fill
+                                  className="object-contain p-1"
                                 />
                               </div>
-                              <span className="text-gray-700 font-semibold text-base group-hover:text-[#2F7D32] transition-colors leading-tight">
+                              <span className="text-gray-700 font-semibold text-xs lg:text-sm group-hover:text-[#2F7D32] transition-colors leading-tight line-clamp-2">
                                 {category.name}
                               </span>
                             </Link>
@@ -525,30 +540,34 @@ export default function Header() {
                         </div>
                       </div>
 
-                      {/* Right Section - 40% — remaining categories title only */}
-                      <div className="w-[40%] p-8 bg-[#F7F7F5] rounded-r-xl">
-                        <h3 className="text-lg font-bold text-[#333] mb-6">
-                          More Categories
-                        </h3>
-                        <div className="grid grid-cols-2 gap-6">
-                          {(() => {
-                            const col1 = categoriesTitleOnly.slice(0, Math.ceil(categoriesTitleOnly.length / 2));
-                            const col2 = categoriesTitleOnly.slice(Math.ceil(categoriesTitleOnly.length / 2));
-                            return [col1, col2].map((col, colIndex) => (
-                              <div key={colIndex} className="space-y-1">
-                                {col.map((category) => (
-                                  <Link
-                                    key={category._id}
-                                    to={`/products?category=${category.slug}`}
-                                    onClick={() => setCategoriesDropdownOpen(false)}
-                                    className="block text-[15px] text-[#555] leading-8 hover:text-[#2F7D32] hover:translate-x-1 transition-all duration-300"
-                                  >
-                                    {category.name}
-                                  </Link>
-                                ))}
-                              </div>
-                            ));
-                          })()}
+                      {/* Right Section - 42% — remaining categories title only */}
+                      <div className="w-[42%] p-6 lg:p-7 bg-[#F7F7F5] rounded-r-xl flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-base lg:text-lg font-bold text-[#333] mb-4">
+                            More Categories
+                          </h3>
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                            {categoriesTitleOnly.map((category) => (
+                              <Link
+                                key={category._id || category.slug}
+                                to={`/products?category=${category.slug}`}
+                                onClick={() => setCategoriesDropdownOpen(false)}
+                                className="block text-xs lg:text-sm text-[#555] py-1.5 hover:text-[#2F7D32] hover:translate-x-1 transition-all duration-200 font-medium truncate"
+                              >
+                                {category.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="pt-4 border-t border-gray-200/60 mt-4">
+                          <Link
+                            to="/products"
+                            onClick={() => setCategoriesDropdownOpen(false)}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#003087] hover:text-[#e8471e] transition-colors"
+                          >
+                            <span>Browse full catalog</span>
+                            <Icon name="ArrowRightIcon" size={12} />
+                          </Link>
                         </div>
                       </div>
                     </div>

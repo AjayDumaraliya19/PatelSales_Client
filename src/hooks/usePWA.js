@@ -11,9 +11,31 @@ function isInstallBannerDismissed() {
   return elapsed < INSTALL_DISMISS_DAYS * 24 * 60 * 60 * 1000;
 }
 
+let globalDeferredPrompt = null;
+const promptSubscribers = new Set();
+
+const notifyPromptSubscribers = () => {
+  promptSubscribers.forEach((callback) => callback(globalDeferredPrompt));
+};
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (event) => {
+    // Intercept default prompt so we can trigger it from our custom install UI
+    event.preventDefault();
+    if (isStandaloneMode()) return;
+    globalDeferredPrompt = event;
+    notifyPromptSubscribers();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    globalDeferredPrompt = null;
+    notifyPromptSubscribers();
+  });
+}
+
 export function usePWA() {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(globalDeferredPrompt);
+  const [isInstallable, setIsInstallable] = useState(Boolean(globalDeferredPrompt));
   const [isInstalled, setIsInstalled] = useState(isStandaloneMode);
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== 'undefined' ? navigator.onLine : true
@@ -24,44 +46,55 @@ export function usePWA() {
   useEffect(() => {
     setPlatform(detectPwaPlatform());
     setIsBannerDismissed(isInstallBannerDismissed());
+    setIsInstalled(isStandaloneMode());
+    setIsInstallable(Boolean(globalDeferredPrompt));
+    setDeferredPrompt(globalDeferredPrompt);
 
-    const handleBeforeInstall = (event) => {
-      event.preventDefault();
-      if (isStandaloneMode()) return;
-      setDeferredPrompt(event);
-      setIsInstallable(true);
+    const handlePromptUpdate = (prompt) => {
+      setDeferredPrompt(prompt);
+      setIsInstallable(Boolean(prompt));
     };
+
+    promptSubscribers.add(handlePromptUpdate);
 
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     const handleDisplayMode = () => setIsInstalled(isStandaloneMode());
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    window.matchMedia('(display-mode: standalone)').addEventListener('change', handleDisplayMode);
-
-    setIsInstalled(isStandaloneMode());
+    const mql = window.matchMedia('(display-mode: standalone)');
+    mql.addEventListener('change', handleDisplayMode);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      promptSubscribers.delete(handlePromptUpdate);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      window.matchMedia('(display-mode: standalone)').removeEventListener('change', handleDisplayMode);
+      mql.removeEventListener('change', handleDisplayMode);
     };
   }, []);
 
   const installApp = useCallback(async () => {
-    if (!deferredPrompt) return false;
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-    setIsInstallable(false);
-    if (outcome === 'accepted') {
-      setIsInstalled(true);
-      return true;
+    const promptEvent = globalDeferredPrompt || deferredPrompt;
+    if (!promptEvent) return false;
+
+    try {
+      await promptEvent.prompt();
+      const { outcome } = await promptEvent.userChoice;
+      globalDeferredPrompt = null;
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+      notifyPromptSubscribers();
+
+      if (outcome === 'accepted') {
+        setIsInstalled(true);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Error invoking PWA install prompt:', err);
+      return false;
     }
-    return false;
   }, [deferredPrompt]);
 
   const dismissInstallBanner = useCallback(() => {

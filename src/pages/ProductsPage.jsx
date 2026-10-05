@@ -44,7 +44,7 @@ export default function ProductsPage() {
       try {
         const response = await productsService.getProducts({
           page,
-          limit,
+          limit: PRODUCTS_PER_PAGE,
           category: categoryFilter,
           search: searchQuery,
           sort: sortBy,

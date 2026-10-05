@@ -16,7 +16,7 @@ export default function WholesaleFlyerPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await productsService.getProducts({ page, limit: true });
+        const response = await productsService.getProducts({ page, limit: PRODUCTS_PER_PAGE });
         setProducts((prev) => (page === 1 ? response.products : [...prev, ...response.products]));
         setTotalPages(response.pages);
       } catch (error) {

@@ -14,11 +14,16 @@ function FeaturedProductCard({ product }) {
     e.stopPropagation();
     if (product.stock === 0 || adding) return;
     setAdding(true);
-    await new Promise((r) => setTimeout(r, 450));
-    addItem(product);
-    setAdding(false);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    try {
+      await new Promise((r) => setTimeout(r, 200));
+      await addItem(product, 1);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+    } finally {
+      setAdding(false);
+    }
   };
 
   return (
