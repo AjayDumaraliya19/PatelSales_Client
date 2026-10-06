@@ -37,13 +37,21 @@ class OrdersService {
   }
 
   /**
-   * Track order by order number and email (public)
+   * Validate promo code
    */
-  async trackOrder(orderNumber, email) {
-    const response = await apiClient.post('/orders/track', {
-      orderNumber,
-      email,
+  async validateCoupon(code, subtotal) {
+    const response = await apiClient.post('/orders/validate-coupon', {
+      code,
+      subtotal,
     });
+    return response.data;
+  }
+
+  /**
+   * Get public shipping settings
+   */
+  async getShippingSettings() {
+    const response = await apiClient.get('/settings/shipping');
     return response.data;
   }
 }

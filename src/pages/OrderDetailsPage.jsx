@@ -137,22 +137,37 @@ export default function OrderDetailsPage() {
           </div>
         </div>
 
-        {/* Shipping Address */}
-        {currentOrder.shippingAddress && (
-          <div className="app-card p-6 mb-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Shipping Address</h2>
-            <div className="space-y-2 text-sm">
+        {/* Fulfillment / Shipping Details */}
+        <div className="app-card p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">
+              {currentOrder.deliveryType === 'pickup' ? 'Store Pickup Details' : 'Delivery Address'}
+            </h2>
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+              currentOrder.deliveryType === 'pickup' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+            }`}>
+              {currentOrder.deliveryType === 'pickup' ? '🏬 Store Pickup' : '🚚 Standard Delivery'}
+            </span>
+          </div>
+          {currentOrder.deliveryType === 'pickup' ? (
+            <div className="space-y-1 text-sm text-gray-700 bg-amber-50/50 p-3 rounded-lg border border-amber-200/50">
+              <p className="font-semibold text-gray-900">Patel Sales LLC (Store Pickup)</p>
+              <p className="text-gray-600">123 E-Commerce St, City, NJ 07001</p>
+              <p className="text-xs text-amber-800 font-medium mt-1">Please present your Order Number ({currentOrder.orderNumber}) at the counter.</p>
+            </div>
+          ) : currentOrder.shippingAddress && (
+            <div className="space-y-1 text-sm text-gray-700">
               <p className="font-medium text-gray-900">
                 {currentOrder.shippingAddress.street}
               </p>
               <p>
                 {currentOrder.shippingAddress.city}, {currentOrder.shippingAddress.state}{' '}
-                {currentOrder.shippingAddress.zip}
+                {currentOrder.shippingAddress.zip || currentOrder.shippingAddress.zipCode}
               </p>
               <p>{currentOrder.shippingAddress.country}</p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Payment Information */}
         <div className="app-card p-6 mb-6">
@@ -187,8 +202,8 @@ export default function OrderDetailsPage() {
               <span className="font-medium">${subtotal.toFixed(2)}</span>
             </div>
             {discount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Discount</span>
+              <div className="flex justify-between text-emerald-600 font-medium">
+                <span>Discount {currentOrder.couponCode ? `(${currentOrder.couponCode})` : ''}</span>
                 <span>-${discount.toFixed(2)}</span>
               </div>
             )}
@@ -197,8 +212,12 @@ export default function OrderDetailsPage() {
               <span>${tax.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Shipping</span>
-              <span>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+              <span className="text-gray-600">
+                {currentOrder.deliveryType === 'pickup' ? 'Store Pickup' : 'Shipping'}
+              </span>
+              <span className={shipping === 0 ? 'text-emerald-600 font-medium' : ''}>
+                {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+              </span>
             </div>
             <div className="flex justify-between font-bold text-base pt-4 border-t border-gray-100">
               <span>Total</span>

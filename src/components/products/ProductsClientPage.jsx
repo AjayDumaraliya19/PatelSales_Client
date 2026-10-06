@@ -262,8 +262,8 @@ export default function ProductsClientPage({
                     : 'grid-cols-1'
                   }`}
               >
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product._id} product={product} variant={viewMode} />
+                {filteredProducts.map((product, index) => (
+                  <ProductCard key={product._id ? `${product._id}-${index}` : index} product={product} variant={viewMode} />
                 ))}
               </div>
 
