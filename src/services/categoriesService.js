@@ -4,12 +4,32 @@ import apiClient from '../lib/apiClient';
 
 // Categories Service
 class CategoriesService {
+  constructor() {
+    this.cachedCategories = null;
+    this.categoriesPromise = null;
+  }
+
   /**
    * Get all active categories
    */
-  async getCategories() {
-    const response = await apiClient.get('/categories');
-    return response.data;
+  async getCategories(forceRefresh = false) {
+    if (!forceRefresh && this.cachedCategories) {
+      return this.cachedCategories;
+    }
+    if (!forceRefresh && this.categoriesPromise) {
+      return this.categoriesPromise;
+    }
+    this.categoriesPromise = apiClient.get('/categories')
+      .then((response) => {
+        this.cachedCategories = response.data;
+        this.categoriesPromise = null;
+        return response.data;
+      })
+      .catch((error) => {
+        this.categoriesPromise = null;
+        throw error;
+      });
+    return this.categoriesPromise;
   }
 
   /**

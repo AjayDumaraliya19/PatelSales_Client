@@ -15,11 +15,16 @@ export default function ProductCard({ product, variant = 'grid' }) {
     e.stopPropagation();
     if (product.stock === 0 || adding) return;
     setAdding(true);
-    await new Promise((r) => setTimeout(r, 300));
-    for (let i = 0; i < qty; i++) addItem(product);
-    setAdding(false);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+    try {
+      await new Promise((r) => setTimeout(r, 200));
+      await addItem(product, qty);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1800);
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+    } finally {
+      setAdding(false);
+    }
   };
 
   const displayPrice = typeof product.displayPrice === 'number' ? product.displayPrice : (typeof product.price === 'number' ? product.price : 0);

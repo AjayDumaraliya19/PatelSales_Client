@@ -32,11 +32,11 @@ export const useCart = () => {
     async (productId, quantity = 1) => {
       setError(null);
       try {
-        await addItem({ _id: productId });
+        await addItem({ _id: productId }, quantity);
         return { success: true };
       } catch (err) {
         setError(err.message || 'Failed to add item to cart');
-        return { success: false, error };
+        return { success: false, error: err };
       }
     },
     [addItem]

@@ -44,7 +44,7 @@ export default function ProductsPage() {
       try {
         const response = await productsService.getProducts({
           page,
-          limit,
+          limit: PRODUCTS_PER_PAGE,
           category: categoryFilter,
           search: searchQuery,
           sort: sortBy,
@@ -53,8 +53,17 @@ export default function ProductsPage() {
           active: true,
         });
 
-        setProducts(response.products);
-        setTotalPages(response.pages);
+        const rawProducts = Array.isArray(response.products) ? response.products : [];
+        const seen = new Set();
+        const uniqueProducts = rawProducts.filter((p) => {
+          if (!p?._id) return true;
+          if (seen.has(p._id)) return false;
+          seen.add(p._id);
+          return true;
+        });
+
+        setProducts(uniqueProducts);
+        setTotalPages(response.pages || 1);
       } catch (error) {
         console.error('Failed to fetch products:', error);
         setProducts([]);

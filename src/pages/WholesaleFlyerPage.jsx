@@ -16,8 +16,11 @@ export default function WholesaleFlyerPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await productsService.getProducts({ page, limit: true });
-        setProducts((prev) => (page === 1 ? response.products : [...prev, ...response.products]));
+        const response = await productsService.getProducts({ page, limit: PRODUCTS_PER_PAGE });
+        setProducts((prev) => {
+          const merged = page === 1 ? (response.products || []) : [...prev, ...(response.products || [])];
+          return Array.from(new Map(merged.map((p) => [p._id, p])).values());
+        });
         setTotalPages(response.pages);
       } catch (error) {
         console.error('Failed to fetch wholesale products:', error);
@@ -67,9 +70,9 @@ export default function WholesaleFlyerPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {products.map((product, index) => (
               <Link
-                key={product._id}
+                key={product._id ? `${product._id}-${index}` : index}
                 to={`/products/${product._id}`}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:-translate-y-1"
               >

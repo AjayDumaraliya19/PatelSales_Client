@@ -83,32 +83,37 @@ export default function ProductDetailPage() {
   const handleAddToCart = async () => {
     if (!product || product.stock === 0 || isAdding) return;
     setIsAdding(true);
-    await new Promise((r) => setTimeout(r, 300));
+    try {
+      await new Promise((r) => setTimeout(r, 200));
 
-    let effectivePrice = product.price;
-    if (product.bulkPricingTiers && product.bulkPricingTiers.length > 0) {
-      const sorted = [...product.bulkPricingTiers].sort((a, b) => a.minQuantity - b.minQuantity);
-      for (const tier of sorted) {
-        if (quantity >= tier.minQuantity) effectivePrice = tier.price;
+      let effectivePrice = product.price;
+      if (product.bulkPricingTiers && product.bulkPricingTiers.length > 0) {
+        const sorted = [...product.bulkPricingTiers].sort((a, b) => a.minQuantity - b.minQuantity);
+        for (const tier of sorted) {
+          if (quantity >= tier.minQuantity) effectivePrice = tier.price;
+        }
       }
-    }
 
-    const cartProduct = {
-      ...product,
-      price: effectivePrice,
-      categoryId: product.category._id,
-      categoryName: product.category.name,
-      isNew: product.isProductNew || false,
-      isOnSale: product.isOnSale || (product.compareAtPrice ? product.compareAtPrice > product.price : false),
-      originalPrice: product.compareAtPrice,
-      caseSize: product.caseSize || '',
-      rating: product.rating,
-      reviewCount: product.reviewCount,
-    };
-    addItem(cartProduct);
-    setIsAdding(false);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+      const cartProduct = {
+        ...product,
+        price: effectivePrice,
+        categoryId: product.category?._id || (typeof product.category === 'string' ? product.category : ''),
+        categoryName: product.category?.name || '',
+        isNew: product.isProductNew || false,
+        isOnSale: product.isOnSale || (product.compareAtPrice ? product.compareAtPrice > product.price : false),
+        originalPrice: product.compareAtPrice,
+        caseSize: product.caseSize || '',
+        rating: product.rating,
+        reviewCount: product.reviewCount,
+      };
+      await addItem(cartProduct, quantity);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+    } catch (err) {
+      console.error('Failed to add to cart:', err);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const goToSlide = useCallback((idx) => {

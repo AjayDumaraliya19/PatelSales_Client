@@ -18,7 +18,7 @@ export const useWishlistStore = create()(
         
         // Optimistic update
         set((state) => ({
-          items: [...state.items, productId],
+          items: state.items.includes(productId) ? state.items : [...state.items, productId],
         }));
 
         // Sync with backend if authenticated

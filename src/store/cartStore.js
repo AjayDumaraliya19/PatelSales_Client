@@ -16,28 +16,53 @@ export const useCartStore = create()(
        * - If authenticated: sync with backend
        * - If guest: store locally
        */
-      addItem: async (product= 1) => {
+      addItem: async (product, quantity = 1) => {
+        if (!product) return;
+        const productId = product._id || product.id;
+        if (!productId) return;
+
+        const qty = Number(quantity) > 0 ? Math.floor(Number(quantity)) : 1;
+        const maxStock = typeof product.stock === 'number' && product.stock >= 0 ? product.stock : 9999;
+        if (maxStock === 0) return;
+
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         // Optimistic update
         set((state) => {
-          const existing = state.items.find((i) => i.productId === product._id);
+          const existing = state.items.find((i) => i.productId === productId);
           if (existing) {
+            const currentQty = Number(existing.quantity) || 0;
+            const updatedQty = Math.min(currentQty + qty, maxStock);
             return {
               items: state.items.map((i) =>
-                i.productId === product._id
-                  ? { ...i, quantity: Math.min(i.quantity + quantity, product.stock) }
+                i.productId === productId
+                  ? { ...i, quantity: updatedQty }
                   : i
               ),
             };
           }
+
+          const initialQty = Math.min(qty, maxStock);
+          const normalizedProduct = {
+            ...product,
+            _id: productId,
+            price: typeof product.price === 'number'
+              ? product.price
+              : (typeof product.displayPrice === 'number' ? product.displayPrice : 0),
+            stock: maxStock,
+            images: Array.isArray(product.images) && product.images.length > 0
+              ? product.images
+              : (product.image ? [product.image] : ['/images/placeholder.png']),
+            name: product.name || 'Product',
+          };
+
           return {
             items: [
               ...state.items,
               {
-                productId: product._id,
-                product,
-                quantity: Math.min(quantity, product.stock),
+                productId,
+                product: normalizedProduct,
+                quantity: initialQty,
               },
             ],
           };
@@ -48,8 +73,8 @@ export const useCartStore = create()(
           try {
             set({ isSyncing: true });
             await cartService.addToCart({
-              product: product._id,
-              quantity,
+              product: productId,
+              quantity: qty,
             });
             set({ lastSyncedAt: Date.now(), isSyncing: false });
           } catch (error) {
@@ -97,18 +122,24 @@ export const useCartStore = create()(
        * Update item quantity
        */
       updateQuantity: async (productId, quantity) => {
-        if (quantity <= 0) {
+        const qty = Number(quantity);
+        if (isNaN(qty) || qty <= 0) {
           await get().removeItem(productId);
           return;
         }
 
+        const validQty = Math.floor(qty);
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
         // Optimistic update
         set((state) => ({
-          items: state.items.map((i) =>
-            i.productId === productId ? { ...i, quantity } : i
-          ),
+          items: state.items.map((i) => {
+            if (i.productId === productId) {
+              const maxStock = typeof i.product?.stock === 'number' && i.product.stock >= 0 ? i.product.stock : 9999;
+              return { ...i, quantity: Math.min(validQty, maxStock) };
+            }
+            return i;
+          }),
         }));
 
         // Sync with backend if authenticated
@@ -122,7 +153,7 @@ export const useCartStore = create()(
             );
             
             if (backendItem && backendItem._id) {
-              await cartService.updateCartItem(backendItem._id, { quantity });
+              await cartService.updateCartItem(backendItem._id, { quantity: validQty });
             }
             set({ lastSyncedAt: Date.now(), isSyncing: false });
           } catch (error) {
@@ -254,8 +285,14 @@ export const useCartStore = create()(
 
       // Calculations
       getSubtotal: () => {
-        return get().items.reduce(
-          (sum, item) => sum + item.product.price * item.quantity,
+        return (get().items || []).reduce(
+          (sum, item) => {
+            const price = typeof item.product?.price === 'number'
+              ? item.product.price
+              : (typeof item.product?.displayPrice === 'number' ? item.product.displayPrice : 0);
+            const qty = Number(item.quantity) || 0;
+            return sum + (price * qty);
+          },
           0
         );
       },
@@ -276,7 +313,7 @@ export const useCartStore = create()(
       },
 
       getItemCount: () => {
-        return get().items.reduce((sum, item) => sum + item.quantity, 0);
+        return (get().items || []).reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
       },
     }),
     {

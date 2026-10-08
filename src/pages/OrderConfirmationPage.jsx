@@ -77,18 +77,26 @@ export default function OrderConfirmationPage() {
               <p className="font-bold text-gray-900">{orderData.orderNumber}</p>
             </div>
             <div>
-              <p className="text-gray-500 mb-1">Items</p>
-              <p className="font-bold text-gray-900">{orderData.items.length}</p>
+              <p className="text-gray-500 mb-1">Fulfillment</p>
+              <p className="font-bold text-gray-900">
+                {orderData.deliveryType === 'pickup' ? '🏬 Store Pickup' : '🚚 Standard Delivery'}
+              </p>
             </div>
             <div>
               <p className="text-gray-500 mb-1">Total</p>
-              <p className="font-bold text-[var(--secondary)]">${orderData.total.toFixed(2)}</p>
+              <p className="font-bold text-[var(--secondary)]">${Number(orderData.total || 0).toFixed(2)}</p>
             </div>
             <div>
               <p className="text-gray-500 mb-1">Status</p>
               <p className="font-bold text-green-600">Confirmed</p>
             </div>
           </div>
+          {orderData.discount > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-emerald-700 font-medium">
+              <span>Promo Discount Applied {orderData.couponCode ? `(${orderData.couponCode})` : ''}</span>
+              <span>-${Number(orderData.discount).toFixed(2)}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-3 justify-center">
