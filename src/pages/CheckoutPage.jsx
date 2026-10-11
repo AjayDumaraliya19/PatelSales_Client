@@ -9,6 +9,7 @@ import { useOrders } from '../hooks/useOrders';
 import { useAuthStore } from '../store/authStore';
 import { getStripe, isStripeConfigured } from '../lib/stripe';
 import ordersService from '../services/ordersService';
+import userService from '../services/userService';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -29,11 +30,52 @@ export default function CheckoutPage() {
   const [promoError, setPromoError] = useState(null);
   const [promoSuccess, setPromoSuccess] = useState(null);
 
+  // Address management state for logged-in user
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState('new');
+  const [saveAddressToProfile, setSaveAddressToProfile] = useState(true);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [addressSuccessMessage, setAddressSuccessMessage] = useState(null);
+
+  // Form input states
+  const [contactInfo, setContactInfo] = useState({
+    fullName: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    company: '',
+  });
+
+  const [newAddress, setNewAddress] = useState({
+    title: 'Home',
+    street: '',
+    city: '',
+    state: 'NJ',
+    zip: '',
+    phone: user?.phone || '',
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
   const [createdOrderId, setCreatedOrderId] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
   const [paymentStep, setPaymentStep] = useState(false);
+
+  // Update contact info when user profile loads
+  useEffect(() => {
+    if (user) {
+      setContactInfo((prev) => ({
+        fullName: prev.fullName || user.name || '',
+        email: prev.email || user.email || '',
+        phone: prev.phone || user.phone || '',
+        company: prev.company || '',
+      }));
+      setNewAddress((prev) => ({
+        ...prev,
+        phone: prev.phone || user.phone || '',
+      }));
+    }
+  }, [user]);
 
   // Fetch store shipping settings from Admin configuration
   useEffect(() => {
@@ -52,11 +94,60 @@ export default function CheckoutPage() {
     };
   }, []);
 
+  // Fetch user's saved addresses
+  const loadAddresses = async () => {
+    if (!isAuthenticated) return;
+    setIsLoadingAddresses(true);
+    try {
+      const res = await userService.getAddresses();
+      if (res?.success && Array.isArray(res.addresses)) {
+        setSavedAddresses(res.addresses);
+        if (res.addresses.length > 0) {
+          const defaultAddr = res.addresses.find((a) => a.isDefault) || res.addresses[0];
+          setSelectedAddressId(defaultAddr._id);
+        } else {
+          setSelectedAddressId('new');
+        }
+      } else {
+        setSelectedAddressId('new');
+      }
+    } catch (err) {
+      console.error('Failed to load user addresses:', err);
+      setSelectedAddressId('new');
+    } finally {
+      setIsLoadingAddresses(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAddresses();
+  }, [isAuthenticated]);
+
   const subtotal = getSubtotal();
   const tax = getTax();
   const deliveryFee = deliveryType === 'pickup' ? 0 : Number(shippingSettings.flatRate || 0);
   const discountAmount = appliedPromo ? (appliedPromo.discount || 0) : 0;
   const finalTotal = Math.max(0, Math.round((subtotal + tax + deliveryFee - discountAmount) * 100) / 100);
+
+  // Check whether all required details are filled
+  const isContactFilled = Boolean(
+    contactInfo.fullName.trim() &&
+    contactInfo.email.trim() &&
+    contactInfo.phone.trim()
+  );
+
+  const isAddressFilled = deliveryType === 'pickup' || (
+    selectedAddressId !== 'new'
+      ? Boolean(savedAddresses.find((a) => a._id === selectedAddressId))
+      : Boolean(
+          newAddress.street.trim() &&
+          newAddress.city.trim() &&
+          newAddress.state.trim() &&
+          newAddress.zip.trim()
+        )
+  );
+
+  const isAllDetailsFilled = isContactFilled && isAddressFilled;
 
   if (items.length === 0) {
     return (
@@ -119,20 +210,93 @@ export default function CheckoutPage() {
     setPromoCodeInput('');
   };
 
+  const handleNewAddressChange = (field, value) => {
+    setNewAddress((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      const res = await userService.updateAddress(addressId, { address: { isDefault: true } });
+      if (res?.success) {
+        setSavedAddresses(res.addresses);
+        setAddressSuccessMessage('Default delivery address updated');
+        setTimeout(() => setAddressSuccessMessage(null), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to set default address:', err);
+    }
+  };
+
+  const handleDeleteAddress = async (addressId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Are you sure you want to delete this saved address?')) return;
+    try {
+      const res = await userService.deleteAddress(addressId);
+      if (res?.success) {
+        const remaining = savedAddresses.filter((a) => a._id !== addressId);
+        setSavedAddresses(remaining);
+        if (selectedAddressId === addressId) {
+          if (remaining.length > 0) {
+            const def = remaining.find((a) => a.isDefault) || remaining[0];
+            setSelectedAddressId(def._id);
+          } else {
+            setSelectedAddressId('new');
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to delete address:', err);
+    }
+  };
+
+  const handleQuickSaveAddress = async () => {
+    if (!newAddress.street.trim() || !newAddress.city.trim() || !newAddress.state.trim() || !newAddress.zip.trim()) {
+      setFormError('Please enter street, city, state, and zip code to save this address');
+      return;
+    }
+    setIsSavingAddress(true);
+    setFormError(null);
+    try {
+      const res = await userService.addAddress({
+        address: {
+          title: newAddress.title || 'Delivery',
+          name: contactInfo.fullName || user?.name || '',
+          street: newAddress.street.trim(),
+          city: newAddress.city.trim(),
+          state: newAddress.state.trim(),
+          zipCode: newAddress.zip.trim(),
+          zip: newAddress.zip.trim(),
+          country: 'US',
+          phone: newAddress.phone.trim() || contactInfo.phone || user?.phone || '',
+          isDefault: savedAddresses.length === 0,
+        },
+      });
+      if (res?.success && Array.isArray(res.addresses)) {
+        setSavedAddresses(res.addresses);
+        const newlyAdded = res.addresses[res.addresses.length - 1];
+        if (newlyAdded?._id) {
+          setSelectedAddressId(newlyAdded._id);
+        }
+        setAddressSuccessMessage('Address successfully saved to your profile!');
+        setTimeout(() => setAddressSuccessMessage(null), 4000);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to save address';
+      setFormError(msg);
+    } finally {
+      setIsSavingAddress(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     setFormError(null);
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email');
-    const phone = formData.get('phone');
-    const fullName = formData.get('fullName');
-    const company = formData.get('company');
-    const street = formData.get('street');
-    const city = formData.get('city');
-    const state = formData.get('state');
-    const zip = formData.get('zip');
+    const email = contactInfo.email.trim();
+    const phone = contactInfo.phone.trim();
+    const fullName = contactInfo.fullName.trim();
+    const company = contactInfo.company.trim();
 
     if (!email || !phone || !fullName) {
       setFormError('Please fill in your name, email, and phone number');
@@ -140,10 +304,62 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (deliveryType === 'delivery' && (!street || !city || !state || !zip)) {
-      setFormError('Please fill in your complete delivery address');
-      setIsSubmitting(false);
-      return;
+    let finalStreet = '';
+    let finalCity = '';
+    let finalState = '';
+    let finalZip = '';
+    let finalPhone = phone;
+
+    if (deliveryType === 'delivery') {
+      if (selectedAddressId !== 'new') {
+        const chosen = savedAddresses.find((a) => a._id === selectedAddressId);
+        if (!chosen) {
+          setFormError('Please select a valid delivery address or enter a new one');
+          setIsSubmitting(false);
+          return;
+        }
+        finalStreet = chosen.street;
+        finalCity = chosen.city;
+        finalState = chosen.state;
+        finalZip = chosen.zipCode || chosen.zip;
+        finalPhone = chosen.phone || phone;
+      } else {
+        finalStreet = newAddress.street.trim();
+        finalCity = newAddress.city.trim();
+        finalState = newAddress.state.trim();
+        finalZip = newAddress.zip.trim();
+        finalPhone = newAddress.phone.trim() || phone;
+
+        if (!finalStreet || !finalCity || !finalState || !finalZip) {
+          setFormError('Please fill in your complete delivery address (Street, City, State, ZIP Code)');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Auto-save address to user's profile if checkbox is checked
+        if (saveAddressToProfile && isAuthenticated) {
+          userService.addAddress({
+            address: {
+              title: newAddress.title || 'Delivery',
+              name: fullName,
+              street: finalStreet,
+              city: finalCity,
+              state: finalState,
+              zipCode: finalZip,
+              zip: finalZip,
+              country: 'US',
+              phone: finalPhone,
+              isDefault: savedAddresses.length === 0,
+            },
+          }).then((res) => {
+            if (res?.success && Array.isArray(res.addresses)) {
+              setSavedAddresses(res.addresses);
+            }
+          }).catch((err) => {
+            console.warn('Could not auto-save address in background:', err);
+          });
+        }
+      }
     }
 
     const orderItems = items.map((item) => ({
@@ -161,17 +377,18 @@ export default function CheckoutPage() {
         state: 'NJ',
         zipCode: '07001',
         country: 'US',
-        phone,
+        phone: finalPhone || phone,
       }
       : {
-        street,
-        city,
-        state,
-        zipCode: zip,
+        street: finalStreet,
+        city: finalCity,
+        state: finalState,
+        zipCode: finalZip,
         country: 'US',
-        phone,
+        phone: finalPhone || phone,
       };
 
+    // Note: Strictly 'card' payment method
     const orderData = {
       items: orderItems,
       shippingAddress,
@@ -190,6 +407,10 @@ export default function CheckoutPage() {
           if (stripe) {
             setStripePromise(Promise.resolve(stripe));
             setPaymentStep(true);
+            const paySec = document.getElementById('payment-section');
+            if (paySec) {
+              paySec.scrollIntoView({ behavior: 'smooth' });
+            }
           } else {
             clearCart();
             navigate('/order-confirmation', { state: { order: result.order } });
@@ -233,12 +454,27 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {formError && (
-            <div className="lg:col-span-5 bg-red-50 border border-red-200 rounded-lg p-4 mb-2">
+            <div className="lg:col-span-5 bg-red-50 border border-red-200 rounded-lg p-4 mb-2 flex items-start gap-2.5">
+              <Icon name="ExclamationTriangleIcon" size={18} className="text-red-600 shrink-0 mt-0.5" />
               <p className="text-red-700 text-sm font-medium">{formError}</p>
             </div>
           )}
 
           <div className="lg:col-span-3 space-y-4">
+            {/* Step 1 Indicator */}
+            <div className="flex items-center justify-between pb-1">
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px]">1</span>
+                Contact & Delivery Information
+              </span>
+              {isAllDetailsFilled && (
+                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  <Icon name="CheckCircleIcon" size={14} className="text-emerald-600" />
+                  Details Complete
+                </span>
+              )}
+            </div>
+
             {/* Fulfillment Selection: Delivery vs Store Pickup */}
             <section className="app-card p-5 sm:p-6">
               <div className="flex items-center justify-between mb-3">
@@ -322,7 +558,8 @@ export default function CheckoutPage() {
                     name="fullName"
                     type="text"
                     required
-                    defaultValue={user?.name || ''}
+                    value={contactInfo.fullName}
+                    onChange={(e) => setContactInfo((prev) => ({ ...prev, fullName: e.target.value }))}
                     className="input-field w-full min-h-[44px]"
                   />
                 </div>
@@ -334,7 +571,8 @@ export default function CheckoutPage() {
                       name="email"
                       type="email"
                       required
-                      defaultValue={user?.email || ''}
+                      value={contactInfo.email}
+                      onChange={(e) => setContactInfo((prev) => ({ ...prev, email: e.target.value }))}
                       className="input-field w-full min-h-[44px]"
                     />
                   </div>
@@ -345,7 +583,8 @@ export default function CheckoutPage() {
                       name="phone"
                       type="tel"
                       required
-                      defaultValue={user?.phone || ''}
+                      value={contactInfo.phone}
+                      onChange={(e) => setContactInfo((prev) => ({ ...prev, phone: e.target.value }))}
                       className="input-field w-full min-h-[44px]"
                     />
                   </div>
@@ -356,103 +595,440 @@ export default function CheckoutPage() {
                     id="checkout-company"
                     name="company"
                     type="text"
+                    value={contactInfo.company}
+                    onChange={(e) => setContactInfo((prev) => ({ ...prev, company: e.target.value }))}
                     className="input-field w-full min-h-[44px]"
                   />
                 </div>
               </div>
             </section>
 
-            {/* Shipping Address (Only needed when Delivery is selected) */}
+            {/* Delivery Address Section (Only needed when Delivery is selected) */}
             {deliveryType === 'delivery' && (
               <section className="app-card p-5 sm:p-6">
-                <h2 className="text-sm font-bold text-gray-900 mb-4">Delivery Address</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="checkout-street" className="app-label mb-1.5 block">Street Address *</label>
-                    <input
-                      id="checkout-street"
-                      name="street"
-                      type="text"
-                      required={deliveryType === 'delivery'}
-                      placeholder="123 Main St, Apt 4B"
-                      className="input-field w-full min-h-[44px]"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label htmlFor="checkout-city" className="app-label mb-1.5 block">City *</label>
-                      <input
-                        id="checkout-city"
-                        name="city"
-                        type="text"
-                        required={deliveryType === 'delivery'}
-                        className="input-field w-full min-h-[44px]"
-                      />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+                      <Icon name="MapPinIcon" size={18} />
                     </div>
                     <div>
-                      <label htmlFor="checkout-state" className="app-label mb-1.5 block">State *</label>
-                      <input
-                        id="checkout-state"
-                        name="state"
-                        type="text"
-                        required={deliveryType === 'delivery'}
-                        defaultValue="NJ"
-                        className="input-field w-full min-h-[44px]"
-                      />
-                    </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label htmlFor="checkout-zip" className="app-label mb-1.5 block">ZIP Code *</label>
-                      <input
-                        id="checkout-zip"
-                        name="zip"
-                        type="text"
-                        required={deliveryType === 'delivery'}
-                        className="input-field w-full min-h-[44px]"
-                      />
+                      <h2 className="text-sm font-bold text-gray-900">Delivery Address</h2>
+                      <p className="text-xs text-gray-500">
+                        {savedAddresses.length > 0
+                          ? 'Select your saved address or enter a new one'
+                          : 'Enter your destination address'}
+                      </p>
                     </div>
                   </div>
+
+                  {savedAddresses.length > 0 && selectedAddressId !== 'new' && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedAddressId('new')}
+                      className="text-xs font-semibold text-[var(--secondary)] hover:underline flex items-center gap-1"
+                    >
+                      <Icon name="PlusIcon" size={14} />
+                      Add New Address
+                    </button>
+                  )}
+                  {savedAddresses.length > 0 && selectedAddressId === 'new' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const defaultAddr = savedAddresses.find((a) => a.isDefault) || savedAddresses[0];
+                        setSelectedAddressId(defaultAddr._id);
+                      }}
+                      className="text-xs font-semibold text-[var(--secondary)] hover:underline flex items-center gap-1"
+                    >
+                      <Icon name="ArrowLeftIcon" size={14} />
+                      Back to Saved Addresses
+                    </button>
+                  )}
                 </div>
+
+                {addressSuccessMessage && (
+                  <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-2 font-medium">
+                    <Icon name="CheckCircleIcon" size={16} className="text-emerald-600 shrink-0" />
+                    <span>{addressSuccessMessage}</span>
+                  </div>
+                )}
+
+                {isLoadingAddresses ? (
+                  <div className="py-6 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
+                    <Icon name="ArrowPathIcon" size={16} className="animate-spin text-emerald-600" />
+                    <span>Loading your saved addresses...</span>
+                  </div>
+                ) : (
+                  <>
+                    {/* Saved Addresses List (Cards) */}
+                    {savedAddresses.length > 0 && selectedAddressId !== 'new' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {savedAddresses.map((addr) => {
+                            const isSelected = selectedAddressId === addr._id;
+                            return (
+                              <div
+                                key={addr._id}
+                                onClick={() => setSelectedAddressId(addr._id)}
+                                className={`cursor-pointer rounded-xl border p-4 transition-all relative ${
+                                  isSelected
+                                    ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500/20 shadow-sm'
+                                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                                        isSelected
+                                          ? 'border-emerald-600 bg-emerald-600 text-white'
+                                          : 'border-gray-300 bg-white'
+                                      }`}
+                                    >
+                                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                    </div>
+                                    <span className="font-bold text-xs text-gray-900">
+                                      {addr.title || 'Saved Address'}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5">
+                                    {addr.isDefault && (
+                                      <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                                        Default
+                                      </span>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleDeleteAddress(addr._id, e)}
+                                      className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
+                                      title="Delete address"
+                                    >
+                                      <Icon name="TrashIcon" size={14} />
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="mt-2 text-xs text-gray-600 space-y-0.5 pl-6">
+                                  <p className="font-medium text-gray-900">{addr.street}</p>
+                                  <p>
+                                    {addr.city}, {addr.state} {addr.zipCode || addr.zip}
+                                  </p>
+                                  {addr.phone && <p className="text-gray-500">Phone: {addr.phone}</p>}
+                                </div>
+
+                                {!addr.isDefault && (
+                                  <div className="mt-3 pt-2 border-t border-gray-100 flex justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSetDefaultAddress(addr._id);
+                                      }}
+                                      className="text-[11px] font-medium text-[var(--secondary)] hover:underline"
+                                    >
+                                      Set as default
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAddressId('new')}
+                          className="w-full py-2.5 px-4 border-2 border-dashed border-gray-200 hover:border-emerald-500 hover:bg-emerald-50/20 rounded-xl text-xs font-semibold text-gray-600 hover:text-emerald-700 flex items-center justify-center gap-1.5 transition-all"
+                        >
+                          <Icon name="PlusIcon" size={15} />
+                          Deliver to a Different / New Address
+                        </button>
+                      </div>
+                    )}
+
+                    {/* New Address Input Form */}
+                    {(savedAddresses.length === 0 || selectedAddressId === 'new') && (
+                      <div className="space-y-4 pt-1">
+                        {savedAddresses.length > 0 && (
+                          <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center justify-between">
+                            <span className="font-medium">Adding a new delivery address</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const defaultAddr = savedAddresses.find((a) => a.isDefault) || savedAddresses[0];
+                                setSelectedAddressId(defaultAddr._id);
+                              }}
+                              className="font-bold underline text-blue-700 hover:text-blue-900"
+                            >
+                              Choose Saved Address
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="address-title" className="app-label mb-1.5 block">
+                              Address Label (Optional)
+                            </label>
+                            <input
+                              id="address-title"
+                              type="text"
+                              value={newAddress.title}
+                              onChange={(e) => handleNewAddressChange('title', e.target.value)}
+                              placeholder="e.g. Home, Office, Store"
+                              className="input-field w-full min-h-[44px]"
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="address-phone" className="app-label mb-1.5 block">
+                              Delivery Phone (Optional)
+                            </label>
+                            <input
+                              id="address-phone"
+                              type="tel"
+                              value={newAddress.phone}
+                              onChange={(e) => handleNewAddressChange('phone', e.target.value)}
+                              placeholder="Phone for driver"
+                              className="input-field w-full min-h-[44px]"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label htmlFor="checkout-street" className="app-label mb-1.5 block">
+                            Street Address *
+                          </label>
+                          <input
+                            id="checkout-street"
+                            type="text"
+                            required={deliveryType === 'delivery'}
+                            value={newAddress.street}
+                            onChange={(e) => handleNewAddressChange('street', e.target.value)}
+                            placeholder="123 Main St, Apt 4B"
+                            className="input-field w-full min-h-[44px]"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                          <div>
+                            <label htmlFor="checkout-city" className="app-label mb-1.5 block">
+                              City *
+                            </label>
+                            <input
+                              id="checkout-city"
+                              type="text"
+                              required={deliveryType === 'delivery'}
+                              value={newAddress.city}
+                              onChange={(e) => handleNewAddressChange('city', e.target.value)}
+                              placeholder="City"
+                              className="input-field w-full min-h-[44px]"
+                            />
+                          </div>
+                          <div>
+                            <label htmlFor="checkout-state" className="app-label mb-1.5 block">
+                              State *
+                            </label>
+                            <input
+                              id="checkout-state"
+                              type="text"
+                              required={deliveryType === 'delivery'}
+                              value={newAddress.state}
+                              onChange={(e) => handleNewAddressChange('state', e.target.value)}
+                              placeholder="NJ"
+                              className="input-field w-full min-h-[44px]"
+                            />
+                          </div>
+                          <div className="col-span-2 sm:col-span-1">
+                            <label htmlFor="checkout-zip" className="app-label mb-1.5 block">
+                              ZIP Code *
+                            </label>
+                            <input
+                              id="checkout-zip"
+                              type="text"
+                              required={deliveryType === 'delivery'}
+                              value={newAddress.zip}
+                              onChange={(e) => handleNewAddressChange('zip', e.target.value)}
+                              placeholder="07001"
+                              className="input-field w-full min-h-[44px]"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Save Address to Profile Checkbox & Button */}
+                        <div className="p-3.5 bg-emerald-50/60 border border-emerald-200/70 rounded-xl space-y-3">
+                          <label className="flex items-start gap-2.5 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={saveAddressToProfile}
+                              onChange={(e) => setSaveAddressToProfile(e.target.checked)}
+                              className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                            />
+                            <span className="text-xs text-gray-800 leading-snug">
+                              <strong>Save this address to my account</strong> for 1-click checkout on future orders.
+                            </span>
+                          </label>
+
+                          <div className="flex items-center justify-between pt-1">
+                            <span className="text-[11px] text-gray-500">
+                              Address will be stored safely in your profile.
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleQuickSaveAddress}
+                              disabled={isSavingAddress || !newAddress.street.trim() || !newAddress.city.trim() || !newAddress.zip.trim()}
+                              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 transition-colors shrink-0"
+                            >
+                              {isSavingAddress ? 'Saving...' : 'Save Address Now'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
               </section>
             )}
 
-            {/* Payment Section */}
-            <section className="app-card p-5 sm:p-6">
-              <h2 className="text-sm font-bold text-gray-900 mb-4">Payment Method</h2>
-              {paymentStep && createdOrderId ? (
-                <div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    Complete your payment to finalize the order.
+            {/* STEP 2: PAYMENT METHOD (Shows ONLY when user has filled all details) */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between pb-2">
+                <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] ${
+                    isAllDetailsFilled ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-600'
+                  }`}>
+                    2
+                  </span>
+                  Payment Method
+                </span>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Card Payment Only
+                </span>
+              </div>
+
+              {!isAllDetailsFilled ? (
+                /* LOCKED PLACEHOLDER when details are not filled yet */
+                <div className="app-card p-6 border-2 border-dashed border-gray-300 bg-gray-50/70 rounded-2xl text-center">
+                  <div className="w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center mx-auto mb-3">
+                    <Icon name="LockClosedIcon" size={24} />
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-800">Payment Method Locked</h3>
+                  <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto leading-relaxed">
+                    Please complete your contact details and delivery address above. The card payment form will appear automatically once all details are filled.
                   </p>
-                  {stripePromise && (
-                    <Elements stripe={stripePromise}>
-                      <PaymentForm
-                        orderId={createdOrderId}
-                        amount={finalTotal}
-                        onSuccess={handlePaymentSuccess}
-                        onError={handlePaymentError}
-                        onBack={() => setPaymentStep(false)}
-                      />
-                    </Elements>
-                  )}
+                  <div className="mt-3 flex items-center justify-center gap-2 text-[11px] font-medium text-gray-500">
+                    <span className={isContactFilled ? 'text-emerald-700 font-bold' : 'text-gray-400'}>
+                      {isContactFilled ? '✓ Contact Info' : '○ Contact Info'}
+                    </span>
+                    <span>•</span>
+                    <span className={isAddressFilled ? 'text-emerald-700 font-bold' : 'text-gray-400'}>
+                      {isAddressFilled ? '✓ Address' : '○ Address'}
+                    </span>
+                  </div>
                 </div>
               ) : (
-                <div>
-                  <p className="text-sm text-gray-600 mb-3">
-                    {isStripeConfigured()
-                      ? 'Secure card payment powered by Stripe. Your card will be charged after confirming.'
-                      : 'Demo checkout — no real payment is processed.'}
-                  </p>
-                  <input
-                    name="cardNumber"
-                    type="text"
-                    placeholder="Card number (demo)"
-                    className="input-field w-full min-h-[44px]"
-                    defaultValue="4111 1111 1111 1111"
-                    readOnly
-                  />
-                </div>
+                /* UNLOCKED PAYMENT METHOD TAB (Only Card Payment) */
+                <section className="app-card p-5 sm:p-6 transition-all duration-300 animate-fadeIn" id="payment-section">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+                        <Icon name="CreditCardIcon" size={18} />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-bold text-gray-900">Card Payment</h2>
+                        <p className="text-xs text-emerald-700 font-medium">Ready for secure payment</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                      <Icon name="CheckCircleIcon" size={13} />
+                      Unlocked
+                    </span>
+                  </div>
+
+                  {paymentStep && createdOrderId ? (
+                    <div className="pt-2">
+                      <div className="mb-4 p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center gap-2">
+                        <Icon name="LockClosedIcon" size={16} className="text-emerald-700 shrink-0" />
+                        <span>Order initiated. Complete your secure card payment below to finalize.</span>
+                      </div>
+                      {stripePromise && (
+                        <Elements stripe={stripePromise}>
+                          <PaymentForm
+                            orderId={createdOrderId}
+                            amount={finalTotal}
+                            onSuccess={handlePaymentSuccess}
+                            onError={handlePaymentError}
+                            onBack={() => setPaymentStep(false)}
+                          />
+                        </Elements>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Exclusive Card Payment Selection Box */}
+                      <div className="border-2 border-emerald-600 bg-emerald-50/40 rounded-xl p-4 sm:p-5 ring-2 ring-emerald-500/10">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5">
+                              <div className="w-5 h-5 rounded-full border-2 border-emerald-600 bg-emerald-600 flex items-center justify-center text-white">
+                                <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="text-sm font-bold text-gray-900">Credit / Debit Card</h3>
+                                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                                  Only Payment Method
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1">
+                                Safe and encrypted checkout powered by Stripe. All major cards accepted.
+                              </p>
+
+                              {/* Card Network Badges */}
+                              <div className="flex items-center gap-1.5 mt-3 flex-wrap">
+                                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-blue-700 border border-blue-200 shadow-2xs">
+                                  VISA
+                                </span>
+                                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-red-600 border border-red-200 shadow-2xs">
+                                  Mastercard
+                                </span>
+                                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-indigo-700 border border-indigo-200 shadow-2xs">
+                                  American Express
+                                </span>
+                                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-white text-orange-600 border border-orange-200 shadow-2xs">
+                                  Discover
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-emerald-200/60 flex items-center justify-between text-[11px] text-emerald-900">
+                          <span className="flex items-center gap-1 font-medium">
+                            <Icon name="ShieldCheckIcon" size={15} className="text-emerald-700" />
+                            256-Bit SSL Encrypted & PCI-DSS Level 1 Compliant
+                          </span>
+                          <span className="text-gray-500 font-medium">Powered by Stripe</span>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
+                        <Icon name="InformationCircleIcon" size={17} className="text-amber-700 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold text-amber-950">Payment Policy Notice</p>
+                          <p className="text-amber-800 mt-0.5">
+                            Patel Sales only accepts Card Payment. Alternative payment options (including Cash on Delivery) are strictly not supported.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </section>
               )}
-            </section>
+            </div>
           </div>
 
           {/* Right Sidebar: Order Summary & Promo Code */}
@@ -564,18 +1140,34 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting || isCreatingOrder || paymentStep}
-                className="btn-primary w-full justify-center mt-2 min-h-[44px] disabled:opacity-70"
-              >
-                {isSubmitting || isCreatingOrder ? 'Placing Order...' : 'Place Order'}
-              </button>
-
-              {paymentStep && (
-                <p className="text-xs text-amber-600 mt-2 text-center">
-                  Complete the payment form above to finalize your order.
-                </p>
+              {/* Order Submission / Payment Button */}
+              {paymentStep ? (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 text-center font-medium">
+                  Payment in progress. Complete card details on the left to finalize your order.
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isCreatingOrder || !isAllDetailsFilled}
+                  className="btn-primary w-full justify-center mt-2 min-h-[46px] disabled:opacity-50 text-sm font-semibold shadow-sm"
+                >
+                  {isSubmitting || isCreatingOrder ? (
+                    <span className="flex items-center gap-2">
+                      <Icon name="ArrowPathIcon" size={16} className="animate-spin" />
+                      Processing Order...
+                    </span>
+                  ) : !isAllDetailsFilled ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Icon name="LockClosedIcon" size={16} />
+                      Complete Details to Pay
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <Icon name="CreditCardIcon" size={16} />
+                      Pay with Card · ${finalTotal.toFixed(2)}
+                    </span>
+                  )}
+                </button>
               )}
 
               <p className="text-xs text-gray-500 mt-3 text-center">

@@ -81,39 +81,68 @@ export default function PaymentForm({ orderId, amount, onSuccess, onError, onBac
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <label className="app-label mb-2 block">Card Details</label>
-        <CardElement
-          onChange={handleCardChange}
-          options={{
-            style: {
-              base: {
-                fontSize: '16px',
-                color: '#1f2937',
-                '::placeholder': { color: '#9ca3af' },
+      <div className="bg-white border-2 border-emerald-600/30 rounded-xl p-4 sm:p-5 bg-gradient-to-b from-emerald-50/20 to-white shadow-sm">
+        <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+              <Icon name="CreditCardIcon" size={18} />
+            </div>
+            <div>
+              <label className="text-sm font-bold text-gray-900 block leading-tight">Card Payment Details</label>
+              <span className="text-[11px] text-emerald-700 font-medium">Only Card Payment Accepted</span>
+            </div>
+          </div>
+          {/* Card brand badges */}
+          <div className="flex items-center gap-1.5 text-[10px] font-bold">
+            <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">VISA</span>
+            <span className="px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">MC</span>
+            <span className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">AMEX</span>
+            <span className="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200">DISC</span>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-300 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-500/20 rounded-lg p-3.5 transition-all">
+          <CardElement
+            onChange={handleCardChange}
+            options={{
+              style: {
+                base: {
+                  fontSize: '15px',
+                  color: '#111827',
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                  '::placeholder': { color: '#9ca3af' },
+                },
+                invalid: {
+                  color: '#dc2626',
+                },
               },
-              invalid: {
-                color: '#ef4444',
-              },
-            },
-          }}
-        />
+            }}
+          />
+        </div>
+
+        <div className="mt-3 flex items-center justify-between text-[11px] text-gray-500">
+          <span className="flex items-center gap-1 text-emerald-700 font-medium">
+            <Icon name="LockClosedIcon" size={13} />
+            256-Bit SSL Encrypted
+          </span>
+          <span className="text-gray-400">Powered by Stripe</span>
+        </div>
       </div>
 
       {cardError && (
-        <p className="text-sm text-red-600 flex items-center gap-1">
-          <Icon name="ExclamationTriangleIcon" size={14} />
-          {cardError}
-        </p>
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2">
+          <Icon name="ExclamationTriangleIcon" size={16} className="shrink-0 text-red-600" />
+          <span>{cardError}</span>
+        </div>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 pt-1">
         {onBack && (
           <button
             type="button"
             onClick={onBack}
             disabled={processing}
-            className="btn-secondary min-h-[44px] flex-1 justify-center"
+            className="btn-secondary min-h-[44px] px-5 text-sm"
           >
             Back
           </button>
@@ -121,15 +150,18 @@ export default function PaymentForm({ orderId, amount, onSuccess, onError, onBac
         <button
           type="submit"
           disabled={!stripe || !cardComplete || processing}
-          className="btn-primary min-h-[44px] flex-1 justify-center disabled:opacity-70"
+          className="btn-primary min-h-[44px] flex-1 justify-center text-sm font-semibold shadow-sm disabled:opacity-60"
         >
           {processing ? (
-            <>
+            <span className="flex items-center gap-2">
               <Icon name="ArrowPathIcon" size={16} className="animate-spin" />
-              Processing...
-            </>
+              Processing Payment...
+            </span>
           ) : (
-            `Pay $${amount.toFixed(2)}`
+            <span className="flex items-center justify-center gap-1.5">
+              <Icon name="LockClosedIcon" size={16} />
+              Pay ${amount.toFixed(2)} with Card
+            </span>
           )}
         </button>
       </div>
