@@ -85,6 +85,7 @@ export const useAuthStore = create()(
           // Clear local state
           localStorage.removeItem('auth_token');
           localStorage.removeItem('auth_user');
+          localStorage.removeItem('patelsales-cart');
           
           set({
             user: null,

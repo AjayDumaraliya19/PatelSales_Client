@@ -58,6 +58,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
   const [createdOrderId, setCreatedOrderId] = useState(null);
+  const [createdOrder, setCreatedOrder] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
   const [paymentStep, setPaymentStep] = useState(false);
 
@@ -402,6 +403,7 @@ export default function CheckoutPage() {
       const result = await createOrder(orderData);
       if (result.success && result.order) {
         setCreatedOrderId(result.order._id);
+        setCreatedOrder(result.order);
         if (isStripeConfigured()) {
           const stripe = await getStripe();
           if (stripe) {
@@ -413,10 +415,20 @@ export default function CheckoutPage() {
             }
           } else {
             clearCart();
+            try {
+              sessionStorage.setItem('lastOrder', JSON.stringify(result.order));
+            } catch (e) {
+              console.error('Session storage error:', e);
+            }
             navigate('/order-confirmation', { state: { order: result.order } });
           }
         } else {
           clearCart();
+          try {
+            sessionStorage.setItem('lastOrder', JSON.stringify(result.order));
+          } catch (e) {
+            console.error('Session storage error:', e);
+          }
           navigate('/order-confirmation', { state: { order: result.order } });
         }
       } else {
@@ -430,14 +442,27 @@ export default function CheckoutPage() {
     }
   };
 
-  const handlePaymentSuccess = (paymentIntentId) => {
+  const handlePaymentSuccess = (confirmedOrder, paymentIntentId) => {
     clearCart();
-    navigate('/order-confirmation', { state: { paymentIntentId } });
+    const finalOrder = confirmedOrder || createdOrder;
+    if (finalOrder) {
+      try {
+        sessionStorage.setItem('lastOrder', JSON.stringify(finalOrder));
+      } catch (e) {
+        console.error('Session storage error:', e);
+      }
+    }
+    navigate('/order-confirmation', {
+      state: {
+        order: finalOrder,
+        paymentIntentId,
+      },
+    });
   };
 
   const handlePaymentError = (error) => {
     setFormError(error);
-    setPaymentStep(false);
+    // Keep user on card payment form so they can fix card details easily
   };
 
   return (
@@ -955,6 +980,7 @@ export default function CheckoutPage() {
                         <Elements stripe={stripePromise}>
                           <PaymentForm
                             orderId={createdOrderId}
+                            order={createdOrder}
                             amount={finalTotal}
                             onSuccess={handlePaymentSuccess}
                             onError={handlePaymentError}

@@ -237,6 +237,25 @@ export const useCartStore = create()(
        * - Pushes merged items to backend
        * - Updates local state with final merged cart
        */
+      /**
+       * Reset local cart without deleting user's cart from backend
+       * Called on logout so guest has an empty cart and items don't duplicate on next login
+       */
+      resetLocalCart: () => {
+        set({ items: [], lastSyncedAt: null, isSyncing: false });
+        try {
+          localStorage.removeItem('patelsales-cart');
+        } catch (e) {
+          console.error('Failed to clear cart storage:', e);
+        }
+      },
+
+      /**
+       * Sync local cart to backend on login
+       * - Prevents duplicate concurrent executions
+       * - If local cart is empty: simply fetches user's backend cart
+       * - If guest has local items: merges them smartly (avoiding quantity doubling)
+       */
       syncCart: async () => {
         const isAuthenticated = useAuthStore.getState().isAuthenticated;
 
@@ -244,10 +263,15 @@ export const useCartStore = create()(
           return;
         }
 
-        const localItems = get().items;
+        // Concurrency guard: avoid duplicate simultaneous syncs
+        if (get().isSyncing) {
+          return;
+        }
+
+        const localItems = get().items || [];
 
         if (localItems.length === 0) {
-          // No local items — just pull backend cart
+          // No guest items to merge — simply pull user's cart from backend
           await get().fetchCart();
           return;
         }
@@ -255,25 +279,58 @@ export const useCartStore = create()(
         try {
           set({ isSyncing: true });
 
-          // 1. Push every local (guest) item to backend.
-          //    Backend merges quantities if the product already exists.
+          // Fetch current backend cart first to check for existing items
+          let backendCart = null;
+          try {
+            const res = await cartService.getCart();
+            backendCart = res?.cart;
+          } catch (e) {
+            backendCart = null;
+          }
+
+          const backendItems = backendCart?.items || [];
+
           for (const item of localItems) {
-            try {
-              await cartService.addToCart({
-                product: item.productId,
-                quantity: item.quantity,
-              });
-            } catch (err) {
-              console.error(`Failed to sync item ${item.productId} to backend:`, err);
+            const prodId = String(item.productId || item.product?._id);
+            if (!prodId) continue;
+
+            const existingInBackend = backendItems.find((bi) => {
+              const biProdId = typeof bi.product === 'string' ? bi.product : bi.product?._id;
+              return String(biProdId) === prodId;
+            });
+
+            if (existingInBackend) {
+              // Item is already in the user's backend cart:
+              // Update to max quantity instead of blindly adding (which doubled the count!)
+              const localQty = Number(item.quantity) || 1;
+              const backendQty = Number(existingInBackend.quantity) || 1;
+              const targetQty = Math.max(localQty, backendQty);
+
+              if (existingInBackend._id && targetQty !== backendQty) {
+                try {
+                  await cartService.updateCartItem(existingInBackend._id, { quantity: targetQty });
+                } catch (err) {
+                  console.error(`Failed to update item ${prodId}:`, err);
+                }
+              }
+            } else {
+              // New guest item not in backend cart — add it
+              try {
+                await cartService.addToCart({
+                  product: prodId,
+                  quantity: Number(item.quantity) || 1,
+                });
+              } catch (err) {
+                console.error(`Failed to add guest item ${prodId} to backend:`, err);
+              }
             }
           }
 
-          // 2. Fetch the fully merged cart from the backend and update local state.
+          // Fetch canonical updated cart from backend
           await get().fetchCart();
           set({ lastSyncedAt: Date.now(), isSyncing: false });
         } catch (error) {
           console.error('Failed to sync cart on login:', error);
-          // Keep local items intact if sync fails
           set({ isSyncing: false });
         }
       },
@@ -302,9 +359,6 @@ export const useCartStore = create()(
       },
 
       getShipping: () => {
-        // ── Shipping charge temporarily disabled ──
-        // const subtotal = get().getSubtotal();
-        // return subtotal >= 150 ? 0 : 12.99;
         return 0;
       },
 
@@ -332,8 +386,7 @@ useAuthStore.subscribe((state, prevState) => {
     // User just logged in - sync local cart to backend
     useCartStore.getState().syncCart();
   } else if (justLoggedOut) {
-    // User logged out - clear cart (keep local for now)
-    // You can choose to clear or keep local cart on logout
-    // useCartStore.getState().clearCart();
+    // User logged out - reset local cart so guest has clean cart and items don't duplicate on re-login
+    useCartStore.getState().resetLocalCart();
   }
 });
